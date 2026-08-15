@@ -1,0 +1,23 @@
+{
+  "app.title": "Citadel",
+  "nav.label": "Main",
+  "surface.entry.title": "Entry",
+  "surface.item.title": "Catalogue item",
+  "entry.heading": "Citadel",
+  "entry.lede": "A dramatic learning platform for hospital resilience.",
+  "boundary.heading": "What this is, and what it is not",
+  "boundary.statement": "Citadel is for preparedness, exercise and improvement only.",
+  "boundary.not_intro": "It is explicitly not:",
+  "boundary.not_1": "live incident command or live incident operations",
+  "boundary.not_2": "live triage or patient tracking during a real event",
+  "boundary.not_3": "clinical decision support",
+  "boundary.not_4": "facility certification or accreditation",
+  "entry.continue": "Continue",
+  "item.heading": "Catalogue item",
+  "item.loading": "Loading…",
+  "item.provenance": "Source",
+  "item.authority_class": "Authority class",
+  "item.version": "Version",
+  "refusal.session_invalid": "You need to sign in to see this.",
+  "refusal.rate_limited": "Too many requests. Wait a moment and try again."
+}

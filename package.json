@@ -1,0 +1,27 @@
+{
+  "name": "@citadel/citadel",
+  "version": "0.1.0",
+  "description": "The game platform. Story, play, evidence, scoring, transfer artifacts.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "private": true,
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "check": "./check-repo.sh",
+    "test": "node --test test/*.test.js",
+    "conformance": "node ../contracts/conformance/src/run.js"
+  },
+  "dependencies": {
+    "@citadel/contracts": "git+file://../contracts#v0.1.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@tanstack/react-router": "^1.0.0"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0",
+    "typescript": "^5.6.0"
+  }
+}

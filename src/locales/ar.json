@@ -1,0 +1,18 @@
+{
+  "app.title": "القلعة",
+  "nav.label": "الرئيسية",
+  "surface.entry.title": "الدخول",
+  "surface.item.title": "عنصر الدليل",
+  "entry.heading": "القلعة",
+  "entry.lede": "منصّة تعلّم دراميّة لصمود المستشفيات.",
+  "boundary.heading": "ما هذه المنصّة، وما ليست",
+  "boundary.statement": "القلعة مخصّصة للتأهّب والتمرين والتحسين فقط.",
+  "boundary.not_intro": "وهي صراحةً ليست:",
+  "boundary.not_1": "قيادة حادث فعلي أو عمليات حادث فعلي",
+  "boundary.not_2": "فرز المصابين أو تتبّع المرضى أثناء حدث فعلي",
+  "boundary.not_3": "دعم القرار السريري",
+  "boundary.not_4": "اعتماد المنشأة أو ترخيصها",
+  "entry.continue": "متابعة",
+  "item.heading": "عنصر الدليل",
+  "item.loading": "جارٍ التحميل…"
+}
