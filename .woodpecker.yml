@@ -5,18 +5,33 @@
 # Anything with logic lives in scripts/ and is read from disk untouched.
 #
 # PER-REPOSITORY SUBSTITUTION BLOCK - the only sanctioned divergence:
-#   checklist-api additionally carries a postgres service, the DB environment
-#   for its test and conformance steps, and the deployment-event steps
-#   (gate-ancestor + deploy). It is the only repository that deploys in R0.
-#   Every other difference between these five files is drift, not design.
+#   checklist-api carries a postgres service and the DB environment for its
+#   test and conformance steps.
+#   citadel carries the api-router-free static release: it ships `dist` built
+#   here, and serves it with a stock Caddy on the VPS.
+#   Both carry the deployment-event steps (gate-ancestor + deploy), because
+#   R0 task H1 is "deploy checklist-api AND citadel through the gate - both
+#   live". Every other difference between these five files is drift.
 #
-# Events: push / pull_request / tag test the code. No deploy secrets exist
-# anywhere in this file, and none are scoped to these events on the server.
+# Events: push / pull_request / tag test the code. No deploy secrets exist at
+# those events - they are scoped to `deployment` on the server, so a push
+# pipeline cannot obtain the deploy key at all.
+#
+# The deployment event runs the three-condition gate: the ancestor check, then
+# the FULL SUITE at the deployed SHA (every step below runs again - closing
+# trap T32 by construction), then upload + deploy.
 
 when:
-  - event: [push, pull_request, tag]
+  - event: [push, pull_request, tag, deployment]
 
 steps:
+  gate-ancestor:
+    image: node:26
+    when:
+      - event: deployment
+    commands:
+      - sh scripts/gate-ancestor.sh
+
   contracts-pin:
     image: node:26
     commands:
@@ -57,3 +72,36 @@ steps:
     image: node:26
     commands:
       - npm audit --audit-level=high
+
+  # Ships the release and runs the server-side deploy. Only on a human-raised
+  # deployment, and only after every step above passed AT THIS SHA.
+  # Transport is plain OpenSSH streaming tar - never the drone-scp plugin,
+  # which reaches the host then dies with "handshake failed: EOF" and whose
+  # rm:true deletes the ENTIRE target directory.
+  deploy:
+    image: alpine:3.20
+    when:
+      - event: deployment
+    environment:
+      VPS_HOST:
+        from_secret: VPS_HOST
+      VPS_USER:
+        from_secret: VPS_USER
+      VPS_SSH_KEY:
+        from_secret: VPS_SSH_KEY
+    commands:
+      - apk add --no-cache openssh-client tar
+      - |
+        if [ -z "$VPS_HOST" ] || [ -z "$VPS_USER" ] || [ -z "$VPS_SSH_KEY" ]; then
+          echo "ERROR: missing VPS deployment secret - check the names match the Woodpecker UI exactly"
+          exit 1
+        fi
+      - mkdir -p ~/.ssh
+      - printf '%s\n' "$VPS_SSH_KEY" | tr -d '\r' > ~/.ssh/id_deploy
+      - chmod 600 ~/.ssh/id_deploy
+      - ssh-keygen -y -f ~/.ssh/id_deploy >/dev/null
+      - printf '%s\n' "$CI_COMMIT_SHA" > RELEASE_SHA
+      - export TARGET=/opt/citadel/citadel
+      - export SSH_OPTS="-i ~/.ssh/id_deploy -p 22 -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -o ServerAliveInterval=20 -o ServerAliveCountMax=6 -o ConnectTimeout=20"
+      - export REMOTE="$VPS_USER@$VPS_HOST"
+      - sh scripts/ci-upload.sh
