@@ -192,3 +192,39 @@ test('★ no surface imports a router Link while R0 mounts no RouterProvider', a
       `its hooks read a null router context and throw during render`);
   }
 });
+
+// ---------------------------------------------------------------------------
+// ★ THE DEFAULT CONSTRUCTOR PATH — the one production uses, and the one no
+//   test ever ran.
+//
+// `fetchImpl = fetch` captured the unbound native function. Calling it as
+// `this.#fetch(...)` set `this` to the gateway, and the browser refused with
+// "Illegal invocation". The item screen was dead in production while every
+// test passed -- because every test injects a fake fetchImpl.
+//
+// A default parameter is production code. Test it like production code.
+// ---------------------------------------------------------------------------
+test('★ the gateway does not call fetch with itself as `this`', async () => {
+  const { HttpCatalogueGateway } = await import('../src/gateways/catalogue-gateway.js');
+
+  const original = globalThis.fetch;
+  let sawThis = 'never called';
+  globalThis.fetch = function (...args) {
+    sawThis = this;
+    return Promise.resolve({ ok: true, json: async () => ({ id: 'X' }), headers: new Map() });
+  };
+
+  try {
+    // No fetchImpl -- exactly what main.jsx does.
+    const gateway = new HttpCatalogueGateway({ baseUrl: '/api/content' });
+    await gateway.getItem('1.0.0', 'X');
+    assert.notEqual(sawThis, 'never called', 'global fetch was never reached');
+    assert.ok(
+      sawThis === globalThis || sawThis === undefined,
+      `fetch was invoked with \`this\` = ${sawThis?.constructor?.name ?? sawThis} — ` +
+      'a browser refuses that with "Illegal invocation"',
+    );
+  } finally {
+    globalThis.fetch = original;
+  }
+});

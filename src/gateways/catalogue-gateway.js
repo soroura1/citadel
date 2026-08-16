@@ -24,7 +24,22 @@ export class HttpCatalogueGateway {
   #baseUrl;
   #fetch;
 
-  constructor({ baseUrl, fetchImpl = fetch }) {
+  /**
+   * ⚠️ `fetchImpl = fetch` CAPTURES THE UNBOUND NATIVE FUNCTION.
+   *
+   * Calling it as `this.#fetch(...)` invokes it with `this` = this gateway, and
+   * the browser refuses:
+   *
+   *     Failed to execute 'fetch' on 'Window': Illegal invocation
+   *
+   * The whole item screen died on it in production. Every test passed, because
+   * every test INJECTS a fake fetchImpl -- so the default, which is the only
+   * thing production uses, was never once executed.
+   *
+   * Binding to globalThis is the fix. The arrow form also keeps a caller's own
+   * injected implementation working unchanged.
+   */
+  constructor({ baseUrl, fetchImpl = (...args) => globalThis.fetch(...args) }) {
     this.#baseUrl = baseUrl;
     this.#fetch = fetchImpl;
   }
