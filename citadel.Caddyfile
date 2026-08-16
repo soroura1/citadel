@@ -1,0 +1,63 @@
+# citadel — the SPA, and the same-origin API proxy the walk depends on.
+#
+# NPM terminates TLS for citadel.endura-assess.com and forwards the whole host
+# to the published host port; inside the container Caddy listens on 8080.
+
+:8080 {
+	root * /srv
+
+	# -------------------------------------------------------------------------
+	# ★ THE SAME-ORIGIN API PROXY — the walk depends on this, not on convenience.
+	#
+	# citadel's gateway calls `/api/content/...` with `credentials: 'include'`,
+	# and R0 authenticates with a cookie set by the SPA on THIS origin. Because
+	# the API is reached through this proxy, that cookie is same-origin and
+	# travels with the request.
+	#
+	# Point the SPA at a cross-origin absolute VITE_API instead and the cookie
+	# stops being sent: no CORS negotiation, no preflight, just a 401 at the
+	# final step of the walk. That failure already happened once, from the other
+	# direction - checklist-api could not READ cookies for the whole of R0
+	# because @fastify/cookie was never registered, and every automated check
+	# still passed because none of them ever sent a credential.
+	#
+	# strip_prefix is load-bearing: api-router maps /content/*, and the public
+	# form here is /api/content/*.
+	# -------------------------------------------------------------------------
+	handle /api/* {
+		uri strip_prefix /api
+		reverse_proxy {$API_UPSTREAM}
+	}
+
+	# /version and /health are STATIC FILES, written by deploy.sh from
+	# RELEASE_SHA. A static site has no server process to ask, but H2 and H4
+	# still apply - "which commit is live" must be answerable from outside the
+	# server, and answered by this service rather than by the proxy in front of
+	# it. A proxy reporting healthy while the thing behind it is broken is the
+	# classic false green.
+	handle /version {
+		rewrite * /version.json
+		header Content-Type application/json
+		file_server
+	}
+
+	handle /health {
+		rewrite * /health.json
+		header Content-Type application/json
+		file_server
+	}
+
+	# The SPA. try_files sends unknown paths to index.html so client-side routes
+	# survive a reload.
+	#
+	# ⚠️ The fallback is why /api/* is handled ABOVE and not below: an SPA
+	# fallback answers 200 with HTML for any path it catches, so a mis-ordered
+	# proxy rule turns a dead API route into a cheerful 200 that fails when the
+	# response is parsed as JSON. That is how "which release is live" becomes
+	# unanswerable from the outside.
+	handle {
+		try_files {path} /index.html
+		file_server
+		encode gzip
+	}
+}

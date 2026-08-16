@@ -1,0 +1,37 @@
+# citadel — a stock Caddy serving bytes built in CI. No Node on the server.
+#
+# The pipeline runs `vite build` at the gated SHA and ships `dist`. Nothing is
+# compiled here, so "green in CI, broken in the image" has no room to happen:
+# the artifact CI tested is the artifact that is served.
+#
+# ⚠️ SHARED VPS. Every name and port below is unique to this platform. Compose
+# prefixes resources with the project name, so a collision lets one platform
+# operate another's containers.
+#
+#   project name  citadel-web        (not "citadel" - checklist-api's stack)
+#   host port     8087               (8085 taken by another platform's adminer,
+#                                     8086 is checklist-api's api-router)
+#   bind          172.17.0.1         private docker bridge, NEVER 0.0.0.0
+#
+# Binding 0.0.0.0 would publish the app over plain HTTP on the public interface
+# and let anyone bypass the proxy that terminates TLS.
+
+name: citadel-web
+
+services:
+  web:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      # Where /api/* is proxied. Read from .env, which is VPS-owned.
+      API_UPSTREAM: ${API_UPSTREAM:-172.17.0.1:8086}
+    volumes:
+      - ./citadel.Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./dist:/srv:ro
+    ports:
+      - "${HOST_BIND_IP:-172.17.0.1}:${HOST_APP_PORT:-8087}:8080"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
