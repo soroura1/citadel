@@ -149,3 +149,46 @@ describe('F7 — deployed bytes', () => {
     );
   });
 });
+
+// ---------------------------------------------------------------------------
+// ★ THE FOURTH ASSERTION IS MISSING, AND THIS IS WHERE IT WOULD GO.
+//
+// Routing, navigation inventory and deployed bytes ALL PASSED while the
+// production page was BLANK. <Navigation> used TanStack Router's <Link>, R0
+// mounts no RouterProvider, and the Link threw
+// `Cannot read properties of null (reading 'stores')` during render.
+//
+// Every assertion here is about whether a surface CAN be reached. None
+// EXECUTES it. "Routed, listed and shipped" is not "renders".
+//
+// ⚠️ WHY THERE IS NO RENDER TEST: `node --test` cannot import `.jsx` --
+// ERR_UNKNOWN_FILE_EXTENSION. There is no JSX transform in this repo's test
+// path, which is exactly why no test has ever rendered a component. Adding one
+// (a loader, or an SSR build step before the tests) is a real change and is
+// OWED -- see citadel/CLAUDE.md.
+//
+// Until then the static guard below catches this defect class, and H5 -- a
+// human opening the page -- remains the only thing that executes it. That is
+// not a shortfall in H5; it is the reason the plan specifies it.
+// ---------------------------------------------------------------------------
+
+test('★ no surface imports a router Link while R0 mounts no RouterProvider', async () => {
+  const { readFileSync, readdirSync } = await import('node:fs');
+  const { join } = await import('node:path');
+  const src = new URL('../src/', import.meta.url).pathname;
+
+  const walk = (dir) => readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+    e.isDirectory() ? walk(join(dir, e.name)) : [join(dir, e.name)]);
+
+  const mountsRouter = walk(src).some((f) =>
+    /\.jsx?$/.test(f) && /RouterProvider/.test(readFileSync(f, 'utf8')));
+
+  if (mountsRouter) return;   // R3 mounts one; the guard retires itself
+
+  for (const f of walk(src).filter((f) => /\.jsx?$/.test(f))) {
+    const text = readFileSync(f, 'utf8');
+    assert.ok(!/@tanstack\/react-router/.test(text),
+      `${f} imports @tanstack/react-router, but nothing mounts a RouterProvider — ` +
+      `its hooks read a null router context and throw during render`);
+  }
+});
