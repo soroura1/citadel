@@ -1,0 +1,50 @@
+{
+  "id": "dec-01-power-pressure",
+  "scene": "sc-01-02",
+  "prompt": { "key": "decision.01.power_pressure.prompt" },
+  "requires_authority": ["role.medical-clinical-services", "role.nursing-patient-flow", "role.operations"],
+  "reflection_required": true,
+  "realistic_window": "first minute",
+  "options": [
+    {
+      "id": "dec-01-power-pressure.stabilize-locally",
+      "label": { "key": "decision.01.power_pressure.stabilize_locally" },
+      "protects": "Reduces movement risk while ICU and emergency teams use manual and battery fallback.",
+      "risks": "Consumes respiratory, nursing, biomedical, and runner capacity.",
+      "defensible_by": "ICU and emergency teams would defend this because moving a ventilated or highly unstable patient through uncertain power and a crowded route is hazardous.",
+      "prerequisites": ["Clinical teams retain care decisions; Rami retains electrical isolation and restoration authority."],
+      "effects": [
+        { "operation": "set_enum", "enum_variable": "C1_POWER_RESPONSE", "enum_value": "local stabilization", "delay": "immediate", "visible": true }
+      ],
+      "deferred_consequence": null,
+      "deliberately_asymmetric": "Canon assigns the response state and a workload cost, but the Chapter 1 season slice leaves workforce capacity unmoved."
+    },
+    {
+      "id": "dec-01-power-pressure.mobile-bridge",
+      "label": { "key": "decision.01.power_pressure.mobile_bridge" },
+      "protects": "Reduces prolonged hand support in the affected ICU bay.",
+      "risks": "Leaves emergency care without its mobile reserve if another patient deteriorates.",
+      "defensible_by": "Ayyash and biomedical staff would defend this because the mobile set can arrive by the quickest service route and reduce prolonged hand support.",
+      "prerequisites": ["The mobile equipment set is found, verified, and delivered through the service route."],
+      "effects": [
+        { "operation": "set_enum", "enum_variable": "C1_POWER_RESPONSE", "enum_value": "mobile bridge", "delay": "immediate", "visible": true },
+        { "operation": "increment", "variable": "V9", "magnitude": "moderate", "delay": "immediate", "visible": true }
+      ],
+      "deferred_consequence": null,
+      "deliberately_asymmetric": "The mobile route becomes operationally decisive; canon names no decreasing season-variable effect for documenting that route."
+    },
+    {
+      "id": "dec-01-power-pressure.selective-relocation",
+      "label": { "key": "decision.01.power_pressure.selective_relocation" },
+      "protects": "Clears the electrical area for safer work when movement risk is lower than continued fallback risk.",
+      "risks": "Occupies recovery or emergency positions and exposes the absence of a truly empty staffed ICU bed.",
+      "defensible_by": "Clinical and nursing leads would defend selected movement when its risk is lower than continued fallback risk.",
+      "prerequisites": ["Clinical and nursing leads select only patients whose movement risk is lower than continued fallback risk."],
+      "effects": [
+        { "operation": "set_enum", "enum_variable": "C1_POWER_RESPONSE", "enum_value": "selective relocation", "delay": "immediate", "visible": true }
+      ],
+      "deferred_consequence": null,
+      "deliberately_asymmetric": "Canon assigns the response state and transferred service pressure but does not assign a directional Chapter 1 season-variable movement here."
+    }
+  ]
+}
