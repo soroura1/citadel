@@ -14,10 +14,10 @@
     "preview": "vite preview",
     "check": "./check-repo.sh",
     "test": "node --test test/*.test.js",
-    "conformance": "node ../contracts/conformance/src/run.js"
+    "conformance": "node node_modules/@citadel/contracts/conformance/src/self.js"
   },
   "dependencies": {
-    "@citadel/contracts": "git+https://github.com/soroura1/contracts.git#v0.2.0",
+    "@citadel/contracts": "git+https://github.com/soroura1/contracts.git#v0.2.1",
     "@tanstack/react-router": "^1.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
