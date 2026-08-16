@@ -82,3 +82,34 @@ test('every real Chapter 1 scene carries a text equivalent — the text path is 
   const m = contentManifest(scenes.map((d) => ({ scene_id: d.id, version: '1.0.0', document: d, lifecycle_state: 'approved' })));
   assert.deepEqual(m.missingTextEquivalent, [], 'a scene with no text equivalent excludes a whole access path');
 });
+
+// --- R3 G1, G2: art is additive ------------------------------------------------
+import { assertPlayableWithoutArt, assetManifest, AssetRefusal } from '../src/engine/assets.js';
+
+test('★ G2 — every real Chapter 1 scene is playable without any art', () => {
+  for (const s of scenes) assert.ok(assertPlayableWithoutArt(s), s.id);
+});
+
+test('★ a scene with no text equivalent is REFUSED — that removes an access path', () => {
+  const s = { ...scenes[0] }; delete s.text_equivalent;
+  assert.throws(() => assertPlayableWithoutArt(s),
+    (e) => e instanceof AssetRefusal && e.refusal === 'scene-has-no-text-equivalent');
+});
+
+test('★ a REQUIRED asset slot is refused — play must never depend on an image', () => {
+  const s = { ...scenes[0], asset_slots: [{ id: 'key-art', required: true }] };
+  assert.throws(() => assertPlayableWithoutArt(s), (e) => e.refusal === 'asset-slot-marked-required');
+  // An optional slot, filled or not, is fine.
+  assert.ok(assertPlayableWithoutArt({ ...scenes[0], asset_slots: [{ id: 'key-art' }] }));
+});
+
+test('★ G1 — the asset manifest is DERIVED, and unfilled is honest, not broken', () => {
+  const m = assetManifest([
+    { id: 'a', static_fallback: 'x', text_equivalent: 't', asset_slots: [{ id: 's1', asset_id: 'img-1' }] },
+    { id: 'b', static_fallback: 'x', text_equivalent: 't', asset_slots: [{ id: 's2' }] },
+  ]);
+  assert.deepEqual(m.filled, ['a:s1']);
+  assert.deepEqual(m.unfilled, ['b:s2']);
+  assert.equal(m.bindingBlockedBy, 'Q10', 'binding a candidate as canonical needs the reviewer');
+  assert.deepEqual(m.missingFallback, []);
+});
