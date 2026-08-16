@@ -1,0 +1,59 @@
+# Shared CI pipeline (Woodpecker) - written once, copied to the five repositories.
+# DEC-016: Woodpecker is the runner, GitHub stays the forge.
+#
+# RULES (trap T9): this file is pure ASCII and every command is trivial.
+# Anything with logic lives in scripts/ and is read from disk untouched.
+#
+# PER-REPOSITORY SUBSTITUTION BLOCK - the only sanctioned divergence:
+#   checklist-api additionally carries a postgres service, the DB environment
+#   for its test and conformance steps, and the deployment-event steps
+#   (gate-ancestor + deploy). It is the only repository that deploys in R0.
+#   Every other difference between these five files is drift, not design.
+#
+# Events: push / pull_request / tag test the code. No deploy secrets exist
+# anywhere in this file, and none are scoped to these events on the server.
+
+when:
+  - event: [push, pull_request, tag]
+
+steps:
+  contracts-pin:
+    image: node:26
+    commands:
+      - ./check-repo.sh
+
+  install:
+    image: node:26
+    commands:
+      - git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
+      - npm ci
+
+  lint:
+    image: node:26
+    commands:
+      - npm run lint --if-present
+
+  typecheck:
+    image: node:26
+    commands:
+      - npm run typecheck --if-present
+
+  test:
+    image: node:26
+    commands:
+      - npm test
+
+  build:
+    image: node:26
+    commands:
+      - npm run build --if-present
+
+  conformance:
+    image: node:26
+    commands:
+      - npm run conformance --if-present
+
+  audit:
+    image: node:26
+    commands:
+      - npm audit --audit-level=high
