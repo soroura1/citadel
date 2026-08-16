@@ -1,0 +1,60 @@
+{
+  "id": "dec-01-closure-characterization",
+  "scene": "sc-01-04",
+  "prompt": { "key": "decision.01.closure_characterization.prompt" },
+  "requires_authority": null,
+  "reflection_required": true,
+  "realistic_window": null,
+  "options": [
+    {
+      "id": "dec-01-closure-characterization.integrated",
+      "label": { "key": "decision.01.closure_characterization.integrated" },
+      "protects": "The electrical restoration, shared-board discrepancy, fallback workload, and unusable physical capacity survive closure together with their different causes explicit.",
+      "risks": "Creates immediate ownership pressure.",
+      "defensible_by": "Fadl, Maha, Rami, and frontline clinical staff would defend this because it preserves the high-risk near miss, raw chronology, shared-board discrepancy, and unusable capacity.",
+      "prerequisites": [],
+      "effects": [
+        { "operation": "set_enum", "enum_variable": "C1_EXECUTIVE_CANDOR", "enum_value": "explicit", "delay": "immediate", "visible": true },
+        { "operation": "set_enum", "enum_variable": "C1_POWER_MAP_EVIDENCE", "enum_value": "preserved", "delay": "immediate", "visible": true },
+        { "operation": "set_enum", "enum_variable": "C1_QUALITY_RECORD", "enum_value": "integrated high-risk record", "delay": "immediate", "visible": true },
+        { "operation": "increment", "variable": "V5", "magnitude": "moderate", "delay": "next_chapter", "visible": true },
+        { "operation": "increment", "variable": "V1", "magnitude": "moderate", "delay": "next_chapter", "visible": true }
+      ],
+      "deferred_consequence": "dc-01-more-evidence-in-chapter-02",
+      "deliberately_asymmetric": "Canon gives this route stronger candor and later evidence while immediate ownership pressure is not assigned to a Chapter 1 season-variable movement."
+    },
+    {
+      "id": "dec-01-closure-characterization.separate-reviews",
+      "label": { "key": "decision.01.closure_characterization.separate_reviews" },
+      "protects": "Strong causal discipline by keeping electrical dependency, usable capacity, and patient-safety follow-up separate.",
+      "risks": "Separated concerns can disappear independently if ownership is lost.",
+      "defensible_by": "Fadl and Maha would defend separate reviews with named owners and review times because this avoids claiming one cause for all problems while preserving links between records.",
+      "prerequisites": ["An owner and review time are named for each unresolved issue."],
+      "effects": [
+        { "operation": "set_enum", "enum_variable": "C1_EXECUTIVE_CANDOR", "enum_value": "separated", "delay": "immediate", "visible": true },
+        { "operation": "set_enum", "enum_variable": "C1_POWER_MAP_EVIDENCE", "enum_value": "separated", "delay": "immediate", "visible": true },
+        { "operation": "set_enum", "enum_variable": "C1_QUALITY_RECORD", "enum_value": "separated high-risk reviews", "delay": "immediate", "visible": true },
+        { "operation": "increment", "variable": "V5", "magnitude": "moderate", "delay": "next_chapter", "visible": true }
+      ],
+      "deferred_consequence": "dc-01-separated-concerns",
+      "deliberately_asymmetric": "Canon gives this route strong causal discipline; its risk is conditional on ownership being lost, so no unconditional decreasing season effect is assigned."
+    },
+    {
+      "id": "dec-01-closure-characterization.normal-service",
+      "label": { "key": "decision.01.closure_characterization.normal_service" },
+      "protects": "Immediate confidence and time after services remained open and no permanent patient harm was detected.",
+      "risks": "Counts physical beds rather than safely usable capability and makes Rami less willing to rely on the operational summary.",
+      "defensible_by": "Thabit and Qays would defend this because backup generation started, critical power was restored, services remained open, and no permanent patient harm was detected.",
+      "prerequisites": [],
+      "effects": [
+        { "operation": "set_enum", "enum_variable": "C1_EXECUTIVE_CANDOR", "enum_value": "minimized", "delay": "immediate", "visible": true },
+        { "operation": "set_enum", "enum_variable": "C1_POWER_MAP_EVIDENCE", "enum_value": "minimized", "delay": "immediate", "visible": true },
+        { "operation": "set_enum", "enum_variable": "C1_QUALITY_RECORD", "enum_value": "high-risk dissent against softened operational closure", "delay": "immediate", "visible": true },
+        { "operation": "decrement", "variable": "V5", "magnitude": "moderate", "delay": "next_chapter", "visible": true },
+        { "operation": "decrement", "variable": "V10", "magnitude": "moderate", "delay": "next_chapter", "visible": true }
+      ],
+      "deferred_consequence": "dc-01-softened-closure-dissent",
+      "deliberately_asymmetric": "Canon protects immediate confidence and time, but Chapter 1 does not move public recognition and the season slice assigns only evidence and relationship losses here."
+    }
+  ]
+}
