@@ -2,6 +2,8 @@ import { createRoot } from 'react-dom/client';
 import { useState } from 'react';
 import { EntryScreen } from './features/entry/EntryScreen.jsx';
 import { ItemScreen } from './features/item/ItemScreen.jsx';
+import { SetupScreen } from './features/setup/SetupScreen.jsx';
+import { PlayScreen } from './features/play/PlayScreen.jsx';
 import { Navigation } from './layout/navigation.jsx';
 import { HttpCatalogueGateway } from './gateways/catalogue-gateway.js';
 import { SURFACES } from './surfaces.js';
@@ -41,9 +43,15 @@ function App() {
   return (
     <>
       <Navigation onNavigate={go} />
-      {surface.id === 'entry'
-        ? <EntryScreen onContinue={() => go('/item')} />
-        : <ItemScreen gateway={gateway} />}
+      {/* ⚠️ A surface declared reachable in surfaces.js MUST be rendered here.
+          The deployed-bytes assertion caught exactly this gap once: both R3
+          surfaces were declared reachable and never wired in, which is the
+          prior attempt's signature failure — six screens shipped that nobody
+          could navigate to. */}
+      {surface.id === 'entry' && <EntryScreen onContinue={() => go('/setup')} />}
+      {surface.id === 'item' && <ItemScreen gateway={gateway} />}
+      {surface.id === 'setup' && <SetupScreen roles={[]} scenarios={[]} onBegin={() => go('/play')} />}
+      {surface.id === 'play' && <PlayScreen scene={null} state={null} />}
     </>
   );
 }

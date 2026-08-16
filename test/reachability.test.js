@@ -228,3 +228,35 @@ test('★ the gateway does not call fetch with itself as `this`', async () => {
     globalThis.fetch = original;
   }
 });
+
+// --- R3 F10: the inventory tracks what R3 built --------------------------------
+
+test('★ F10 — Setup and Play are REACHABLE, and no longer merely planned', async () => {
+  const { SURFACES, PLANNED_SURFACES, reachableSurfaces } = await import('../src/surfaces.js');
+  for (const id of ['setup', 'play']) {
+    const s = SURFACES.find((x) => x.id === id);
+    assert.ok(s, `${id} is not in the inventory`);
+    assert.equal(s.status, 'reachable');
+    assert.ok(!PLANNED_SURFACES.some((p) => p.id === id),
+      `${id} is both built and still listed as planned — two states for one surface`);
+  }
+  assert.equal(reachableSurfaces().length, 4);
+});
+
+test('★ no surface sits at "routed but not reachable" without a dated justification', async () => {
+  const { SURFACES } = await import('../src/surfaces.js');
+  for (const s of SURFACES) {
+    if (s.status !== 'reachable') {
+      assert.ok(s.reason && /\d{4}/.test(s.reason),
+        `${s.id} is not reachable and its justification carries no date — ` +
+        'the prior attempt shipped six screens nobody could reach');
+    }
+  }
+});
+
+test('every reachable surface is in navigation, or says why not', async () => {
+  const { SURFACES } = await import('../src/surfaces.js');
+  for (const s of SURFACES.filter((x) => x.status === 'reachable' && !x.inNavigation)) {
+    assert.ok(s.reason?.length > 20, `${s.id} is reachable, absent from navigation, and unexplained`);
+  }
+});

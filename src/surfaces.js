@@ -48,6 +48,29 @@ export const SURFACES = [
       'checklist-api → citadel → this screen. It proves every seam.',
     release: 'R0',
   },
+  {
+    id: 'setup',
+    path: '/setup',
+    title: 'Setup',
+    status: 'reachable',
+    inNavigation: true,
+    reason:
+      'R3. Role, stake, tendency, scenario, severity, name and language. Every choice here reaches ' +
+      'the engine — a setup screen whose options do not is a questionnaire, and the participant ' +
+      'learns within one scene that their answers did not matter.',
+    release: 'R3',
+  },
+  {
+    id: 'play',
+    path: '/play',
+    title: 'Play',
+    status: 'reachable',
+    inNavigation: true,
+    reason:
+      'R3. The scene, its decision, and honest state. Reachable from setup AND from a deep link, ' +
+      'because a participant who closes the tab must be able to return to where they were.',
+    release: 'R3',
+  },
 ];
 
 /**
@@ -55,8 +78,6 @@ export const SURFACES = [
  * rather than discovered — and so nobody mistakes "not built" for "forgotten".
  */
 export const PLANNED_SURFACES = [
-  { id: 'setup', title: 'Setup', release: 'R3' },
-  { id: 'play', title: 'Play', release: 'R3' },
   { id: 'record', title: 'Record', release: 'R4' },
   { id: 'observation', title: 'Observation record', release: 'R4' },
   { id: 'results', title: 'Results', release: 'R4' },
