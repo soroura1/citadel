@@ -58,6 +58,42 @@ if ! ssh $SSH_OPTS "$REMOTE" "test -f '$TARGET/.env'"; then
   exit 1
 fi
 
+# ---------------------------------------------------------------------------
+# ★ VALIDATE THE ENV FILE IS COMPLETE -- HERE, BEFORE ANYTHING IS SWAPPED.
+#
+# ============================================================================
+# THIS IS THE ONLY PLACE "FAIL FAST BEFORE SWAPPING" CAN BE TRUE.
+# ============================================================================
+# deploy.sh also validates, and its comment used to claim it did so "before
+# swapping". It cannot: install-release.sh has already replaced every CI-owned
+# path by the time deploy.sh runs.
+#
+# On 17 Aug that cost an outage. A release added OWNER_DB_PASSWORD, the files
+# were installed, deploy.sh refused, and the site returned 404 on every path --
+# because `rm -rf dist` followed by `cp -R` breaks a running container's bind
+# mount, and deploy.sh had exited before `up -d --force-recreate` could fix it.
+#
+# A refusal that arrives after the damage is not a refusal, it is a diagnosis.
+# ---------------------------------------------------------------------------
+. "$(dirname "$0")/required-env.sh"
+
+echo "-> Checking $TARGET/.env is complete BEFORE swapping anything..."
+missing=""
+for name in $REQUIRED_ENV; do
+  if ! ssh $SSH_OPTS "$REMOTE" "grep -qE '^${name}=..*' '$TARGET/.env'"; then
+    missing="$missing $name"
+  fi
+done
+if [ -n "$missing" ]; then
+  echo
+  echo "REFUSED: $TARGET/.env is missing:$missing"
+  echo
+  echo "Nothing has been changed on the server. The running release is untouched."
+  echo "Add the variable(s) to $TARGET/.env and deploy again."
+  exit 1
+fi
+echo "   all required variables present"
+
 echo "-> Creating staging directory on the VPS..."
 # Upload into a FRESH directory, never straight over the live target: extracting
 # onto the target would merge the new release into the old one, leaving deleted

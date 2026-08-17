@@ -34,7 +34,9 @@ HEALTH_PORT="${HEALTH_PORT:-8080}"
 HEALTH_RETRIES="${HEALTH_RETRIES:-20}"
 HEALTH_SLEEP_SEC="${HEALTH_SLEEP_SEC:-2}"
 
-REQUIRED_ENV="APP_BASE_URL API_UPSTREAM OWNER_DB_PASSWORD APP_DB_PASSWORD"
+# One list, shared with ci-upload.sh, which checks it on the VPS BEFORE the
+# swap -- the only point at which failing early actually protects anything.
+. "$APP_DIR/scripts/required-env.sh"
 # -------------------------- END PROJECT CONFIG --------------------------
 
 export COMPOSE_PROJECT_NAME
@@ -44,8 +46,11 @@ cd "$APP_DIR"
 # --------------------------- Prerequisites -----------------------------
 docker compose version >/dev/null 2>&1 || { echo "the docker compose plugin is missing"; exit 1; }
 
-# --------------- Env validation - fail fast BEFORE swapping ------------
-# A misconfiguration should cost one second, not a half-completed deploy.
+# ------------------------- Env validation, again -----------------------
+# ⚠️ NOT "before swapping" -- install-release.sh has already replaced every
+# CI-owned path by the time this runs. The check that protects the running
+# release lives in ci-upload.sh; this one is the second line of defence, for a
+# hand-run ./deploy.sh where no upload happened.
 if [ ! -f "$ENV_FILE" ]; then
   echo "No $ENV_FILE."
   echo "It is SERVER-OWNED and CI never writes it. Copy deploy.env.example and fill it in."
