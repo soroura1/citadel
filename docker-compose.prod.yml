@@ -19,6 +19,50 @@
 name: citadel-web
 
 services:
+  # ---------------------------------------------------------------------------
+  # citadel's own database — R3 Phase D.
+  #
+  # ⚠️ ONE DATABASE PER SERVICE. A shared instance is a shared dependency
+  # wearing a disguise, and the first time one service's migration blocks
+  # another's deploy the cost becomes obvious.
+  #
+  # Bound to the private bridge only. It is never published publicly, and
+  # nothing outside this compose project reaches it.
+  # ---------------------------------------------------------------------------
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: ${OWNER_DB_PASSWORD:?OWNER_DB_PASSWORD is required}
+      POSTGRES_DB: citadel
+    volumes:
+      - citadel_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # One-shot. Run by deploy.sh BEFORE the app restarts — the only thing that
+  # touches the schema.
+  migrate:
+    image: node:26-alpine
+    profiles: ["tools"]
+    depends_on:
+      db: { condition: service_healthy }
+    environment:
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_NAME: citadel
+      OWNER_DB_USER: postgres
+      OWNER_DB_PASSWORD: ${OWNER_DB_PASSWORD:?}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?}
+    volumes:
+      - ./migrations:/app/migrations:ro
+      - ./scripts:/app/scripts:ro
+    working_dir: /app
+    command: ["node", "scripts/migrate.js"]
+
   web:
     image: caddy:2-alpine
     restart: unless-stopped
@@ -35,3 +79,6 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
+
+volumes:
+  citadel_db: {}

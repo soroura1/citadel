@@ -18,4 +18,7 @@
 # sibling project streamed 132 MB per deploy until its excludes were fixed, and
 # .dockerignore does not apply to a tar.
 # ---------------------------------------------------------------------------
-RELEASE_PATHS="dist citadel.Caddyfile docker-compose.prod.yml deploy.sh deploy.env.example scripts RELEASE_SHA"
+# ⚠️ `migrations` was missing until 17 Aug. Phase D built the story-content
+# tables, proved them against a real Postgres, and never shipped them -- the
+# same shape as the defect DEC-023 exists to fix, one layer down.
+RELEASE_PATHS="dist migrations citadel.Caddyfile docker-compose.prod.yml deploy.sh deploy.env.example scripts RELEASE_SHA"

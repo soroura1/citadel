@@ -34,7 +34,7 @@ HEALTH_PORT="${HEALTH_PORT:-8080}"
 HEALTH_RETRIES="${HEALTH_RETRIES:-20}"
 HEALTH_SLEEP_SEC="${HEALTH_SLEEP_SEC:-2}"
 
-REQUIRED_ENV="APP_BASE_URL API_UPSTREAM"
+REQUIRED_ENV="APP_BASE_URL API_UPSTREAM OWNER_DB_PASSWORD APP_DB_PASSWORD"
 # -------------------------- END PROJECT CONFIG --------------------------
 
 export COMPOSE_PROJECT_NAME
@@ -88,6 +88,19 @@ fi
 printf '{"commit":"%s","service":"citadel","deployedAt":"%s"}\n' \
   "$COMMIT_SHA" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$APP_DIR/dist/version.json"
 printf '{"status":"ok","service":"citadel"}\n' > "$APP_DIR/dist/health.json"
+
+# ----------------------------- Migrations ------------------------------
+# ★ BEFORE the app restarts, and the ONLY thing that touches the schema.
+#
+# The runner refuses an edited migration by checksum, so a file changed after
+# deployment fails here rather than diverging silently across environments.
+echo "-> Applying migrations"
+docker compose -f "$COMPOSE_FILE" up -d db
+docker compose -f "$COMPOSE_FILE" run --rm migrate || {
+  echo "Migrations failed. The app has NOT been restarted — the previous release is still serving."
+  docker compose -f "$COMPOSE_FILE" logs --tail=60 db
+  exit 1
+}
 
 # --------------------------- Port collision ----------------------------
 # The 8085 lesson, made mechanical. Another platform on this shared VPS taking

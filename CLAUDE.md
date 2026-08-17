@@ -31,6 +31,25 @@ just a 401 at the final step. The mirror-image failure already happened: `checkl
 *read* cookies for the whole of R0 because `@fastify/cookie` was never registered, **and every
 automated check still passed**, because nothing ever presented a credential.
 
+## ⚠️ citadel now has a DATABASE — and `.env` must be edited before the next deploy
+
+R3 Phase D added story-content tables. `/opt/citadel/citadel/.env` needs two new variables:
+
+```
+OWNER_DB_PASSWORD=...
+APP_DB_PASSWORD=...
+```
+
+**`deploy.sh` stops with the variable named** rather than half-configuring — trap `T25`, working as
+designed. Migrations run **before** the app restarts; if they fail the previous release keeps
+serving.
+
+> **How this gap happened, recorded because it is instructive.** Phase D built the tables, proved
+> them against a real Postgres, and shipped **neither the migration nor a database** — `migrations`
+> was absent from `RELEASE_PATHS` and the compose had no `db`. That is the same shape as the defect
+> `DEC-023` exists to fix (*"an engine with nothing able to feed it"*), one layer down: **a pipeline
+> with nowhere to live.**
+
 ## The R0 placeholder session — delete at R2
 
 `src/main.jsx` sets `citadel_session` itself, because R0 has no identity and `requireSession`
