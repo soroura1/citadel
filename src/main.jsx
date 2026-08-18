@@ -1,3 +1,4 @@
+import './styles.css';
 import { createRoot } from 'react-dom/client';
 import { useState } from 'react';
 import { EntryScreen } from './features/entry/EntryScreen.jsx';
