@@ -55,10 +55,20 @@ while :; do
       echo "AUTHENTICATION FAILED — the host answered, the credential was refused."
       echo "  $err"
       echo
-      echo "OWNER_DB_PASSWORD must match the password db-citadel was CREATED with."
-      echo "It lives in the server-owned stack, not here:"
-      echo "    grep POSTGRES_PASSWORD /opt/citadel/.env"
-      echo "A freshly generated value cannot work — the database already exists."
+      echo "OWNER_DB_PASSWORD must match the password the database was CREATED with."
+      echo
+      echo "⚠️ POSTGRES_PASSWORD ONLY APPLIES WHEN THE DATA DIRECTORY IS FIRST"
+      echo "   INITIALISED. Editing it in a .env afterwards changes NOTHING about a"
+      echo "   database that already exists — so two .env files can agree with each"
+      echo "   other and both disagree with the running database."
+      echo
+      echo "To make the database match the .env (works without the old password,"
+      echo "because docker exec uses the trusted local socket):"
+      echo
+      echo "    docker exec <db-container> psql -U $OWNER_DB_USER \\"
+      echo "      -c \"ALTER USER $OWNER_DB_USER PASSWORD '<the value in .env>'\""
+      echo
+      echo "Then re-run the deploy."
       exit 1
       ;;
     *"database \""*"does not exist"*)
