@@ -43,6 +43,38 @@ export COMPOSE_PROJECT_NAME
 
 cd "$APP_DIR"
 
+# ============================================================================
+# ★ THE CONTAINER MUST BE RECREATED EVEN IF THIS SCRIPT FAILS.
+# ============================================================================
+# install-release.sh has ALREADY replaced ./dist by the time this runs, and a
+# bind mount holds an INODE, not a path. So the running container is pointing at
+# a directory that no longer exists the moment the swap completes -- Caddy
+# serves 404 for every path, including its own static /health, and `docker exec`
+# refuses with "current working directory is outside of container mount
+# namespace root".
+#
+# `up -d --force-recreate` at the end of a SUCCESSFUL deploy repairs that. But a
+# failure in between -- a missing env var, an unreachable database, a bad
+# migration -- exits before reaching it and leaves the site serving nothing,
+# while this script prints "the previous release is still serving".
+#
+# That happened three times on 17-18 August. The message was false each time.
+#
+# This trap makes it true: on any non-zero exit after this point, put the
+# container back on the current bytes.
+recreate_on_failure() {
+  status=$?
+  [ "$status" -eq 0 ] && return 0
+  echo
+  echo "-> Deploy failed. Recreating the container so it serves the files on disk"
+  echo "   (a bind mount holds an inode; the swap already happened)"
+  docker compose -f "$COMPOSE_FILE" up -d --force-recreate web >/dev/null 2>&1 \
+    && echo "   container recreated — the site is serving again" \
+    || echo "   ⚠️ COULD NOT RECREATE. The site may be down. Check: docker compose ps"
+  return $status
+}
+trap recreate_on_failure EXIT
+
 # --------------------------- Prerequisites -----------------------------
 docker compose version >/dev/null 2>&1 || { echo "the docker compose plugin is missing"; exit 1; }
 

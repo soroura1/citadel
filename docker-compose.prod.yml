@@ -63,7 +63,18 @@ services:
     restart: unless-stopped
     environment:
       # Where /api/* is proxied. Read from .env, which is VPS-owned.
-      API_UPSTREAM: ${API_UPSTREAM:-172.17.0.1:8086}
+      #
+      # ⚠️ BY SERVICE NAME ON THE SHARED NETWORK, not by host IP.
+      #
+      # This was 172.17.0.1:8086 -- the docker0 gateway. That worked while web
+      # sat on the default bridge. Moving it onto `citadel` (correct, so it can
+      # reach db-citadel) made 172.17.0.1 unroutable from here, and every
+      # /api/content request became a 502.
+      #
+      # api-router is on this same network, so its container port is reachable
+      # directly. No host IP, no published port, nothing to break when either
+      # changes.
+      API_UPSTREAM: ${API_UPSTREAM:-api-router:8085}
     networks: [citadel]
     volumes:
       - ./citadel.Caddyfile:/etc/caddy/Caddyfile:ro
