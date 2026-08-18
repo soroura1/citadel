@@ -95,5 +95,15 @@
   "locale.en": "English",
   "locale.ar": "العربية",
   "surface.setup.title": "Setup",
-  "surface.play.title": "Play"
+  "surface.play.title": "Play",
+  "provisional.label": "About this content",
+  "provisional.heading": "Provisional content.",
+  "provisional.body": "Chapter 1 was written and attested by its own author, because no independent reviewer was available. It has not been through review, and it does not carry approved authority.",
+  "provisional.remediation": "This is superseded — not renewed — when a story reviewer is named.",
+  "chapter_end.heading": "The end of the first light",
+  "chapter_end.lede": "The chapter is over. Nothing here is a score, and nothing is a verdict on how you did.",
+  "chapter_end.state": "Where the Bimaristan stands",
+  "chapter_end.decisions": "What you decided",
+  "chapter_end.owed": "What is not settled yet",
+  "chapter_end.owed_body": "Some of what happened here has not finished happening. It will arrive in a later chapter, and when it does you will be able to see what it came from."
 }
