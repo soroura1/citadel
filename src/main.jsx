@@ -6,6 +6,9 @@ import { ItemScreen } from './features/item/ItemScreen.jsx';
 import { SetupScreen } from './features/setup/SetupScreen.jsx';
 import { PlayScreen } from './features/play/PlayScreen.jsx';
 import { CHAPTER_1 } from './content/chapter-1.js';
+import ATTESTATION from './content/attestation.json' with { type: 'json' };
+import { ProvisionalNotice } from './features/play/ProvisionalNotice.jsx';
+import { ChapterEnd } from './features/play/ChapterEnd.jsx';
 import { bundleFrom, startRun, view, chooseAndAdvance } from './engine/run.js';
 import { Navigation } from './layout/navigation.jsx';
 import { HttpCatalogueGateway } from './gateways/catalogue-gateway.js';
@@ -72,7 +75,22 @@ function App() {
         const active = run ?? startRun({ bundle: chapter });
         if (!run) setRun(active);
         const v = view(active, chapter);
+
+        // ★ The chapter ENDS. P7 — without this the last decision left a blank
+        // screen, which reads as a crash rather than a conclusion.
+        if (v.complete) {
+          return (
+            <>
+              <ProvisionalNotice attestation={ATTESTATION} />
+              <ChapterEnd state={active.state} history={active.history}
+                          owed={active.state.pending ?? []} />
+            </>
+          );
+        }
+
         return (
+          <>
+          <ProvisionalNotice attestation={ATTESTATION} />
           <PlayScreen
             scene={v.scene}
             decision={v.decision}
@@ -80,6 +98,7 @@ function App() {
             role={active.role}
             onChoose={(optionId) => setRun(chooseAndAdvance(active, chapter, optionId).run)}
           />
+          </>
         );
       })()}
     </>

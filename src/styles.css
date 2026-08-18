@@ -127,6 +127,19 @@ dl { display: grid; grid-template-columns: auto 1fr; gap: var(--space-s) var(--s
 dt { font-weight: 700; }
 dd { margin: 0; color: var(--ink-quiet); }
 
+.provisional {
+  /* Set apart and legible, never alarming. A warning colour would make a
+     standing condition of the content read as an error. */
+  max-inline-size: var(--measure);
+  margin-inline: auto;
+  margin-block-end: var(--space-l);
+  padding: var(--space);
+  background: var(--wash);
+  border-inline-start: 4px solid var(--ink-quiet);
+}
+.provisional p { margin-block-end: var(--space-s); }
+.provisional p:last-child { margin-block-end: 0; color: var(--ink-quiet); }
+
 details { margin-block-start: var(--space-s); }
 summary { cursor: pointer; color: var(--link); }
 
