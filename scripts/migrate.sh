@@ -34,10 +34,47 @@ MIGRATIONS="${MIGRATIONS_DIR:-/app/migrations}"
 export PGPASSWORD="$OWNER_DB_PASSWORD"
 psql() { command psql -h "$DB_HOST" -p "$DB_PORT" -U "$OWNER_DB_USER" -d "$DB_NAME" -v ON_ERROR_STOP=1 -qtA "$@"; }
 
+# ============================================================================
+# ★ WAIT FOR THE DATABASE — AND NAME THE ACTUAL CAUSE WHEN IT DOES NOT COME.
+# ============================================================================
+# An earlier version retried a psql connection and, on timeout, said "database
+# did not become reachable". That sentence was WRONG for the failure that
+# actually occurred: the host resolved and the port answered, and the password
+# was simply not the one db-citadel was created with.
+#
+# Sixty seconds of retrying an authentication failure, reported as a network
+# problem, sent two people looking at networks. A diagnostic that names the
+# wrong cause is worse than no diagnostic -- it is a confident wrong answer.
 echo "-> Waiting for $DB_HOST:$DB_PORT"
 i=0
-until psql -c 'select 1' >/dev/null 2>&1; do
-  i=$((i+1)); [ "$i" -gt 30 ] && { echo "database did not become reachable"; exit 1; }
+while :; do
+  err=$(psql -c 'select 1' 2>&1) && break
+  case "$err" in
+    *"password authentication failed"*|*"no password supplied"*|*"role \""*"does not exist"*)
+      echo
+      echo "AUTHENTICATION FAILED — the host answered, the credential was refused."
+      echo "  $err"
+      echo
+      echo "OWNER_DB_PASSWORD must match the password db-citadel was CREATED with."
+      echo "It lives in the server-owned stack, not here:"
+      echo "    grep POSTGRES_PASSWORD /opt/citadel/.env"
+      echo "A freshly generated value cannot work — the database already exists."
+      exit 1
+      ;;
+    *"database \""*"does not exist"*)
+      echo
+      echo "CONNECTED, but the database $DB_NAME does not exist on $DB_HOST."
+      echo "  $err"
+      exit 1
+      ;;
+  esac
+  i=$((i+1))
+  if [ "$i" -gt 30 ]; then
+    echo
+    echo "Could not reach $DB_HOST:$DB_PORT after 60s. Last error:"
+    echo "  $err"
+    exit 1
+  fi
   sleep 2
 done
 
