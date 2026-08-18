@@ -99,11 +99,29 @@ printf '{"status":"ok","service":"citadel"}\n' > "$APP_DIR/dist/health.json"
 #
 # The runner refuses an edited migration by checksum, so a file changed after
 # deployment fails here rather than diverging silently across environments.
-echo "-> Applying migrations"
-docker compose -f "$COMPOSE_FILE" up -d db
+# ⚠️ THERE IS NO LOCAL `db` SERVICE, DELIBERATELY.
+#
+# `db-citadel` belongs to the SERVER-OWNED stack at /opt/citadel, and this
+# compose JOINS its network with `external: true`. Standing up a second database
+# here would be worse than an error: backup.sh would keep backing up the
+# original while the app wrote to the new one, and the backup would go green
+# forever against a database nobody was using.
+#
+# So a missing network is refused by name. `external: true` means compose will
+# not create it, and the failure otherwise surfaces as an obscure DNS error
+# inside the migrate container.
+if ! docker network inspect citadel_citadel >/dev/null 2>&1; then
+  echo "The citadel_citadel network does not exist."
+  echo "It belongs to the server-owned stack: cd /opt/citadel && docker compose up -d"
+  echo "Nothing has been changed. The previous release is still serving."
+  exit 1
+fi
+
+echo "-> Applying migrations against the shared db-citadel"
 docker compose -f "$COMPOSE_FILE" run --rm migrate || {
   echo "Migrations failed. The app has NOT been restarted — the previous release is still serving."
-  docker compose -f "$COMPOSE_FILE" logs --tail=60 db
+  echo "The database is server-owned; its logs are in the /opt/citadel stack:"
+  echo "  cd /opt/citadel && docker compose logs --tail=60 db-citadel"
   exit 1
 }
 
