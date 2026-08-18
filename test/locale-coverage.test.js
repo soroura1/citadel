@@ -25,8 +25,8 @@ import { dirname, join } from 'node:path';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const en = JSON.parse(readFileSync(join(here, '../src/locales/en.json'), 'utf8'));
-const read = (p) => JSON.parse(readFileSync(join(here, 'fixtures', p), 'utf8'));
-const all = (d) => readdirSync(join(here, 'fixtures', d)).map((f) => read(join(d, f)));
+const read = (p) => JSON.parse(readFileSync(join(here, '../src/content', p), 'utf8'));
+const all = (d) => readdirSync(join(here, '../src/content', d)).map((f) => read(join(d, f)));
 
 const scenes = all('scenes');
 const decisions = all('decisions');
@@ -108,4 +108,14 @@ test('every option a player can be shown has a label', () => {
     for (const o of d.options) if (en[o.label.key] === undefined) missing.push(o.label.key);
   }
   assert.deepEqual(missing, []);
+});
+
+test('★ no raw identifier is ever rendered as prose', async () => {
+  // `choice_or_discovery` holds a decision id. It reached the screen once as
+  // "dec-01-gate-access" — the same class of failure as a locale key on screen:
+  // an internal name shown to a person who has no use for it.
+  const { readFileSync } = await import('node:fs');
+  const play = readFileSync(new URL('../src/features/play/PlayScreen.jsx', import.meta.url), 'utf8');
+  assert.match(play, /movement !== 'choice_or_discovery'/,
+    'the decision pointer must not be rendered as a movement');
 });

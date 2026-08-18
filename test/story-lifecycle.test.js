@@ -14,8 +14,8 @@ import { approveScene, transitionScene, buildBundle, contentManifest, StoryRefus
   from '../src/engine/story-lifecycle.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const scenes = readdirSync(join(here, 'fixtures/scenes'))
-  .map((f) => JSON.parse(readFileSync(join(here, 'fixtures/scenes', f), 'utf8')));
+const scenes = readdirSync(join(here, '../src/content/scenes'))
+  .map((f) => JSON.parse(readFileSync(join(here, '../src/content/scenes', f), 'utf8')));
 
 const row = (over = {}) => ({
   scene_id: 'sc-01-01', version: '1.0.0', chapter: 'ch-01',

@@ -96,6 +96,24 @@ export function defer({ caused_by, surfaces_at, relationship, emotional, operati
 export function shouldFire(consequence, { chapter, season = {}, decisionsTaken = [] }) {
   const at = consequence.surfaces_at;
 
+  // ⚠️ A HELD EFFECT IS NOT A DEFERRED CONSEQUENCE, THOUGH BOTH WERE CALLED
+  // "pending" until the chapter runner made them meet.
+  //
+  //   a held effect      {operation, variable, magnitude, delay}  — R3
+  //   a consequence      {caused_by, surfaces_at, relationship,   — R4
+  //                       emotional, operational}
+  //
+  // An effect is a state change waiting for its moment. A consequence is a
+  // narrative event with a cause, a relationship and two accounts of what it
+  // did. One can produce the other; they are not the same record, and passing
+  // the first here used to be a TypeError three frames deep.
+  if (!at) {
+    throw new ConsequenceRefusal(
+      'not-a-deferred-consequence',
+      'this record has no surfaces_at — a held EFFECT was passed where a CONSEQUENCE belongs',
+    );
+  }
+
   if (at.chapter && at.chapter !== chapter) return false;
 
   if (at.variable_threshold) {
