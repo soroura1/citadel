@@ -11,6 +11,44 @@ import { presentOptions } from '../../engine/decision.js';
  * attached to a resilience state teaches optimisation, which is the behaviour
  * this product exists to make harder rather than easier.
  */
+/**
+ * ★ RENDER WHAT THE CONTENT DECLARES — NEVER A KEY THIS FILE INVENTS.
+ *
+ * An earlier version built `scene.${scene.id}.${movement}` and looked that up.
+ * The content declares `scene.01.01.orientation`; the constructed key was
+ * `scene.sc-01-01.orientation`. Two naming schemes for one string, so the
+ * authored prose could never be found and every movement would have rendered
+ * its own key back at the reader.
+ *
+ * A movement is one of three shapes, and each is honest about itself:
+ *   · a plain string        — prose authored in the content file
+ *   · { key }               — a locale key the content NAMES
+ *   · [ { character_id, wants } ] — desire, which is a list of people
+ */
+function renderMovement(content) {
+  if (content == null) return null;
+  if (typeof content === 'string') return <p>{content}</p>;
+
+  if (Array.isArray(content)) {
+    return (
+      <ul>
+        {content.map((want, i) => (
+          <li key={want.character_id ?? i}>
+            <strong>{want.character_id}</strong> {want.wants}
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
+  // An object carrying its own key. NOT the `what_matters_now` beside it —
+  // t() returns ⟨key⟩ for a missing string on purpose, so the gap is visible
+  // and reaches the coverage report. Quietly substituting the authored English
+  // would hide exactly what that report exists to find.
+  if (content.key) return <p>{t(content.key)}</p>;
+  return null;
+}
+
 export function PlayScreen({ scene, decision, state, role, onChoose, textPath = false }) {
   if (!scene) return <main><p role="alert">{t('play.no_scene')}</p></main>;
 
@@ -26,14 +64,14 @@ export function PlayScreen({ scene, decision, state, role, onChoose, textPath = 
           moment. */}
       {textPath && scene.text_equivalent ? (
         <section aria-label={t('play.text_path')}>
-          <p>{scene.text_equivalent}</p>
+          <p>{renderMovement(scene.text_equivalent)}</p>
         </section>
       ) : (
         <ol aria-label={t('play.movements')}>
           {movementsOf(scene).map(({ movement, content }) => (
             <li key={movement}>
               <h2>{t(`movement.${movement}`)}</h2>
-              <p>{typeof content === 'string' ? content : t(`scene.${scene.id}.${movement}`)}</p>
+              {renderMovement(content)}
             </li>
           ))}
         </ol>
