@@ -20,38 +20,30 @@ name: citadel-web
 
 services:
   # ---------------------------------------------------------------------------
-  # citadel's own database — R3 Phase D.
+  # There is NO db service here, deliberately.
   #
-  # ⚠️ ONE DATABASE PER SERVICE. A shared instance is a shared dependency
-  # wearing a disguise, and the first time one service's migration blocks
-  # another's deploy the cost becomes obvious.
+  # `D3` — one database per service — is satisfied by `db-citadel`, a dedicated
+  # Postgres instance in the SERVER-OWNED stack at /opt/citadel. This project
+  # joins that network and uses it.
   #
-  # Bound to the private bridge only. It is never published publicly, and
-  # nothing outside this compose project reaches it.
+  # ⚠️ Defining a db here instead would put citadel's data OUTSIDE
+  # /opt/citadel/backup.sh and outside the restore rehearsal — the nightly job
+  # would back up the now-unused db-citadel and go green forever while the real
+  # data went unprotected. That is the failure this arrangement prevents, and it
+  # is why the databases are infrastructure (server-owned, persistent) rather
+  # than part of a CI-owned release that a bad deploy could take with it.
+  #
+  # checklist-api does the same thing, for the same reason.
   # ---------------------------------------------------------------------------
-  db:
-    image: postgres:17-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_PASSWORD: ${OWNER_DB_PASSWORD:?OWNER_DB_PASSWORD is required}
-      POSTGRES_DB: citadel
-    volumes:
-      - citadel_db:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   # One-shot. Run by deploy.sh BEFORE the app restarts — the only thing that
   # touches the schema.
   migrate:
     image: node:26-alpine
     profiles: ["tools"]
-    depends_on:
-      db: { condition: service_healthy }
+    networks: [citadel]
     environment:
-      DB_HOST: db
+      DB_HOST: db-citadel
       DB_PORT: "5432"
       DB_NAME: citadel
       OWNER_DB_USER: postgres
@@ -69,6 +61,7 @@ services:
     environment:
       # Where /api/* is proxied. Read from .env, which is VPS-owned.
       API_UPSTREAM: ${API_UPSTREAM:-172.17.0.1:8086}
+    networks: [citadel]
     volumes:
       - ./citadel.Caddyfile:/etc/caddy/Caddyfile:ro
       - ./dist:/srv:ro
@@ -80,5 +73,10 @@ services:
       timeout: 5s
       retries: 3
 
-volumes:
-  citadel_db: {}
+# The database lives in the server-owned stack at /opt/citadel, which creates
+# this network. `external: true` means compose JOINS it and never creates it —
+# so a deploy cannot silently stand up a second, empty, unbacked database.
+networks:
+  citadel:
+    external: true
+    name: citadel_citadel
