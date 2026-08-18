@@ -39,7 +39,10 @@ services:
   # One-shot. Run by deploy.sh BEFORE the app restarts — the only thing that
   # touches the schema.
   migrate:
-    image: node:26-alpine
+    # ⚠️ The POSTGRES image, not node. citadel ships `dist`, never
+    # `node_modules`, so a Node migration runner has no driver to import.
+    # psql is already here and needs nothing installed.
+    image: postgres:17-alpine
     profiles: ["tools"]
     networks: [citadel]
     environment:
@@ -53,7 +56,7 @@ services:
       - ./migrations:/app/migrations:ro
       - ./scripts:/app/scripts:ro
     working_dir: /app
-    command: ["node", "scripts/migrate.js"]
+    command: ["sh", "scripts/migrate.sh"]
 
   web:
     image: caddy:2-alpine
