@@ -5,6 +5,8 @@ import { EntryScreen } from './features/entry/EntryScreen.jsx';
 import { ItemScreen } from './features/item/ItemScreen.jsx';
 import { SetupScreen } from './features/setup/SetupScreen.jsx';
 import { PlayScreen } from './features/play/PlayScreen.jsx';
+import { CHAPTER_1 } from './content/chapter-1.js';
+import { bundleFrom, startRun, view, chooseAndAdvance } from './engine/run.js';
 import { Navigation } from './layout/navigation.jsx';
 import { HttpCatalogueGateway } from './gateways/catalogue-gateway.js';
 import { SURFACES } from './surfaces.js';
@@ -36,8 +38,13 @@ document.cookie = `citadel_session=${R0_PLACEHOLDER_SESSION}; path=/; SameSite=L
 // the surface INVENTORY is already the source of truth, which is the part that matters.
 const gateway = new HttpCatalogueGateway({ baseUrl: import.meta.env.VITE_API ?? '/api/content' });
 
+// Built once. loadBundle validates every scene and decision at load, so a
+// broken bundle fails HERE rather than when a participant reaches the scene.
+const chapter = bundleFrom(CHAPTER_1);
+
 function App() {
   const [path, setPath] = useState(window.location.pathname);
+  const [run, setRun] = useState(null);
   const surface = SURFACES.find((s) => s.path === path) ?? SURFACES[0];
   const go = (p) => { window.history.pushState({}, '', p); setPath(p); };
 
@@ -51,8 +58,30 @@ function App() {
           could navigate to. */}
       {surface.id === 'entry' && <EntryScreen onContinue={() => go('/setup')} />}
       {surface.id === 'item' && <ItemScreen gateway={gateway} />}
-      {surface.id === 'setup' && <SetupScreen roles={[]} scenarios={[]} onBegin={() => go('/play')} />}
-      {surface.id === 'play' && <PlayScreen scene={null} state={null} />}
+      {surface.id === 'setup' && (
+        <SetupScreen
+          roles={[]}
+          scenarios={[]}
+          onBegin={(config) => { setRun(startRun({ bundle: chapter, config })); go('/play'); }}
+        />
+      )}
+      {surface.id === 'play' && (() => {
+        // Arriving at /play directly — a deep link, or a reload — starts a run
+        // rather than showing an empty screen. R0-US-04's reachability applies
+        // to a URL somebody typed, not only to a path through the app.
+        const active = run ?? startRun({ bundle: chapter });
+        if (!run) setRun(active);
+        const v = view(active, chapter);
+        return (
+          <PlayScreen
+            scene={v.scene}
+            decision={v.decision}
+            state={v.state}
+            role={active.role}
+            onChoose={(optionId) => setRun(chooseAndAdvance(active, chapter, optionId).run)}
+          />
+        );
+      })()}
     </>
   );
 }

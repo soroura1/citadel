@@ -24,8 +24,8 @@ import { assertDecisionIsReal, presentOptions, choose } from '../src/engine/deci
 import { loadBundle, save, resume } from '../src/engine/bundle.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const read = (p) => JSON.parse(readFileSync(join(here, 'fixtures', p), 'utf8'));
-const all = (d) => readdirSync(join(here, 'fixtures', d)).map((f) => read(join(d, f)));
+const read = (p) => JSON.parse(readFileSync(join(here, '../src/content', p), 'utf8'));
+const all = (d) => readdirSync(join(here, '../src/content', d)).map((f) => read(join(d, f)));
 
 const scenes = all('scenes');
 const decisions = all('decisions');

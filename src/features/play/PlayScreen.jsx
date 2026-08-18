@@ -68,7 +68,14 @@ export function PlayScreen({ scene, decision, state, role, onChoose, textPath = 
         </section>
       ) : (
         <ol aria-label={t('play.movements')}>
-          {movementsOf(scene).map(({ movement, content }) => (
+          {movementsOf(scene)
+            // ⚠️ `choice_or_discovery` holds a decision ID, not prose. Rendering
+            // it printed `dec-01-gate-access` at the reader — the same failure
+            // as a locale key on screen. The decision has its own section
+            // below, with its prompt and options; this movement is the pointer
+            // to it, and a pointer is not something a person reads.
+            .filter(({ movement }) => movement !== 'choice_or_discovery')
+            .map(({ movement, content }) => (
             <li key={movement}>
               <h2>{t(`movement.${movement}`)}</h2>
               {renderMovement(content)}
