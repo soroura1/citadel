@@ -137,12 +137,29 @@ describe('F11 — contrast', () => {
   };
 
   // R0's palette. Every pair a user can actually see together.
+  // ★ READ FROM THE STYLESHEET, NEVER RESTATED HERE.
+  //
+  // This list used to be its own copy of the palette — so it could have passed
+  // in full while the page rendered entirely different colours. A contrast test
+  // that does not read the colours in use is testing a document, not a product.
+  const cssVars = Object.fromEntries(
+    [...readFileSync(join(srcDir, 'styles.css'), 'utf8')
+      .matchAll(/(--[a-z-]+):\s*(#[0-9a-f]{6})/gi)].map((m) => [m[1], m[2]]),
+  );
+
   const PAIRS = [
-    ['#1a1a1a', '#ffffff', 'body text on background'],
-    ['#ffffff', '#1a1a1a', 'inverted text'],
-    ['#0b4f6c', '#ffffff', 'link on background'],
-    ['#5a5a5a', '#ffffff', 'secondary text on background'],
+    [cssVars['--ink'], cssVars['--paper'], 'body text on background'],
+    [cssVars['--paper'], cssVars['--ink'], 'inverted text (buttons)'],
+    [cssVars['--link'], cssVars['--paper'], 'link on background'],
+    [cssVars['--ink-quiet'], cssVars['--paper'], 'secondary text on background'],
   ];
+
+  test('the palette was actually found in the stylesheet', () => {
+    for (const [fg, bg, label] of PAIRS) {
+      assert.ok(fg && bg, `${label}: a colour is missing from styles.css — ` +
+        'this test would otherwise pass by comparing undefined to undefined');
+    }
+  });
 
   test('every colour pair meets WCAG 2.2 AA for normal text (4.5:1)', () => {
     for (const [fg, bg, label] of PAIRS) {
