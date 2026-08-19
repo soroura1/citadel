@@ -21,6 +21,14 @@ import { t } from '../../locales/index.js';
 export function EntryScreen({ onContinue }) {
   return (
     <main>
+      {/* First light over the Bimaristan. Atmosphere, never information — the
+          page is complete without it, and `alt` carries what a sighted viewer
+          takes from it rather than a filename. */}
+      <figure className="hero" data-provisional={t('provisional.badge')}>
+        <img src="/scenes/first-light.jpg" alt={t('art.first_light.alt')}
+             width="1100" height="733" fetchPriority="high" />
+      </figure>
+
       <h1>{t('entry.heading')}</h1>
       <p>{t('entry.lede')}</p>
 

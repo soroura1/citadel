@@ -49,6 +49,15 @@ function renderMovement(content) {
   return null;
 }
 
+/* Which scene carries which candidate image. Only the scenes an image exists
+ * for appear here; the rest render text-only, which is the designed state and
+ * not a gap. Binding is still gated on Q10 — these are candidates, and the
+ * provisional band says so on every one. */
+const sceneArt = {
+  'sc-01-01': 'gate-of-names',
+  'sc-01-02': 'bay-that-went-dark',
+};
+
 export function PlayScreen({ scene, decision, state, role, onChoose, textPath = false }) {
   if (!scene) return <main><p role="alert">{t('play.no_scene')}</p></main>;
 
@@ -56,6 +65,24 @@ export function PlayScreen({ scene, decision, state, role, onChoose, textPath = 
 
   return (
     <main>
+      {/* ★ THE BELL — canon's own clock. Chapter 1 runs "First Bell to shortly
+          after the Third Bell", so position is told in bells rather than
+          "Scene 2 of 4". A number would be true of any content; this is true of
+          this world. */}
+      {scene.bell && (
+        <p className="bell">{t('play.bell')} <b>{t(`bell.${scene.bell}`)}</b></p>
+      )}
+
+      {/* Atmosphere, never information. `art is additive`: the scene is
+          complete in text, so no clue lives only here. */}
+      {!textPath && sceneArt[scene.id] && (
+        <figure className="scene-image" data-provisional={t('provisional.badge')}>
+          <img src={`/scenes/${sceneArt[scene.id]}.jpg`}
+               alt={t(`art.${sceneArt[scene.id].replace(/-/g, '_')}.alt`)}
+               width="1100" height="733" loading="lazy" />
+        </figure>
+      )}
+
       <h1>{t(`scene.${scene.id}.title`)}</h1>
 
       {/* ★ F7 — THE TEXT PATH IS NOT A FALLBACK.
@@ -85,7 +112,7 @@ export function PlayScreen({ scene, decision, state, role, onChoose, textPath = 
       )}
 
       {presented && (
-        <section aria-label={t('play.decision')}>
+        <section className="decision" aria-label={t('play.decision')}>
           <h2>{t(presented.prompt?.key ?? 'play.decision')}</h2>
 
           {!presented.authorised ? (
@@ -105,7 +132,7 @@ export function PlayScreen({ scene, decision, state, role, onChoose, textPath = 
                       It is what makes the option a position rather than a trap. */}
                   <details>
                     <summary>{t('play.who_would_defend')}</summary>
-                    <p>{o.defensibleBy}</p>
+                    <p className="defensible">{o.defensibleBy}</p>
                   </details>
                 </li>
               ))}
@@ -116,7 +143,7 @@ export function PlayScreen({ scene, decision, state, role, onChoose, textPath = 
 
       {/* ★ F5 — state shown as BANDS, never numbers, and never ranked.
           No praise, no congratulation, no total. */}
-      <section aria-label={t('play.state')}>
+      <section className="state" aria-label={t('play.state')}>
         <dl>
           {Object.entries(state?.season ?? {}).map(([v, band]) => (
             <div key={v}>
