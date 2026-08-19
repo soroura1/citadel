@@ -314,5 +314,10 @@
       "why": "Canon gives the final Hall image but does not bind a static fallback asset."
     }
   ],
-  "bell": "third"
+  "bell": "third",
+  "emotional_state": {
+    "register": "unease",
+    "derivedFrom": "first unease",
+    "unresolved": "Canon gives Chapter 1's arc at CHAPTER level in one line and assigns no register to an individual scene. This distribution is a derivation, not canon."
+  }
 }

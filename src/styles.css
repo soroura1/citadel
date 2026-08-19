@@ -160,10 +160,66 @@ dd { margin: 0; color: var(--ink-quiet); }
 details { margin-block-start: var(--space-s); }
 summary { cursor: pointer; color: var(--link); }
 
+/* =========================================================================
+ * ★ V9 — THE EMOTIONAL REGISTER DRIVES HOW A SCENE OPENS.
+ * =========================================================================
+ * art-direction-and-asset-model.md § 2 gives each register a visual meaning.
+ * This is that meaning in type and space — no new colour, no image, no icon.
+ *
+ *   wonder     scale, light, depth       → opens SLOWLY, and wide
+ *   pressure   compression, crowding     → CUTS. no ease-in, tighter measure
+ *   unease     small wrongness inside a  → HOLDS STILL. nothing moves; one
+ *              competent scene              hairline sits where it should not
+ *
+ * ⚠️ THE REGISTER MUST SURVIVE WITHOUT MOTION. A state that is only legible
+ * because of an animation is invisible to anyone who has asked for less of it —
+ * so measure, weight and spacing carry the register, and motion only inflects
+ * how it arrives. prefers-reduced-motion removes the arrival, never the state.
+ * ------------------------------------------------------------------------- */
+
+[data-register] { --register-measure: var(--measure); }
+main[data-register] { max-inline-size: var(--register-measure); }
+
+/* Wonder — scale and air. The widest measure in the product, and the slowest. */
+[data-register='wonder'] {
+  --register-measure: 72ch;
+  animation: register-open 900ms ease-out both;
+}
+[data-register='wonder'] h1 { font-size: var(--step-2); letter-spacing: 0.01em; }
+
+/* Pressure — compression. A narrower column crowds the line; it arrives without
+ * an ease, because a cut is the point. */
+[data-register='pressure'] {
+  --register-measure: 56ch;
+  animation: register-cut 1ms steps(1, end) both;
+}
+[data-register='pressure'] ol[aria-label] > li { margin-block-end: var(--space); }
+
+/* Unease — nothing moves. The scene is competent and something is slightly
+ * wrong: one rule sits heavier than the others. No animation at all. */
+[data-register='unease'] ol[aria-label] > li:nth-child(3) {
+  border-inline-start-color: var(--ink-quiet);
+}
+
+/* Named in words above the scene — quiet, and never the only carrier. */
+.register-note { color: var(--ink-quiet); font-style: italic; margin-block-end: var(--space-l); }
+
+/* Visible to assistive technology, absent from the visual page. */
+.visually-hidden {
+  position: absolute; inline-size: 1px; block-size: 1px;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+
+@keyframes register-open { from { opacity: 0; } to { opacity: 1; } }
+@keyframes register-cut  { from { opacity: 1; } to { opacity: 1; } }
+
 /* ---- ★ reduced motion ---------------------------------------------------
  * DEC-012. There is no motion in this stylesheet, and this rule is here so
  * that adding some later cannot skip the escape hatch. */
 @media (prefers-reduced-motion: reduce) {
+  /* ★ The register still applies — only its ARRIVAL is removed. Measure, weight
+   * and the misplaced hairline are unaffected, so a reader who wants less
+   * motion loses none of the meaning. */
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;

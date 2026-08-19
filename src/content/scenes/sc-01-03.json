@@ -292,5 +292,10 @@
       "why": "Canon does not bind a static fallback asset for the resuscitation, ICU-threshold, and liaison scene."
     }
   ],
-  "bell": "second"
+  "bell": "second",
+  "emotional_state": {
+    "register": "pressure",
+    "derivedFrom": "concentrated fear",
+    "unresolved": "Canon gives Chapter 1's arc at CHAPTER level in one line and assigns no register to an individual scene. This distribution is a derivation, not canon."
+  }
 }

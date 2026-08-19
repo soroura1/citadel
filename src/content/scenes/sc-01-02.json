@@ -322,5 +322,10 @@
       "why": "Canon identifies the bay, sealed arch, and token but does not bind a static fallback asset."
     }
   ],
-  "bell": "first_quarter"
+  "bell": "first_quarter",
+  "emotional_state": {
+    "register": "pressure",
+    "derivedFrom": "concentrated fear",
+    "unresolved": "Canon gives Chapter 1's arc at CHAPTER level in one line and assigns no register to an individual scene. This distribution is a derivation, not canon."
+  }
 }

@@ -114,5 +114,13 @@
   "bell.first": "First Bell",
   "bell.first_quarter": "Quarter after First Bell",
   "bell.second": "Second Bell",
-  "bell.third": "Third Bell"
+  "bell.third": "Third Bell",
+  "register.label": "The feeling of this scene:",
+  "register.wonder": "A building working at its best, and worth looking at.",
+  "register.belonging": "Ordinary work, done by people who know each other.",
+  "register.unease": "Everything is competent. Something is slightly wrong.",
+  "register.pressure": "Too much at once, and not enough room.",
+  "register.loss": "Where there was activity, there is none.",
+  "register.recognition": "Something you had already seen, seen differently.",
+  "register.earned-hope": "Light returning — changed, not restored."
 }
