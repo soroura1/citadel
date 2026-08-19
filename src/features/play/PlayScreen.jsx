@@ -62,9 +62,22 @@ export function PlayScreen({ scene, decision, state, role, onChoose, textPath = 
   if (!scene) return <main><p role="alert">{t('play.no_scene')}</p></main>;
 
   const presented = decision ? presentOptions(decision, { role }) : null;
+  const register = scene.emotional_state?.register ?? null;
 
   return (
-    <main>
+    <main data-register={register ?? undefined}>
+      {/* ★ V9 — THE REGISTER IS NAMED IN WORDS, not only in type and space.
+          A scene that opens differently only through measure and motion says
+          nothing to a screen reader and nothing on a printed page. The register
+          drives how the scene ARRIVES; this sentence is what it MEANS, and the
+          two are separate on purpose. */}
+      {register && (
+        <p className="register-note">
+          <span className="visually-hidden">{t('register.label')} </span>
+          {t(`register.${register}`)}
+        </p>
+      )}
+
       {/* ★ THE BELL — canon's own clock. Chapter 1 runs "First Bell to shortly
           after the Third Bell", so position is told in bells rather than
           "Scene 2 of 4". A number would be true of any content; this is true of

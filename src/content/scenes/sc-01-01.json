@@ -307,5 +307,10 @@
       "why": "Canon names sensory and visual material but does not bind a static fallback asset."
     }
   ],
-  "bell": "first"
+  "bell": "first",
+  "emotional_state": {
+    "register": "wonder",
+    "derivedFrom": "wonder",
+    "unresolved": "Canon gives Chapter 1's arc at CHAPTER level in one line and assigns no register to an individual scene. This distribution is a derivation, not canon."
+  }
 }
