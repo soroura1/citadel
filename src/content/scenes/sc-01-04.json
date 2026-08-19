@@ -1,20 +1,50 @@
 {
   "id": "sc-01-04",
   "chapter": "ch-01",
-  "locations": ["Hall of Measure"],
-  "present": ["player", "Thabit", "Qays", "Fadl", "Maha", "Rami", "Alia or appropriate clinical leaders", "Bishr", "selected role specialists"],
+  "locations": [
+    "Hall of Measure"
+  ],
+  "present": [
+    "player",
+    "Thabit",
+    "Qays",
+    "Fadl",
+    "Maha",
+    "Rami",
+    "Alia or appropriate clinical leaders",
+    "Bishr",
+    "selected role specialists"
+  ],
   "play_mode": "either",
   "orientation": {
     "key": "scene.01.04.orientation",
     "what_matters_now": "Backup generation started, stable power was restored, no permanent harm was detected, and services remained open, while staffing, transferred pressure, and the omitted shared board remain unresolved."
   },
   "desire": [
-    { "character_id": "Thabit", "wants": "Close a contained local failure without presenting the whole Bimaristan as unsafe." },
-    { "character_id": "Qays", "wants": "Record successful generator start and restored critical power according to the current Measure definition." },
-    { "character_id": "Fadl", "wants": "Retain the no-harm event as a high-risk patient-safety near miss, name transferred service pressure, and assign immediate controls and review ownership." },
-    { "character_id": "Maha", "wants": "Preserve the source chronology and partial-restoration exception so the quality record can be tested later." },
-    { "character_id": "Rami", "wants": "Prevent restored from being interpreted as the dependency is corrected." },
-    { "character_id": "clinical and nursing leaders", "wants": "Stop physical beds from being reported as safely available capacity." }
+    {
+      "character_id": "Thabit",
+      "wants": "Close a contained local failure without presenting the whole Bimaristan as unsafe."
+    },
+    {
+      "character_id": "Qays",
+      "wants": "Record successful generator start and restored critical power according to the current Measure definition."
+    },
+    {
+      "character_id": "Fadl",
+      "wants": "Retain the no-harm event as a high-risk patient-safety near miss, name transferred service pressure, and assign immediate controls and review ownership."
+    },
+    {
+      "character_id": "Maha",
+      "wants": "Preserve the source chronology and partial-restoration exception so the quality record can be tested later."
+    },
+    {
+      "character_id": "Rami",
+      "wants": "Prevent restored from being interpreted as the dependency is corrected."
+    },
+    {
+      "character_id": "clinical and nursing leaders",
+      "wants": "Stop physical beds from being reported as safely available capacity."
+    }
   ],
   "friction": "Thabit and Qays want to close the local outage, while direct observation shows powered equipment without safe staffing and available beds that cannot be used safely.",
   "choice_or_discovery": "dec-01-closure-characterization",
@@ -23,28 +53,152 @@
   "begins_after": "The new critical patient has a named responsible clinical team and a defined location or accepted transfer, with the cost carried by emergency care, another service, or the network.",
   "ends_before": "The shared electrical board and the usable-capacity definition are corrected, and before the transferred service pressure is relieved.",
   "tension_axes": [
-    { "axis": "information", "severity": "moderate" },
-    { "axis": "authority", "severity": "hard" },
-    { "axis": "resource", "severity": "moderate" },
-    { "axis": "trust", "severity": "hard" }
+    {
+      "axis": "information",
+      "severity": "moderate"
+    },
+    {
+      "axis": "authority",
+      "severity": "hard"
+    },
+    {
+      "axis": "resource",
+      "severity": "moderate"
+    },
+    {
+      "axis": "trust",
+      "severity": "hard"
+    }
   ],
   "role_variants": [
-    { "role_id": "role.resilience-lead", "starting_position": "The outage, fallback, capacity shortage, and network option have no single coordinating owner.", "information_held": "The outage, fallback, capacity shortage, and network option have no single coordinating owner.", "options_available": ["Establish shared objectives, update interval, and cross-service coordination."] },
-    { "role_id": "role.medical-clinical-services", "starting_position": "The emergency patient needs ICU capability, not merely an empty bed.", "information_held": "The emergency patient needs ICU capability, not merely an empty bed.", "options_available": ["Coordinate clinical heads and define safe service priorities."] },
-    { "role_id": "role.nursing-patient-flow", "starting_position": "Thirty occupied ICU beds are being covered by a roster safe for about 28.", "information_held": "Thirty occupied ICU beds are being covered by a roster safe for about 28.", "options_available": ["Define staffed capacity, bedside responsibility, and redeployment limits."] },
-    { "role_id": "role.infection-prevention-control", "starting_position": "Prolonged critical care in crowded emergency space changes separation, cleaning, and exposure risk.", "information_held": "Prolonged critical care in crowded emergency space changes separation, cleaning, and exposure risk.", "options_available": ["Define safe placement precautions without assuming Public Health authority."] },
-    { "role_id": "role.operations", "starting_position": "Backup generation succeeded but one downstream board did not transfer.", "information_held": "Backup generation succeeded but one downstream board did not transfer.", "options_available": ["Isolate, inspect, restore, and identify the shared electrical dependency."] },
-    { "role_id": "role.human-resources-workforce", "starting_position": "The return counts posts, not competent people available at the bedside after fallback.", "information_held": "The return counts posts, not competent people available at the bedside after fallback.", "options_available": ["Identify skill mix, overtime, vacancy, and redeployment consequences."] },
-    { "role_id": "role.occupational-health-wellbeing", "starting_position": "Manual fallback and extended shifts create immediate fatigue and injury risk.", "information_held": "Manual fallback and extended shifts create immediate fatigue and injury risk.", "options_available": ["Set relief, exposure, and safe-work limits for affected staff."] },
-    { "role_id": "role.occupational-fire-environmental-safety", "starting_position": "Temporary leads, mobile units, dark routes, and electrical access create secondary hazards.", "information_held": "Temporary leads, mobile units, dark routes, and electrical access create secondary hazards.", "options_available": ["Define electrical-access, trip, fire, and evacuation controls."] },
-    { "role_id": "role.medicines", "starting_position": "Power interruption affects infusion devices and time-critical administration.", "information_held": "Power interruption affects infusion devices and time-critical administration.", "options_available": ["Verify continuity, substitute safely, and prioritize protected devices."] },
-    { "role_id": "role.food-nutrition", "starting_position": "Emergency and ICU patients held beyond intended time require safe nutrition and diet identification.", "information_held": "Emergency and ICU patients held beyond intended time require safe nutrition and diet identification.", "options_available": ["Protect clinical nutrition continuity and identify hidden holding load."] },
-    { "role_id": "role.procurement", "starting_position": "Batteries, mobile units, transfer components, and connectors come from incompatible purchasing generations.", "information_held": "Batteries, mobile units, transfer components, and connectors come from incompatible purchasing generations.", "options_available": ["Identify specification and replacement constraints."] },
-    { "role_id": "role.storage-distribution", "starting_position": "The mobile equipment set exists but must be physically found, verified, and delivered.", "information_held": "The mobile equipment set exists but must be physically found, verified, and delivered.", "options_available": ["Establish usable inventory and chain of custody."] },
-    { "role_id": "role.information", "starting_position": "Central status receives generator success before local downstream failure.", "information_held": "Central status receives generator success before local downstream failure.", "options_available": ["Preserve time, source, exception, acknowledgement, and uncertainty."] },
-    { "role_id": "role.city-community-coordination", "starting_position": "Network transfer requires receiving capability, transport, route, and continuing responsibility.", "information_held": "Network transfer requires receiving capability, transport, route, and continuing responsibility.", "options_available": ["Coordinate Regional Authority, transport, and partner-hospital acceptance."] },
-    { "role_id": "role.learning-assessment", "starting_position": "Some fallbacks were practiced while others depended on memory and individual skill.", "information_held": "Some fallbacks were practiced while others depended on memory and individual skill.", "options_available": ["Distinguish tested practice from successful improvisation without pausing for training."] },
-    { "role_id": "role.quality-patient-safety", "starting_position": "No permanent harm does not erase a high-risk near miss or transferred service pressure.", "information_held": "No permanent harm does not erase a high-risk near miss or transferred service pressure.", "options_available": ["Work with Fadl to preserve a proportionate account, immediate controls, ownership, and review time."] }
+    {
+      "role_id": "role.resilience-lead",
+      "starting_position": "The outage, fallback, capacity shortage, and network option have no single coordinating owner.",
+      "information_held": "The outage, fallback, capacity shortage, and network option have no single coordinating owner.",
+      "options_available": [
+        "Establish shared objectives, update interval, and cross-service coordination."
+      ]
+    },
+    {
+      "role_id": "role.medical-clinical-services",
+      "starting_position": "The emergency patient needs ICU capability, not merely an empty bed.",
+      "information_held": "The emergency patient needs ICU capability, not merely an empty bed.",
+      "options_available": [
+        "Coordinate clinical heads and define safe service priorities."
+      ]
+    },
+    {
+      "role_id": "role.nursing-patient-flow",
+      "starting_position": "Thirty occupied ICU beds are being covered by a roster safe for about 28.",
+      "information_held": "Thirty occupied ICU beds are being covered by a roster safe for about 28.",
+      "options_available": [
+        "Define staffed capacity, bedside responsibility, and redeployment limits."
+      ]
+    },
+    {
+      "role_id": "role.infection-prevention-control",
+      "starting_position": "Prolonged critical care in crowded emergency space changes separation, cleaning, and exposure risk.",
+      "information_held": "Prolonged critical care in crowded emergency space changes separation, cleaning, and exposure risk.",
+      "options_available": [
+        "Define safe placement precautions without assuming Public Health authority."
+      ]
+    },
+    {
+      "role_id": "role.operations",
+      "starting_position": "Backup generation succeeded but one downstream board did not transfer.",
+      "information_held": "Backup generation succeeded but one downstream board did not transfer.",
+      "options_available": [
+        "Isolate, inspect, restore, and identify the shared electrical dependency."
+      ]
+    },
+    {
+      "role_id": "role.human-resources-workforce",
+      "starting_position": "The return counts posts, not competent people available at the bedside after fallback.",
+      "information_held": "The return counts posts, not competent people available at the bedside after fallback.",
+      "options_available": [
+        "Identify skill mix, overtime, vacancy, and redeployment consequences."
+      ]
+    },
+    {
+      "role_id": "role.occupational-health-wellbeing",
+      "starting_position": "Manual fallback and extended shifts create immediate fatigue and injury risk.",
+      "information_held": "Manual fallback and extended shifts create immediate fatigue and injury risk.",
+      "options_available": [
+        "Set relief, exposure, and safe-work limits for affected staff."
+      ]
+    },
+    {
+      "role_id": "role.occupational-fire-environmental-safety",
+      "starting_position": "Temporary leads, mobile units, dark routes, and electrical access create secondary hazards.",
+      "information_held": "Temporary leads, mobile units, dark routes, and electrical access create secondary hazards.",
+      "options_available": [
+        "Define electrical-access, trip, fire, and evacuation controls."
+      ]
+    },
+    {
+      "role_id": "role.medicines",
+      "starting_position": "Power interruption affects infusion devices and time-critical administration.",
+      "information_held": "Power interruption affects infusion devices and time-critical administration.",
+      "options_available": [
+        "Verify continuity, substitute safely, and prioritize protected devices."
+      ]
+    },
+    {
+      "role_id": "role.food-nutrition",
+      "starting_position": "Emergency and ICU patients held beyond intended time require safe nutrition and diet identification.",
+      "information_held": "Emergency and ICU patients held beyond intended time require safe nutrition and diet identification.",
+      "options_available": [
+        "Protect clinical nutrition continuity and identify hidden holding load."
+      ]
+    },
+    {
+      "role_id": "role.procurement",
+      "starting_position": "Batteries, mobile units, transfer components, and connectors come from incompatible purchasing generations.",
+      "information_held": "Batteries, mobile units, transfer components, and connectors come from incompatible purchasing generations.",
+      "options_available": [
+        "Identify specification and replacement constraints."
+      ]
+    },
+    {
+      "role_id": "role.storage-distribution",
+      "starting_position": "The mobile equipment set exists but must be physically found, verified, and delivered.",
+      "information_held": "The mobile equipment set exists but must be physically found, verified, and delivered.",
+      "options_available": [
+        "Establish usable inventory and chain of custody."
+      ]
+    },
+    {
+      "role_id": "role.information",
+      "starting_position": "Central status receives generator success before local downstream failure.",
+      "information_held": "Central status receives generator success before local downstream failure.",
+      "options_available": [
+        "Preserve time, source, exception, acknowledgement, and uncertainty."
+      ]
+    },
+    {
+      "role_id": "role.city-community-coordination",
+      "starting_position": "Network transfer requires receiving capability, transport, route, and continuing responsibility.",
+      "information_held": "Network transfer requires receiving capability, transport, route, and continuing responsibility.",
+      "options_available": [
+        "Coordinate Regional Authority, transport, and partner-hospital acceptance."
+      ]
+    },
+    {
+      "role_id": "role.learning-assessment",
+      "starting_position": "Some fallbacks were practiced while others depended on memory and individual skill.",
+      "information_held": "Some fallbacks were practiced while others depended on memory and individual skill.",
+      "options_available": [
+        "Distinguish tested practice from successful improvisation without pausing for training."
+      ]
+    },
+    {
+      "role_id": "role.quality-patient-safety",
+      "starting_position": "No permanent harm does not erase a high-risk near miss or transferred service pressure.",
+      "information_held": "No permanent harm does not erase a high-risk near miss or transferred service pressure.",
+      "options_available": [
+        "Work with Fadl to preserve a proportionate account, immediate controls, ownership, and review time."
+      ]
+    }
   ],
   "required_reveals": [
     {
@@ -52,26 +206,77 @@
       "what": "The map is correct about power and wrong about readiness: restored electrical supply and two physically empty beds do not establish safely usable critical-care capability.",
       "reachable_on_all_role_paths": true,
       "how_each_role_reaches_it": [
-        { "role_id": "role.resilience-lead", "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below." },
-        { "role_id": "role.medical-clinical-services", "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below." },
-        { "role_id": "role.nursing-patient-flow", "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below." },
-        { "role_id": "role.infection-prevention-control", "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below." },
-        { "role_id": "role.operations", "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below." },
-        { "role_id": "role.human-resources-workforce", "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below." },
-        { "role_id": "role.occupational-health-wellbeing", "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below." },
-        { "role_id": "role.occupational-fire-environmental-safety", "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below." },
-        { "role_id": "role.medicines", "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below." },
-        { "role_id": "role.food-nutrition", "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below." },
-        { "role_id": "role.procurement", "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below." },
-        { "role_id": "role.storage-distribution", "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below." },
-        { "role_id": "role.information", "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below." },
-        { "role_id": "role.city-community-coordination", "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below." },
-        { "role_id": "role.learning-assessment", "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below." },
-        { "role_id": "role.quality-patient-safety", "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below." }
+        {
+          "role_id": "role.resilience-lead",
+          "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below."
+        },
+        {
+          "role_id": "role.medical-clinical-services",
+          "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below."
+        },
+        {
+          "role_id": "role.nursing-patient-flow",
+          "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below."
+        },
+        {
+          "role_id": "role.infection-prevention-control",
+          "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below."
+        },
+        {
+          "role_id": "role.operations",
+          "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below."
+        },
+        {
+          "role_id": "role.human-resources-workforce",
+          "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below."
+        },
+        {
+          "role_id": "role.occupational-health-wellbeing",
+          "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below."
+        },
+        {
+          "role_id": "role.occupational-fire-environmental-safety",
+          "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below."
+        },
+        {
+          "role_id": "role.medicines",
+          "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below."
+        },
+        {
+          "role_id": "role.food-nutrition",
+          "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below."
+        },
+        {
+          "role_id": "role.procurement",
+          "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below."
+        },
+        {
+          "role_id": "role.storage-distribution",
+          "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below."
+        },
+        {
+          "role_id": "role.information",
+          "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below."
+        },
+        {
+          "role_id": "role.city-community-coordination",
+          "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below."
+        },
+        {
+          "role_id": "role.learning-assessment",
+          "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below."
+        },
+        {
+          "role_id": "role.quality-patient-safety",
+          "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below."
+        }
       ]
     }
   ],
-  "real_world_bridge": { "kind": "observation_record", "id": null },
+  "real_world_bridge": {
+    "kind": "observation_record",
+    "id": null
+  },
   "creative_tests": {
     "someone_wants_something_now": true,
     "legitimate_need_in_tension": true,
@@ -82,15 +287,32 @@
     "advances_mystery": true,
     "transfers_to_real_hospital": true
   },
-  "text_equivalent": { "key": "scene.01.04.text_equivalent" },
+  "text_equivalent": {
+    "key": "scene.01.04.text_equivalent"
+  },
   "skippable": true,
   "static_fallback": null,
   "keyboard_reachable": true,
-  "asset_slots": ["slot.ch01.quality-house"],
+  "asset_slots": [
+    "slot.ch01.quality-house"
+  ],
   "unresolved": [
-    { "field": "quests", "why": "Canon describes the scene's purpose but assigns no quest identifier." },
-    { "field": "in_world_deadline", "why": "Canon places the scene at Third Bell but gives no deadline for characterization and closure." },
-    { "field": "real_world_bridge.id", "why": "Canon names the high-risk quality record and evidence trail but assigns no observation-record identifier." },
-    { "field": "static_fallback", "why": "Canon gives the final Hall image but does not bind a static fallback asset." }
-  ]
+    {
+      "field": "quests",
+      "why": "Canon describes the scene's purpose but assigns no quest identifier."
+    },
+    {
+      "field": "in_world_deadline",
+      "why": "Canon places the scene at Third Bell but gives no deadline for characterization and closure."
+    },
+    {
+      "field": "real_world_bridge.id",
+      "why": "Canon names the high-risk quality record and evidence trail but assigns no observation-record identifier."
+    },
+    {
+      "field": "static_fallback",
+      "why": "Canon gives the final Hall image but does not bind a static fallback asset."
+    }
+  ],
+  "bell": "third"
 }

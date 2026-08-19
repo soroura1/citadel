@@ -26,18 +26,35 @@
    * Verified by computation in test/accessibility.test.js, which READS THESE
    * VALUES. An earlier version of that test carried its own copy of the
    * palette, so it could have passed while the page used something else.
+   *
+   * ★ THE PALETTE IS THE BUILDING'S. Taken from the art direction's own words —
+   * "warm limestone, muted turquoise and indigo tile, oxidized copper" — so the
+   * page is made of the same materials as the place it describes. A generic
+   * cream-and-terracotta scheme would have been a default; this is a source.
    */
-  --ink:          #1a1a1a;   /* body text            — 16.10:1 on paper */
-  --paper:        #ffffff;
-  --ink-quiet:    #5a5a5a;   /* secondary text       —  7.00:1 on paper */
-  --link:         #0b4f6c;   /* links, focus         —  8.24:1 on paper */
-  --rule:         #d8d4cd;   /* hairlines only, never text */
-  --wash:         #f6f4f0;   /* set-apart blocks */
+  --ink:          #191b1f;   /* body text        — 14.51:1 on paper */
+  --paper:        #f0ebe1;   /* WARM LIMESTONE — the Bimaristan's own material */
+  --ink-quiet:    #55585f;   /* secondary text   —  6.00:1 on paper */
+  --link:         #24406b;   /* indigo tile      —  8.75:1 on paper */
+  --turquoise:    #1f6b70;   /* muted turquoise  —  5.21:1 on paper */
+  --copper:       #8a4b22;   /* oxidised copper  —  5.68:1 on paper */
+  --rule:         #d6cfc2;   /* hairlines only, never text */
+  --wash:         #e8e1d4;   /* set-apart blocks */
 
   /* ---- type scale --------------------------------------------------------
    * A fourth, rounded. Four sizes is enough for a document; more invites
    * decoration, and decoration is what a hospital on a slow connection pays for.
    */
+  /* ---- type: a book, not an application ----------------------------------
+   * NO WEBFONT. The audience includes hospitals on old devices and slow
+   * connections, and a display face is not worth a blocking download. These
+   * stacks are already on the device, and the first name in each is the one
+   * with character.
+   */
+  --face-display: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+  --face-body:    'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+  --face-utility: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
   --step--1: 0.889rem;
   --step-0:  1rem;
   --step-1:  1.333rem;
@@ -153,4 +170,155 @@ summary { cursor: pointer; color: var(--link); }
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ===========================================================================
+ * THE SCENE — a page of a book, not a form
+ * ===========================================================================
+ * Everything above dresses a document. What follows makes a scene read like
+ * one: the prose given room, the decision set apart as the moment it is, and
+ * the chapter's own clock — the Bell — carrying position instead of "1 of 4".
+ */
+
+body { font-family: var(--face-body); }
+h1, h2, h3 { font-family: var(--face-display); font-weight: 600; letter-spacing: -0.01em; }
+
+/* ---- ★ THE BELL — the signature, and it is canon's, not ours --------------
+ * Chapter 1 runs "First Bell to shortly after the Third Bell". The Bimaristan
+ * tells time by bells, so the scene tells position by bells. A numbered
+ * "Scene 2 of 4" would be true of any content; this is true of THIS world.
+ */
+.bell {
+  font-family: var(--face-utility);
+  font-size: var(--step--1);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-quiet);
+  display: flex;
+  align-items: center;
+  gap: var(--space-s);
+  margin-block-end: var(--space-l);
+}
+.bell::after {
+  content: '';
+  flex: 1;
+  block-size: 1px;
+  background: var(--rule);
+}
+.bell b { color: var(--turquoise); font-weight: 700; }
+
+/* ---- the scene image — atmosphere, never information ---------------------
+ * `art is additive`: every scene is complete in text, so the image carries no
+ * clue that the prose does not. It is allowed to be beautiful and nothing more.
+ */
+.scene-image {
+  margin-block-end: var(--space-l);
+  position: relative;
+  border: 1px solid var(--rule);
+  background: var(--wash);
+}
+.scene-image img { display: block; inline-size: 100%; block-size: auto; }
+
+/* ★ THE PROVISIONAL BAND — required by DEC-029, and deliberately NOT baked
+ * into the file. Q10, the inclusion review, has not happened. When it does,
+ * this rule is deleted and the images need no regeneration. A watermark burned
+ * into a JPEG would have to be undone by re-deriving every asset. */
+.scene-image[data-provisional]::after {
+  content: attr(data-provisional);
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline: 0;
+  font-family: var(--face-utility);
+  font-size: var(--step--1);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: rgba(25, 27, 31, 0.82);
+  padding: var(--space-s) var(--space);
+}
+
+/* ---- the movements as prose ---------------------------------------------
+ * They were a labelled list, which reads as a form. The movement name becomes
+ * a quiet margin note and the prose runs on, so the scene is read rather than
+ * filled in.
+ */
+ol[aria-label] > li { border: 0; padding: 0; margin-block-end: var(--space-l); }
+ol[aria-label] > li h2 {
+  font-family: var(--face-utility);
+  font-size: var(--step--1);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-quiet);
+  margin-block: 0 var(--space-s);
+}
+ol[aria-label] > li p { font-size: var(--step-1); line-height: 1.55; margin: 0; }
+
+/* ---- ★ THE DECISION — the moment, and it should look like one ------------
+ * Set in the wash, ruled on the leading edge in copper. Copper is the world's
+ * functional-signal material, and this is the only place the page uses it: the
+ * one moment where something is actually at stake.
+ */
+.decision {
+  background: var(--wash);
+  border-inline-start: 3px solid var(--copper);
+  padding: var(--space-l);
+  margin-block: var(--space-l);
+}
+.decision > h2 {
+  font-family: var(--face-display);
+  font-size: var(--step-1);
+  margin-block: 0 var(--space);
+}
+.decision ul { list-style: none; margin: 0; padding: 0; }
+.decision li + li { margin-block-start: var(--space); }
+.decision button {
+  inline-size: 100%;
+  text-align: start;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  padding: var(--space);
+  font-family: var(--face-body);
+  font-size: var(--step-0);
+  line-height: 1.5;
+}
+.decision button:hover { border-color: var(--copper); }
+
+/* `defensible_by` — who would defend this, and why. Every option has one, and
+ * showing it is the anti-pattern guard made visible: there is no wrong answer
+ * sitting beside a right one. */
+.defensible {
+  display: block;
+  margin-block-start: var(--space-s);
+  font-size: var(--step--1);
+  color: var(--ink-quiet);
+  font-style: italic;
+}
+
+/* ---- state: shown quietly, never scored ---------------------------------
+ * DEC-005. A number attached to a resilience state teaches optimisation, which
+ * is the behaviour this product exists to make harder. So: named bands, no
+ * digits, no progress bar, and nothing congratulates a costly decision.
+ */
+.state {
+  font-family: var(--face-utility);
+  font-size: var(--step--1);
+  color: var(--ink-quiet);
+  border-block-start: 1px solid var(--rule);
+  padding-block-start: var(--space);
+  margin-block-start: var(--space-l);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-s) var(--space-l);
+}
+.state b { color: var(--ink); font-weight: 600; }
+
+/* ---- the hero: first light over the Bimaristan --------------------------- */
+.hero { margin-block-end: var(--space-l); border: 1px solid var(--rule); position: relative; }
+.hero img { display: block; inline-size: 100%; block-size: auto; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero img, .scene-image img { animation: settle 700ms ease-out both; }
+  @keyframes settle { from { opacity: 0; } to { opacity: 1; } }
 }

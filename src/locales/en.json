@@ -105,5 +105,14 @@
   "chapter_end.state": "Where the Bimaristan stands",
   "chapter_end.decisions": "What you decided",
   "chapter_end.owed": "What is not settled yet",
-  "chapter_end.owed_body": "Some of what happened here has not finished happening. It will arrive in a later chapter, and when it does you will be able to see what it came from."
+  "chapter_end.owed_body": "Some of what happened here has not finished happening. It will arrive in a later chapter, and when it does you will be able to see what it came from.",
+  "provisional.badge": "Provisional — pending inclusion review",
+  "art.first_light.alt": "The Bimaristan at first light: a great vaulted hospital of warm limestone and turquoise tile, courtyards opening one into another, people already at work in the early sun.",
+  "art.gate_of_names.alt": "The Gate of Names opening into the Clinical Sorting Court: families waiting under linen canopies, porters and nurses moving along separated routes, an ordinary busy morning.",
+  "art.bay_that_went_dark.alt": "The far bay of the intensive care ward with its light gone: staff working by lantern and hand-held lamp around a patient, equipment still, the rest of the ward lit beyond.",
+  "play.bell": "The hour",
+  "bell.first": "First Bell",
+  "bell.first_quarter": "Quarter after First Bell",
+  "bell.second": "Second Bell",
+  "bell.third": "Third Bell"
 }
