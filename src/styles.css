@@ -378,3 +378,92 @@ ol[aria-label] > li p { font-size: var(--step-1); line-height: 1.55; margin: 0; 
   .hero img, .scene-image img { animation: settle 700ms ease-out both; }
   @keyframes settle { from { opacity: 0; } to { opacity: 1; } }
 }
+
+/* ---------------------------------------------------------------------------
+   EVS-2 — the beat, and the response.
+
+   ★ NO COPPER HERE. Copper is spent exactly once in this stylesheet, on the
+   decision, and it is the signal that the decision is where the chapter turns.
+   Spending it again on the response would tell the reader that two things are
+   the most important thing, which is the same as telling them nothing.
+
+   The response is set apart by GROUND, not by colour: a wash panel and a rule,
+   the same vocabulary the provisional notice uses.
+   --------------------------------------------------------------------------- */
+
+.beat {
+  font-family: var(--face-utility);
+  font-size: var(--step--1);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-quiet);
+  margin-block-end: var(--space-l);
+}
+
+/* The cost, beside what the option protects. FPE-05: both are readable BEFORE
+   the commitment, because the role could reasonably know them. */
+.risk { color: var(--ink-quiet); }
+
+.response {
+  background: var(--wash);
+  border-block-start: 2px solid var(--turquoise);
+  padding: var(--space) var(--space-l);
+  margin-block: var(--space-l);
+}
+
+.response > h2 {
+  font-size: var(--step-1);
+  margin-block-start: 0;
+}
+
+.response .chosen b { color: var(--turquoise); }
+
+.response .turn { font-size: var(--step-1); line-height: 1.4; }
+
+.response .label {
+  font-family: var(--face-utility);
+  font-size: var(--step--1);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-quiet);
+  display: block;
+}
+
+/* ⚠️ THE DERIVED ACCOUNT IS MARKED. Chapter 1 canon authors no post-commitment
+   narration, so most of this beat is assembled from the option's own protects
+   and risks. A thin beat that looks finished would let the EVS gate pass on
+   content nobody wrote. */
+.narrative[data-provisional] {
+  border-inline-start: 3px solid var(--rule);
+  padding-inline-start: var(--space);
+}
+
+.provisional-note {
+  font-size: var(--step--1);
+  color: var(--ink-quiet);
+  font-style: italic;
+}
+
+.changes, .characters { list-style: none; margin: 0; padding: 0; }
+.changes li, .characters li { margin-block-start: var(--space-s); }
+.moved-name { color: var(--ink-quiet); }
+.moved-to { font-weight: 600; }
+
+/* ★ A WORSENING IS NOT COLOURED RED, AND AN IMPROVEMENT IS NOT COLOURED GREEN.
+   DEC-012: no information conveyed by colour alone — and DEC-005: nothing
+   ranks a safety state. The band's own word says which way it moved; a traffic
+   light would turn that into a score with the number removed. The attribute
+   exists for tests and for future non-colour treatment, not for a hue. */
+[data-worsened='true'] .moved-to { text-decoration: underline; text-underline-offset: 0.2em; }
+
+.advance { margin-block: var(--space-l); }
+.advance button {
+  font-family: var(--face-utility);
+  font-size: var(--step-0);
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  padding: var(--space-s) var(--space);
+  cursor: pointer;
+}
+.advance button:hover { border-color: var(--turquoise); }

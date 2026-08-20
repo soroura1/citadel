@@ -13,7 +13,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "./check-repo.sh",
-    "test": "node --test test/*.test.js",
+    "test": "node --import ./test/jsx-hook.mjs --test test/*.test.js",
     "conformance": "node node_modules/@citadel/contracts/conformance/src/self.js"
   },
   "dependencies": {
@@ -27,6 +27,7 @@
     "@vitejs/plugin-react": "^6.0.5",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
+    "esbuild": "^0.28.2",
     "typescript": "^5.6.0",
     "vite": "^8.0.0"
   }

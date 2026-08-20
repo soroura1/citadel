@@ -9,8 +9,42 @@
  * a pure component handed one scene; four scenes and a state that carries
  * between them is a different thing, and it is the thing a chapter is.
  *
- * A run is: a position in an ordered bundle, the state accumulated so far, and
- * the history that makes a later consequence explainable.
+ * A run is: a position in an ordered bundle, the BEAT within that position, the
+ * state accumulated so far, and the history that makes a later consequence
+ * explainable.
+ *
+ * ============================================================================
+ * ★ EVS-2 — THE BEAT IS THE STAGING PHASE. THERE IS NO SECOND VOCABULARY.
+ * ============================================================================
+ * The session plan names seven beats: arrive/setup, pre-commit encounter,
+ * interactive discovery, commitment, immediate response, residue, and
+ * reflection/exit. They are not seven things this file tracks. Two of them are
+ * RUN-LEVEL and already exist as their own surfaces:
+ *
+ *   arrive / setup      -> SetupScreen, before the run starts
+ *   reflection / exit   -> ChapterEnd, after the last scene
+ *
+ * The rest are PER SCENE, and they are exactly the four phases EVS-1 put in
+ * the scene contract:
+ *
+ *   pre_commit   encounter — orientation, desire, friction
+ *   interactive  discovery and the decision itself
+ *   post_commit  commitment's response — the turn and the immediate effect
+ *   scene_exit   residue
+ *
+ * ⚠️ A SECOND ENUM SYNCHRONISED TO THOSE FOUR WOULD BE TWO DEFINITIONS OF ONE
+ * SEQUENCE. This project has already paid for that shape twice — two phase
+ * tables in one release document, and a rule expressed in two places that
+ * diverged. The beat IS the phase. `PHASES` in `staging.js` is the only list.
+ *
+ * ============================================================================
+ * ★ AND `view()` PROJECTS — IT DOES NOT HAND OVER THE WHOLE SCENE
+ * ============================================================================
+ * FPE-01 says `turn`, the immediate effect, the state delta and `residue` are
+ * not rendered before commitment. A surface that RECEIVES them and is trusted
+ * not to draw them is one careless edit from breaking that. So the view carries
+ * only what the current phase presents: at `pre_commit` the turn is not hidden,
+ * it is ABSENT.
  */
 
 import { loadBundle } from './bundle.js';
@@ -19,6 +53,8 @@ import { choose as decide, presentOptions } from './decision.js';
 import { assertSceneShape } from './scene.js';
 import { fireDue } from './consequence.js';
 import { startingStateFor } from './configuration.js';
+import { PHASES, phasesOf } from './staging.js';
+import { composeResponse } from './response.js';
 
 export class RunRefusal extends Error {
   constructor(refusal, detail) {
@@ -54,6 +90,11 @@ export function startRun({ bundle, config = {}, scenario = null }) {
     bundleVersion: bundle.version,
     order,
     index: 0,
+    // Every scene opens on its encounter. Nothing post-commitment exists yet.
+    phase: PHASES[0],
+    // The response to THIS scene's commitment, once it has been made. Cleared
+    // when the run moves to the next scene, because it belongs to that scene.
+    response: null,
     role: config.role ?? null,
     displayName: config.displayName ?? null,
     scenarioId: scenario?.id ?? null,
@@ -99,15 +140,71 @@ export function currentDecision(run, bundle) {
   return decision;
 }
 
-/** What the surface should render, assembled once so the component stays pure. */
+/**
+ * The movements this phase presents, with their content.
+ *
+ * ⚠️ `immediate_effect` is staged in `post_commit` beside `turn`, and it is not
+ * a movement — its content is the composed response, which lives on the run and
+ * not on the scene. It is filtered out here and supplied separately.
+ */
+function presentedIn(scene, phase) {
+  const plan = phasesOf(scene);
+  if (!plan) throw new RunRefusal('scene-not-staged', scene.id);
+  const movements = plan.find((p) => p.phase === phase)?.presents ?? [];
+
+  return movements
+    .filter((movement) => {
+      // Not a movement: its content is the composed response, which lives on
+      // the run rather than on the scene, and the view supplies it separately.
+      if (movement === 'immediate_effect') return false;
+
+      // ⚠️ `choice_or_discovery` HOLDS A DECISION ID, NOT PROSE. It reached the
+      // screen once as "dec-01-gate-access" — an internal name shown to someone
+      // who has no use for it, the same class of failure as a locale key on
+      // screen. The decision is supplied as `presented`, with its prompt and
+      // options; this movement is the POINTER to it, and a pointer is not
+      // something a person reads.
+      //
+      // It is dropped HERE rather than in the component, because a projection
+      // is where "what may be shown" belongs. A discovery scene whose
+      // `choice_or_discovery` is prose rather than a reference still presents —
+      // which is what EVS-4 will need.
+      const content = scene[movement];
+      if (movement === 'choice_or_discovery' && typeof content === 'string' && content.startsWith('dec-')) {
+        return false;
+      }
+      return true;
+    })
+    .map((movement) => ({ movement, content: scene[movement] }));
+}
+
+/**
+ * What the surface should render, assembled once so the component stays pure.
+ *
+ * ★ ONLY THE CURRENT PHASE. The scene object is passed for its chrome — id,
+ * title, bell, register, art — and the movement content comes from `presents`,
+ * which is projected. A component that reads `scene.turn` directly is reaching
+ * past this projection, and the render tests assert the turn's PROSE is absent
+ * from pre-commit markup so that reach cannot go unnoticed.
+ */
 export function view(run, bundle) {
   const scene = currentScene(run, bundle);
-  if (!scene) return { scene: null, decision: null, complete: true };
+  if (!scene || run.complete) return { scene: null, decision: null, complete: true };
+
   const decision = currentDecision(run, bundle);
+  const atDecision = run.phase === 'interactive';
+
   return {
     scene,
-    decision,
-    presented: decision ? presentOptions(decision, { role: run.role }) : null,
+    phase: run.phase,
+    presents: presentedIn(scene, run.phase),
+    // ★ The decision exists only where it is staged. Handing it to the surface
+    // at `pre_commit` would let an encounter screen draw the options, which is
+    // the commitment happening before the encounter has finished.
+    decision: atDecision ? decision : null,
+    presented: atDecision && decision ? presentOptions(decision, { role: run.role }) : null,
+    // The response is the post-commitment material. Absent until it exists.
+    response: run.phase === 'post_commit' ? run.response : null,
     state: run.state,
     position: { index: run.index, of: run.order.length },
     complete: false,
@@ -115,14 +212,32 @@ export function view(run, bundle) {
 }
 
 /**
- * Choose, apply, and move on — carrying the state.
+ * ★ COMMIT. Apply, compose the response, and STOP.
+ *
+ * ============================================================================
+ * THIS REPLACES `chooseAndAdvance`, WHICH WAS DELETED RATHER THAN KEPT.
+ * ============================================================================
+ * The old call applied the effects and moved to the next scene in one step, so
+ * the response beat had nowhere to happen — the player chose and received
+ * another page. Leaving it beside `commit` as a convenience would have left a
+ * second, shorter path that skips FPE-02 entirely, and `main.jsx` was one
+ * refactor from calling it. Two active specifications for one act is the defect
+ * this project has already corrected twice in documents; it is worse in code.
  *
  * ★ THE STATE IS THE POINT. A chapter whose scenes each start fresh is four
  * short stories; the decision in scene 2 matters because scene 1 already
  * happened to the same person.
  */
-export function chooseAndAdvance(run, bundle, optionId) {
+export function commit(run, bundle, optionId) {
   if (run.complete) throw new RunRefusal('run-already-complete');
+
+  // ⚠️ Refused BY THE ENGINE, not merely by the surface not drawing a button.
+  // A commitment accepted at `pre_commit` is a decision taken while the
+  // encounter is still on screen, and FPE-01 would then hold only as long as
+  // every caller behaved.
+  if (run.phase !== 'interactive') {
+    throw new RunRefusal('commitment-out-of-turn', `phase is ${run.phase}, not interactive`);
+  }
 
   const scene = currentScene(run, bundle);
   const decision = currentDecision(run, bundle);
@@ -136,6 +251,7 @@ export function chooseAndAdvance(run, bundle, optionId) {
   }
 
   const { state, changes } = decide(run.state, decision, optionId);
+  const response = composeResponse({ scene, decision, optionId, changes });
 
   const history = [...run.history, {
     sequence: run.history.length + 1,
@@ -143,8 +259,43 @@ export function chooseAndAdvance(run, bundle, optionId) {
     sceneTitle: scene.id,          // the surface resolves the title from locale
     decisionId: decision.id,
     optionId,
+    // ★ FPE-04 wants the specific option permanently readable. Recording HOW
+    // the response was told is what stops a thin derived beat from later being
+    // mistaken for authored narrative in the record.
+    responseProvenance: response.narrative.provenance,
   }];
 
+  return {
+    run: Object.freeze({ ...run, phase: 'post_commit', response, state, history }),
+    changes,
+    response,
+  };
+}
+
+/**
+ * Move to the next beat. A SEPARATE ACT from committing.
+ *
+ * The phases are walked in the order `PHASES` declares. Leaving the last one
+ * leaves the scene.
+ */
+export function advance(run, bundle) {
+  if (run.complete) throw new RunRefusal('run-already-complete');
+
+  const here = PHASES.indexOf(run.phase);
+  if (here < 0) throw new RunRefusal('unknown-phase', run.phase);
+
+  // ⚠️ You cannot walk PAST a decision without making one. Advancing from
+  // `interactive` would carry the player into the response beat of a
+  // commitment that never happened.
+  if (run.phase === 'interactive' && currentDecision(run, bundle)) {
+    throw new RunRefusal('cannot-advance-past-an-undecided-commitment', currentSceneId(run));
+  }
+
+  if (here < PHASES.length - 1) {
+    return Object.freeze({ ...run, phase: PHASES[here + 1] });
+  }
+
+  // --- leaving the scene -------------------------------------------------
   const index = run.index + 1;
   const complete = index >= run.order.length;
 
@@ -154,24 +305,20 @@ export function chooseAndAdvance(run, bundle, optionId) {
   const { fired, pending: stillOwed } = complete
     ? fireDue(run.deferred, {
         chapter: 'ch-01-complete',
-        season: state.season,
-        decisionsTaken: history.map((h) => h.optionId),
+        season: run.state.season,
+        decisionsTaken: run.history.map((h) => h.optionId),
       })
     : { fired: [], pending: run.deferred };
 
-  return {
-    run: Object.freeze({
-      ...run,
-      index,
-      complete,
-      state,                       // held EFFECTS stay where applyOption put them
-      deferred: stillOwed,         // deferred CONSEQUENCES, still owed
-      history,
-      arrived: [...run.arrived, ...fired],
-    }),
-    changes,
-    arrived: fired,
-  };
+  return Object.freeze({
+    ...run,
+    index,
+    phase: PHASES[0],
+    response: null,               // the response belonged to the scene just left
+    complete,
+    deferred: stillOwed,
+    arrived: [...run.arrived, ...fired],
+  });
 }
 
 /** Serialise. The bundle version is pinned, so a run resumes into what it played. */
@@ -179,11 +326,24 @@ export function serialise(run) {
   return JSON.stringify(run);
 }
 
+/**
+ * ★ RESUME AT THE EXACT BEAT, or refuse by name.
+ *
+ * ⚠️ A run stored at `post_commit` with no response would render an EMPTY
+ * response beat — a page that says a choice was made and shows nothing it did.
+ * That is worse than a crash, because it looks like a finished screen.
+ */
 export function deserialise(text, bundle) {
   const run = JSON.parse(text);
   if (run.bundleVersion !== bundle.version) {
     throw new RunRefusal('run-pinned-to-another-bundle',
       `run is ${run.bundleVersion}, bundle is ${bundle.version}`);
+  }
+  if (!PHASES.includes(run.phase)) {
+    throw new RunRefusal('unknown-phase', String(run.phase));
+  }
+  if (run.phase === 'post_commit' && !run.response) {
+    throw new RunRefusal('resumed-response-beat-has-no-response', currentSceneId(run) ?? '(no scene)');
   }
   return Object.freeze(run);
 }

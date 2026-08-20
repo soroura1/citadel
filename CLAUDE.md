@@ -4,6 +4,36 @@
 **Topology:** [`../CLAUDE.md`](../CLAUDE.md) — `citadel.endura-assess.com` → `172.17.0.1:8087`,
 `TARGET=/opt/citadel/citadel`.
 
+## ★ EVS-2 — ONE BEAT AT A TIME. `chooseAndAdvance` IS GONE.
+
+`view()` **projects**: it carries only what the current phase stages. At `pre_commit` the turn is
+not hidden by a conditional — it is not in the props. A component trusted not to draw something it
+holds is one careless edit from drawing it.
+
+| Act | Call |
+|---|---|
+| Decide | `commit(run, bundle, optionId)` — applies, composes the response, **stops** at `post_commit` |
+| Leave | `advance(run, bundle)` — one beat, or out of the scene |
+
+⚠️ **`chooseAndAdvance` was deleted, not kept.** It applied the effects and moved to the next scene
+in one call, so the response beat had nowhere to happen. Left beside `commit` as a convenience it
+would have been a second, shorter path that skips `FPE-02` — and `main.jsx` was one refactor from
+calling it.
+
+**The beat IS the staging phase.** The session plan's seven beats are two run-level surfaces
+(`SetupScreen`, `ChapterEnd`) plus EVS-1's four phases. A second enum synchronised to those four
+would be two definitions of one sequence.
+
+### What the response is made of — and what it is not
+
+Canon authors **no** post-commitment narration, and character reactions for **one** decision. So
+eleven responses are composed thin from the option's own `protects`, `risks` and visible effects —
+restricted to the sources `derived_from` declares — and **carry the provisional band**. Scene 4's
+three carry Fadl, Maha and Rami verbatim, and take precedence.
+
+⛔ **A character reaction is NEVER derived.** `protects` and `risks` are the option's properties, not
+a person's; a name in front of them would be an invented performance.
+
 ## ★ EVS-1 — the content is now VALIDATED against the contract it pins
 
 `test/content-conformance.test.js`. Until it existed, **this repository pinned a schema it never
@@ -17,15 +47,12 @@ suite against *itself*. Neither looked at a scene.
 ⚠️ **The defect was the missing check, not the missing field.** A consumer that pins a contract and
 never runs it has paid the tag-and-pin cost and bought none of the safety.
 
-## The scene contract now says WHEN — and nothing renders it YET
+## The scene contract says WHEN — and EVS-2 renders it
 
-`contracts@v0.5.0` added `staging` (four phases) and `immediate_effect`. All four Chapter 1 scenes
+`contracts@v0.5.0` added `staging` (four phases) and `immediate_effect`; all four Chapter 1 scenes
 carry both. `src/engine/staging.js` holds what a schema cannot see — a movement staged twice or
-nowhere, an option with no response — because those need two documents at once.
-
-⚠️ **`PlayScreen` still renders all six movements as one `<ol>`, so `turn` and `residue` are still on
-the page before the player chooses.** That is `FPE-01` still broken, deliberately: **EVS-2** is the
-session that consumes the staging. EVS-1 built the vocabulary; the renderer is untouched.
+nowhere, an option with no response — because those need two documents at once. EVS-2 made `view()`
+walk it, so `FPE-01` holds in the markup and not only in the data.
 
 **Bundle `v0.1` → `v0.2`.** The scenes changed shape, so a run saved under `v0.1` refuses to resume —
 which is what pinning the version into the save is for.
@@ -103,10 +130,11 @@ The build succeeded. 17 tests passed. All three reachability assertions passed. 
 | | |
 |---|---|
 | ✅ In place now | A static guard: no `@tanstack/react-router` import while nothing mounts a `RouterProvider`. It retires itself when R3 adds one |
-| ⛔ **Owed** | **A render assertion.** `node --test` cannot import `.jsx` (`ERR_UNKNOWN_FILE_EXTENSION`) — there is no JSX transform in the test path, which is *why* no test has ever rendered a component. Needs a loader or an SSR build step before the tests |
+| ✅ **Closed at EVS-2** | **The render assertion.** `test/jsx-hook.mjs` registers a synchronous `esbuild.transformSync` load hook, so `node --test` can import `.jsx`. `test/render.test.js` executes `PlayScreen` through `renderToStaticMarkup` and asserts on the markup |
 
-Until that exists, **`H5` is the only thing that executes the page** — which is not a shortfall in
-`H5`, it is the reason the plan specifies a human.
+⚠️ **Why not vite's `transformWithEsbuild`:** it is exported and it is **async**, while
+`module.registerHooks` is synchronous. An async transform needs `module.register` and a worker
+thread. Do not "simplify" the hook back to vite's helper without also moving to that loader.
 
 `SURFACES` in `src/surfaces.js` is the source of truth; the manifest is computed, never written.
 

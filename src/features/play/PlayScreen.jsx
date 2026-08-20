@@ -1,16 +1,34 @@
 import { t } from '../../locales/index.js';
-import { movementsOf } from '../../engine/scene.js';
-import { presentOptions } from '../../engine/decision.js';
+import { ResponseView } from './ResponseView.jsx';
 
 /**
- * The Play surface. (R3 F3, F4, F5, F7)
+ * The Play surface. (R3 F3, F4, F5, F7 · EVS-2)
  *
  * ★ NO SCORE. NOTHING CONGRATULATES A COSTLY DECISION.
  *
  * `DEC-005`: gamify the learning behaviour, never the safety state. A number
  * attached to a resilience state teaches optimisation, which is the behaviour
  * this product exists to make harder rather than easier.
+ *
+ * ============================================================================
+ * ★ EVS-2 — ONE BEAT AT A TIME. THE SIX MOVEMENTS ARE NOT A DOCUMENT.
+ * ============================================================================
+ * This component used to render all six authored movements as one ordered list,
+ * so `turn` — what the commitment causes — and `residue` — what it leaves —
+ * were on the page before the player had chosen anything. The interface was
+ * spoiling its own drama, which is exactly what FPE-01 forbids.
+ *
+ * It now renders `presents`: the movements the CURRENT PHASE stages, projected
+ * by `view()`. At `pre_commit` the turn is not hidden by a conditional; it is
+ * not in the props at all. That distinction matters — a component trusted not
+ * to draw something it holds is one careless edit from drawing it.
+ *
+ * ⚠️ DO NOT REACH FOR `scene.turn` OR `scene.residue` HERE. They are on the
+ * scene object, which is passed for its chrome (title, bell, register, art).
+ * `test/render.test.js` asserts their PROSE is absent from pre-commit markup,
+ * so a reach past the projection fails a test rather than shipping.
  */
+
 /**
  * ★ RENDER WHAT THE CONTENT DECLARES — NEVER A KEY THIS FILE INVENTS.
  *
@@ -58,14 +76,25 @@ const sceneArt = {
   'sc-01-02': 'bay-that-went-dark',
 };
 
-export function PlayScreen({ scene, decision, state, role, onChoose, textPath = false }) {
+export function PlayScreen({
+  scene, phase, presents = [], decision, presented, response,
+  state, onChoose, onAdvance, textPath = false,
+}) {
   if (!scene) return <main><p role="alert">{t('play.no_scene')}</p></main>;
 
-  const presented = decision ? presentOptions(decision, { role }) : null;
   const register = scene.emotional_state?.register ?? null;
 
+  /* ★ THE TEXT PATH SUBSTITUTES AT THE ENCOUNTER, AND NOWHERE ELSE.
+     All four authored `text_equivalent` strings are pre-commit material —
+     arrival, pressure, who wants what, the difficulty. None narrates the turn
+     or the residue, which is why substituting them here does not leak past the
+     commitment. From `interactive` onwards both paths render the same beats,
+     because parity means reaching the same decision and the same response, not
+     reading a synopsis instead of playing. */
+  const textPathEncounter = textPath && phase === 'pre_commit' && scene.text_equivalent;
+
   return (
-    <main data-register={register ?? undefined}>
+    <main data-register={register ?? undefined} data-phase={phase}>
       {/* ★ V9 — THE REGISTER IS NAMED IN WORDS, not only in type and space.
           A scene that opens differently only through measure and motion says
           nothing to a screen reader and nothing on a printed page. The register
@@ -98,32 +127,32 @@ export function PlayScreen({ scene, decision, state, role, onChoose, textPath = 
 
       <h1>{t(`scene.${scene.id}.title`)}</h1>
 
-      {/* ★ F7 — THE TEXT PATH IS NOT A FALLBACK.
-          It reaches the same decision. A "text version" that stops short of the
-          choice excludes a whole access path from the product's only real
-          moment. */}
-      {textPath && scene.text_equivalent ? (
+      {/* ★ EVS-2 — WHERE THE PLAYER IS, IN WORDS. A beat that changes what is
+          on screen without saying so reads as content appearing and vanishing.
+          Named rather than numbered: "of 4" would be a progress bar with the
+          bar removed. */}
+      <p className="beat"><span className="visually-hidden">{t('play.beat')} </span>{t(`beat.${phase}`)}</p>
+
+      {textPathEncounter ? (
         <section aria-label={t('play.text_path')}>
-          <p>{renderMovement(scene.text_equivalent)}</p>
+          <p>{t(scene.text_equivalent.key)}</p>
         </section>
       ) : (
-        <ol aria-label={t('play.movements')}>
-          {movementsOf(scene)
-            // ⚠️ `choice_or_discovery` holds a decision ID, not prose. Rendering
-            // it printed `dec-01-gate-access` at the reader — the same failure
-            // as a locale key on screen. The decision has its own section
-            // below, with its prompt and options; this movement is the pointer
-            // to it, and a pointer is not something a person reads.
-            .filter(({ movement }) => movement !== 'choice_or_discovery')
-            .map(({ movement, content }) => (
-            <li key={movement}>
-              <h2>{t(`movement.${movement}`)}</h2>
-              {renderMovement(content)}
-            </li>
-          ))}
-        </ol>
+        presents.length > 0 && (
+          <ol aria-label={t('play.movements')}>
+            {presents.map(({ movement, content }) => (
+              <li key={movement}>
+                <h2>{t(`movement.${movement}`)}</h2>
+                {renderMovement(content)}
+              </li>
+            ))}
+          </ol>
+        )
       )}
 
+      {/* ★ THE DECISION EXISTS ONLY AT `interactive`. `view()` supplies it
+          nowhere else, so this is not a conditional protecting a secret — there
+          is nothing here to protect at any other beat. */}
       {presented && (
         <section className="decision" aria-label={t('play.decision')}>
           <h2>{t(presented.prompt?.key ?? 'play.decision')}</h2>
@@ -141,6 +170,9 @@ export function PlayScreen({ scene, decision, state, role, onChoose, textPath = 
                 <li key={o.id}>
                   <button type="button" onClick={() => onChoose?.(o.id)}>{t(o.label.key)}</button>
                   <p>{o.protects}</p>
+                  {/* FPE-05 — the risk is available BEFORE commitment, because
+                      the role could reasonably know it. */}
+                  <p className="risk">{o.risks}</p>
                   {/* Available on request, not shouted: who would defend this.
                       It is what makes the option a position rather than a trap. */}
                   <details>
@@ -154,8 +186,23 @@ export function PlayScreen({ scene, decision, state, role, onChoose, textPath = 
         </section>
       )}
 
+      {response && <ResponseView response={response} />}
+
+      {/* ★ ADVANCING IS A SEPARATE ACT FROM COMMITTING.
+          There is no control here at `interactive`: the way forward is the
+          decision, and a "skip" beside it would make the chapter's one real
+          moment optional. Everywhere else the player leaves when they are
+          ready — the response is not a flash between two pages. */}
+      {phase !== 'interactive' && (
+        <p className="advance">
+          <button type="button" onClick={() => onAdvance?.()}>{t(`advance.${phase}`)}</button>
+        </p>
+      )}
+
       {/* ★ F5 — state shown as BANDS, never numbers, and never ranked.
-          No praise, no congratulation, no total. */}
+          No praise, no congratulation, no total. This is where the Bimaristan
+          STANDS, which the player has carried since the last scene — not the
+          delta, which belongs to the response beat alone. */}
       <section className="state" aria-label={t('play.state')}>
         <dl>
           {Object.entries(state?.season ?? {}).map(([v, band]) => (
