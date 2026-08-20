@@ -260,6 +260,9 @@
           "role_id": "role.quality-patient-safety",
           "route": "Follows the same emergency-to-ICU pathway and reads the live service state."
         }
+      ],
+      "evidence_ids": [
+        "ev.01.01.positions-are-not-capacity"
       ]
     }
   ],
@@ -320,6 +323,7 @@
       "friction"
     ],
     "interactive": [
+      "actions",
       "choice_or_discovery"
     ],
     "post_commit": [
@@ -374,5 +378,146 @@
         ]
       }
     ]
-  }
+  },
+  "evidence": [
+    {
+      "id": "ev.01.01.board-497",
+      "what": "The previous twenty-four-hour board closes at 497 consultations.",
+      "source": {
+        "kind": "instrument",
+        "id": "the handover board"
+      },
+      "partial": true,
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: \"the previous 24-hour board closes at 497 consultations\"."
+    },
+    {
+      "id": "ev.01.01.rolling-average",
+      "what": "A clerk changes the rolling seven-day average from 492 to 501, while the preceding daily marks show ordinary fluctuation — 462, 518, 487, 539 and 496.",
+      "source": {
+        "kind": "person",
+        "id": "a clerk"
+      },
+      "partial": true,
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: \"a clerk changes the rolling seven-day average from 492 to 501 while the preceding daily marks show ordinary fluctuation\"."
+    },
+    {
+      "id": "ev.01.01.positions-are-not-capacity",
+      "what": "Physical positions, staffed positions, occupied positions and patients waiting for another service are not the same measure of capability.",
+      "source": {
+        "kind": "place",
+        "id": "Clinical Sorting Court"
+      },
+      "partial": false,
+      "satisfies_reveal": "reveal.01.capacity-is-not-physical-position",
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Scene 1 playable action 3 — \"identifies the difference between physical positions, staffed positions, occupied positions, and patients waiting for another service\"."
+    },
+    {
+      "id": "ev.01.01.thirty-eight-of-fifty",
+      "what": "Only about 38 of the 50 physical positions can normally be staffed at the same time.",
+      "source": {
+        "kind": "person",
+        "id": "Nour"
+      },
+      "partial": true,
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: \"Only about 38 of the 50 physical positions can normally be staffed at the same time\", and the state-effects row where \"the nursing leader corrects the interpretation\"."
+    },
+    {
+      "id": "ev.01.01.nine-cannot-leave",
+      "what": "Forty-three patients remain from the night. Nine are waiting for an inpatient bed, a diagnostic result, a specialist decision or a safe transfer.",
+      "source": {
+        "kind": "person",
+        "id": "Nour"
+      },
+      "partial": false,
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: \"Asks what the 43 patients are waiting for | reveals the ICU and inpatient constraint before the outage\"."
+    },
+    {
+      "id": "ev.01.01.ayyash-token",
+      "what": "Ayyash carries a registered route key and an older keyed transfer token that does not appear on the duty register.",
+      "source": {
+        "kind": "person",
+        "id": "Ayyash"
+      },
+      "partial": true,
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Sensory anchors — \"Ayyash carrying a registered route key and an older keyed transfer token that does not appear on the duty register\"."
+    }
+  ],
+  "actions": [
+    {
+      "id": "inspect.01.01.handover-board",
+      "type": "inspect",
+      "target": {
+        "kind": "instrument",
+        "id": "the handover board"
+      },
+      "reveals": [
+        "ev.01.01.board-497",
+        "ev.01.01.rolling-average"
+      ],
+      "visible_to_roles": null,
+      "requires": [],
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: \"Showing 500 consultations without exposition\" — the board, the clerk and the preceding daily marks."
+    },
+    {
+      "id": "inspect.01.01.sorting-court",
+      "type": "inspect",
+      "target": {
+        "kind": "place",
+        "id": "Clinical Sorting Court"
+      },
+      "reveals": [
+        "ev.01.01.positions-are-not-capacity"
+      ],
+      "visible_to_roles": null,
+      "requires": [],
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Scene 1 playable action 3."
+    },
+    {
+      "id": "consult.01.01.nour",
+      "type": "consult",
+      "target": {
+        "kind": "person",
+        "id": "Nour"
+      },
+      "reveals": [
+        "ev.01.01.thirty-eight-of-fifty",
+        "ev.01.01.nine-cannot-leave"
+      ],
+      "visible_to_roles": null,
+      "requires": [],
+      "response": {
+        "character_id": "Nour",
+        "does": "Corrects the reading that treats all fifty physical places as capacity.",
+        "withholds": null,
+        "acts_independently": false,
+        "dialogue_unresolved": "Canon states the correction as an outcome in its state-effects table and writes no line for it."
+      },
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: State effects — \"Treats all 50 physical places as capacity | the nursing leader corrects the interpretation\"."
+    },
+    {
+      "id": "consult.01.01.ayyash",
+      "type": "consult",
+      "target": {
+        "kind": "person",
+        "id": "Ayyash"
+      },
+      "reveals": [
+        "ev.01.01.ayyash-token"
+      ],
+      "visible_to_roles": null,
+      "requires": [],
+      "response": {
+        "character_id": "Ayyash",
+        "does": "Hands over the patients, equipment and unresolved movements he is still carrying.",
+        "withholds": null,
+        "acts_independently": false,
+        "dialogue_unresolved": "Canon gives Ayyash a want and an action and writes no line for him here."
+      },
+      "cost": {
+        "currency": "time",
+        "what": "His night shift officially ended some time ago; he is still here because the movements have not been handed to anyone yet."
+      },
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Ayyash's want — \"finish a night shift that officially ended while ensuring the morning team receives the patients, equipment, and unresolved movements he is still carrying\"."
+    }
+  ]
 }

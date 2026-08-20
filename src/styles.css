@@ -509,3 +509,70 @@ ol[aria-label] > li p { font-size: var(--step-1); line-height: 1.55; margin: 0; 
   color: var(--ink-quiet);
   font-size: var(--step--1);
 }
+
+/* ---------------------------------------------------------------------------
+   EVS-4 — investigating, and what it turns up.
+
+   ★ STILL NO COPPER. It is spent once, on the decision, and that is what makes
+   the decision legible as the moment the chapter turns. Investigation is what
+   you do beforehand; dressing it as decisively would say two things are the
+   most important thing, which says nothing.
+   --------------------------------------------------------------------------- */
+
+.actions { margin-block: var(--space-l); }
+.actions > h2, .actions > h3 {
+  font-family: var(--face-utility);
+  font-size: var(--step-0);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-quiet);
+}
+
+.action-list { list-style: none; margin: 0; padding: 0; }
+.action-list li { margin-block-end: var(--space-s); }
+.action-list button {
+  font-family: var(--face-utility);
+  font-size: var(--step-0);
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  padding: var(--space-s) var(--space);
+  cursor: pointer;
+  inline-size: 100%;
+  text-align: start;
+}
+.action-list button:hover { border-color: var(--turquoise); }
+
+/* Asking a person is a different act from reading a board, and only one of the
+   two can decline. The controls say so without relying on colour. */
+[data-action-type='consult'] button { border-inline-start-width: 3px; }
+.action-list .verb { color: var(--ink-quiet); }
+.action-list .target { font-weight: 600; }
+
+.cost { font-size: var(--step--1); color: var(--ink-quiet); margin-block-start: var(--space-s); }
+.cost .label, .withholds .label {
+  font-family: var(--face-utility);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.response-from {
+  border-inline-start: 3px solid var(--rule);
+  padding-inline-start: var(--space);
+  margin-block: var(--space);
+}
+.withholds { color: var(--ink-quiet); }
+.acts-independently { color: var(--ink-quiet); font-style: italic; }
+
+.discoveries { list-style: none; margin: 0; padding: 0; }
+.discoveries li {
+  border-block-start: 1px solid var(--rule);
+  padding-block: var(--space-s);
+}
+.provenance { font-size: var(--step--1); color: var(--ink-quiet); }
+.provenance cite { font-style: normal; font-weight: 600; }
+/* A fact that is incomplete on its own is marked in words by `play.partial`;
+   this is the quiet second signal, never the only one. */
+[data-partial='true'] .provenance { font-style: italic; }
+
+.risk-unknown { color: var(--ink-quiet); font-style: italic; }

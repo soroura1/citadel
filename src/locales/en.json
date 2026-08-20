@@ -165,5 +165,19 @@
   "setup.roles_not_yet_playable": "Also in the Bimaristan, not yet playable in this slice:",
   "setup.stake_is_private": "Yours. Shown back to you once, and never to anyone in the story.",
   "setup.locale_incomplete": "This translation is incomplete; untranslated text falls back to English.",
-  "refusal.run-has-no-role": "No role was selected, so no authority can be claimed."
+  "refusal.run-has-no-role": "No role was selected, so no authority can be claimed.",
+  "play.actions": "What you can do",
+  "action.inspect": "Look at",
+  "action.consult": "Ask",
+  "play.what_you_know": "What you know so far",
+  "play.according_to": "According to",
+  "play.partial": "incomplete on its own",
+  "play.withholds": "What they will not do:",
+  "play.acts_independently": "They act under their own authority, whether or not you ask.",
+  "play.risk_not_yet_known": "What this would cost is not yet known to you. Someone here can tell you.",
+  "cost.time": "Time:",
+  "cost.trust": "Trust:",
+  "cost.workload": "Workload:",
+  "cost.service_capacity": "Service capacity:",
+  "cost.evidence": "Evidence:"
 }

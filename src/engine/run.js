@@ -56,6 +56,7 @@ import { startingStateFor } from './configuration.js';
 import { PHASES, phasesOf } from './staging.js';
 import { composeResponse } from './response.js';
 import { assertRoleIsPlayable, variantFor } from './roles.js';
+import { availableActions, actionIndex, evidenceIndex } from './evidence.js';
 
 export class RunRefusal extends Error {
   constructor(refusal, detail) {
@@ -114,6 +115,19 @@ export function startRun({ bundle, config = {}, scenario = null }) {
     locale: config.locale ?? 'en',
     scenarioId: scenario?.id ?? null,
     state,
+    // ★ EVS-4 — WHAT HAS BEEN FOUND OUT, AND HOW.
+    //
+    // Each entry records the evidence, the action it came through and the
+    // person, instrument, place or record behind it. Provenance travels with
+    // the fact because Chapter 1 turns on two people reading accurate
+    // information in different rooms — a run holding one world state cannot
+    // express that, a run holding who-said-what can.
+    discovered: [],
+    actionsTaken: [],
+    // Declared notes in canon's own currencies, recorded and never summed.
+    // Canon names time, trust, workload, service capacity and evidence, and
+    // sets no prices; a total here would be a score wearing a lore costume.
+    costsIncurred: [],
     // ★ Shaped for traceback() deliberately. R4 must answer "why did this
     // happen" three chapters later, and that answer is only constructible if
     // the link was recorded WHEN THE DECISION WAS MADE.
@@ -136,6 +150,24 @@ export function startRun({ bundle, config = {}, scenario = null }) {
 }
 
 export const currentSceneId = (run) => run.order[run.index] ?? null;
+
+/** The response from the most recent consult in this scene, or null. */
+function lastResponseIn(run, scene) {
+  const here = (run.actionsTaken ?? []).filter((a) => a.sceneId === scene.id);
+  const index = actionIndex(scene);
+  for (let i = here.length - 1; i >= 0; i--) {
+    const action = index.get(here[i].actionId);
+    if (action?.response) return action.response;
+  }
+  return null;
+}
+
+/** Every evidence id the participant currently holds, across the whole run. */
+export const heldEvidence = (run) => new Set((run.discovered ?? []).map((d) => d.evidenceId));
+
+/** Action ids already taken in the CURRENT scene. A scene's actions are its own. */
+const takenHere = (run) =>
+  new Set((run.actionsTaken ?? []).filter((a) => a.sceneId === currentSceneId(run)).map((a) => a.actionId));
 
 export function currentScene(run, bundle) {
   const id = currentSceneId(run);
@@ -169,9 +201,13 @@ function presentedIn(scene, phase) {
 
   return movements
     .filter((movement) => {
-      // Not a movement: its content is the composed response, which lives on
-      // the run rather than on the scene, and the view supplies it separately.
-      if (movement === 'immediate_effect') return false;
+      // Not movements. `immediate_effect`'s content is the composed response,
+      // which lives on the run; `actions` are filtered by role and by what is
+      // held, which is also run state. Both are supplied by the view as their
+      // own fields, and both would otherwise render a heading for a locale key
+      // that has no business existing — `⟨movement.actions⟩` reached the page
+      // exactly once, which is what the no-key-on-screen assertion is for.
+      if (movement === 'immediate_effect' || movement === 'actions') return false;
 
       // ⚠️ `choice_or_discovery` HOLDS A DECISION ID, NOT PROSE. It reached the
       // screen once as "dec-01-gate-access" — an internal name shown to someone
@@ -231,12 +267,100 @@ export function view(run, bundle) {
     // at `pre_commit` would let an encounter screen draw the options, which is
     // the commitment happening before the encounter has finished.
     decision: atDecision ? decision : null,
-    presented: atDecision && decision ? presentOptions(decision, { role: run.role }) : null,
+    // ★ EVS-4 — the risks the participant could reasonably know, and no others.
+    presented: atDecision && decision
+      ? presentOptions(decision, { role: run.role, held: heldEvidence(run) })
+      : null,
+    // ★ EVS-4 — what can be done here, filtered by role and by what is held.
+    // Staged in `interactive` alongside the commitment, so investigation and
+    // decision live in the same beat and investigation comes first in the array.
+    actions: atDecision
+      ? availableActions(scene, { role: run.role, held: heldEvidence(run), taken: takenHere(run) })
+      : [],
+    // What has been found out in THIS scene, with where each fact came from.
+    discoveries: (run.discovered ?? []).filter((d) => d.sceneId === scene.id),
+    // ★ DERIVED, NOT STORED. The last consult's response is a property of the
+    // last action taken, so it survives a save without being written twice —
+    // and two copies of one fact is the shape this project keeps correcting.
+    lastResponse: lastResponseIn(run, scene),
     // The response is the post-commitment material. Absent until it exists.
     response: run.phase === 'post_commit' ? run.response : null,
     state: run.state,
     position: { index: run.index, of: run.order.length },
     complete: false,
+  };
+}
+
+/**
+ * ★ INSPECT OR CONSULT. The two actions that are not the commitment. (EVS-4)
+ *
+ * ⚠️ LEGAL ONLY AT `interactive`, LIKE THE COMMITMENT. Investigating during the
+ * response beat would be learning something after deciding and having it count
+ * as though it were known before — which is the chronology EVS-2 exists to fix,
+ * running backwards.
+ *
+ * ★ AND A CONSULT MAY DECLINE. Canon's fail-forward: "the professional owner
+ * states the binding limit and acts within existing authority." The limit is
+ * returned with the answer rather than instead of it — Fadl classifies the near
+ * miss AND does not take clinical or electrical authority, and both halves are
+ * the same act.
+ */
+export function act(run, bundle, actionId) {
+  if (run.complete) throw new RunRefusal('run-already-complete');
+  if (run.phase !== 'interactive') {
+    throw new RunRefusal('action-out-of-turn', `phase is ${run.phase}, not interactive`);
+  }
+
+  const scene = currentScene(run, bundle);
+  const action = actionIndex(scene).get(actionId);
+  if (!action) throw new RunRefusal('action-not-in-scene', `${actionId} in ${scene.id}`);
+
+  const offered = availableActions(scene, {
+    role: run.role, held: heldEvidence(run), taken: takenHere(run),
+  });
+  if (!offered.some((a) => a.id === actionId)) {
+    // Named three ways, because three different things are wrong and a
+    // participant deserves to know which.
+    if (takenHere(run).has(actionId)) throw new RunRefusal('action-already-taken', actionId);
+    if (action.visible_to_roles && !action.visible_to_roles.includes(run.role)) {
+      throw new RunRefusal('action-not-available-to-this-role', `${run.role} on ${actionId}`);
+    }
+    throw new RunRefusal('action-requires-evidence-not-held', actionId);
+  }
+
+  const evidence = evidenceIndex(scene);
+  const already = heldEvidence(run);
+  const found = action.reveals
+    .filter((id) => !already.has(id))
+    .map((id) => {
+      const e = evidence.get(id);
+      return Object.freeze({
+        evidenceId: id,
+        what: e.what,
+        // ★ PROVENANCE. Who or what said it, and which act it came through.
+        source: e.source,
+        partial: e.partial !== false,
+        via: actionId,
+        sceneId: scene.id,
+        sequence: (run.discovered ?? []).length + 1,
+      });
+    });
+
+  return {
+    run: Object.freeze({
+      ...run,
+      discovered: [...(run.discovered ?? []), ...found],
+      actionsTaken: [...(run.actionsTaken ?? []),
+        { actionId, sceneId: scene.id, type: action.type, target: action.target }],
+      costsIncurred: action.cost
+        ? [...(run.costsIncurred ?? []), { ...action.cost, via: actionId, sceneId: scene.id }]
+        : (run.costsIncurred ?? []),
+    }),
+    found,
+    // What the person did, and what they would not do. Null for an inspection:
+    // only a person can decline.
+    response: action.response ?? null,
+    cost: action.cost ?? null,
   };
 }
 
@@ -272,7 +396,7 @@ export function commit(run, bundle, optionId, { as = null } = {}) {
   const decision = currentDecision(run, bundle);
   if (!decision) throw new RunRefusal('scene-has-no-decision', scene?.id);
 
-  const presented = presentOptions(decision, { role: run.role });
+  const presented = presentOptions(decision, { role: run.role, held: heldEvidence(run) });
 
   // ★ EVS-3 — COMMITTING IS TWO THINGS, AND THE RECORD SAYS WHICH.
   //
@@ -315,6 +439,11 @@ export function commit(run, bundle, optionId, { as = null } = {}) {
     // the response was told is what stops a thin derived beat from later being
     // mistaken for authored narrative in the record.
     responseProvenance: response.narrative.provenance,
+    // ★ EVS-4 — WHAT WAS KNOWN WHEN THE COMMITMENT WAS MADE. A debrief that
+    // cannot say what the participant had found out cannot ask a fair question
+    // about the decision they took — and "they chose without knowing" and "they
+    // chose knowing" are the two most different things a debrief can tell apart.
+    evidenceHeld: [...heldEvidence(run)],
   }];
 
   return {

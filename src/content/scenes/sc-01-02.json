@@ -276,6 +276,10 @@
           "role_id": "role.quality-patient-safety",
           "route": "Through the shared emergency-to-ICU response, Rami demonstrates the shared board and Ayyash's token supplies the matching emblem."
         }
+      ],
+      "evidence_ids": [
+        "ev.01.02.shared-board",
+        "ev.01.02.emblem-match"
       ]
     }
   ],
@@ -335,6 +339,7 @@
       "friction"
     ],
     "interactive": [
+      "actions",
       "choice_or_discovery"
     ],
     "post_commit": [
@@ -409,5 +414,228 @@
         ]
       }
     ]
-  }
+  },
+  "evidence": [
+    {
+      "id": "ev.01.02.hall-reads-generation",
+      "what": "The Hall reads backup generation active. It does not initially see the failed downstream board.",
+      "source": {
+        "kind": "instrument",
+        "id": "the Hall of Measure display"
+      },
+      "partial": true,
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: \"The Hall initially sees backup generation active, not the downstream exception.\""
+    },
+    {
+      "id": "ev.01.02.eight-beds-two-tables",
+      "what": "Eight ICU beds and two of the six emergency resuscitation tables remain without stable mains supply, although the rest of the critical system appears restored.",
+      "source": {
+        "kind": "place",
+        "id": "older ICU far bay"
+      },
+      "partial": false,
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: The electrical-interruption sequence — \"an older downstream changeover board fails to connect an eight-bed ICU bay and two of six emergency resuscitation tables to the restored bus\"."
+    },
+    {
+      "id": "ev.01.02.timings",
+      "what": "At 0 seconds the supply trips; bedside batteries, emergency lighting and hand ventilation bridge to about 11 seconds; the generator reaches stable operation at about 11 seconds and the main critical bus is restored at about 18; from 18 seconds to 4 minutes 20 the older downstream board does not connect; by 4 minutes 20 the board is isolated and the approved manual alternate feed is operating.",
+      "source": {
+        "kind": "record",
+        "id": "the electrical sequence"
+      },
+      "partial": false,
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: The elapsed-time table, and the written control \"place detailed timings in optional inspection or the later review rather than long crisis dialogue\"."
+    },
+    {
+      "id": "ev.01.02.shared-board",
+      "what": "Two circuits shown as separate on the official map pass through one older transfer board behind a sealed arch. The mapped lines stop before the chamber, later conduits continue through the wall, and the board has been repaired several times without the dependency map being amended.",
+      "source": {
+        "kind": "person",
+        "id": "Rami"
+      },
+      "partial": false,
+      "satisfies_reveal": "reveal.01.shared-board-and-emblem",
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: \"Mystery and systems discovery\" — the map, the chamber, the repairs and the unamended dependency map."
+    },
+    {
+      "id": "ev.01.02.emblem-match",
+      "what": "The chamber threshold bears an unfamiliar emblem, and Ayyash’s keyed transfer token bears the same one, because porters still use the old service access and lower transfer desk.",
+      "source": {
+        "kind": "place",
+        "id": "the sealed arch"
+      },
+      "partial": false,
+      "satisfies_reveal": "reveal.01.shared-board-and-emblem",
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: \"The chamber threshold bears the unfamiliar emblem. Ayyash’s keyed transfer token bears the same emblem because porters still use the old service access and lower transfer desk.\""
+    },
+    {
+      "id": "ev.01.02.near-miss-entry",
+      "what": "A temporary high-risk near-miss entry is open, with the final classification and corrective work still unresolved.",
+      "source": {
+        "kind": "person",
+        "id": "Fadl"
+      },
+      "partial": true,
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Scene 2 closure — \"Fadl opens a temporary high-risk near-miss entry with the final classification and corrective work still unresolved.\""
+    },
+    {
+      "id": "ev.01.02.source-chronology",
+      "what": "The source-marked timeline preserves the difference between main-bus restoration and local restoration, which the central record collapses into one successful transfer.",
+      "source": {
+        "kind": "person",
+        "id": "Maha"
+      },
+      "partial": false,
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Scene 2 closure and Maha's want — she preserves the exact source and time of loss, generator start, partial restoration, local exception and manual restoration."
+    },
+    {
+      "id": "ev.01.02.no-single-owner",
+      "what": "The outage, the fallback, the capacity shortage and the network option have no single coordinating owner.",
+      "source": {
+        "kind": "person",
+        "id": "the duty nursing leader"
+      },
+      "partial": false,
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Role-specific evidence and authority — the Resilience Lead’s first evidence noticed."
+    }
+  ],
+  "actions": [
+    {
+      "id": "inspect.01.02.hall-display",
+      "type": "inspect",
+      "target": {
+        "kind": "instrument",
+        "id": "the Hall of Measure display"
+      },
+      "reveals": [
+        "ev.01.02.hall-reads-generation"
+      ],
+      "visible_to_roles": null,
+      "requires": [],
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: \"The central display monitors the generator and main critical bus; it does not initially see the failed downstream board.\""
+    },
+    {
+      "id": "inspect.01.02.electrical-sequence",
+      "type": "inspect",
+      "target": {
+        "kind": "record",
+        "id": "the electrical sequence"
+      },
+      "reveals": [
+        "ev.01.02.timings"
+      ],
+      "visible_to_roles": null,
+      "requires": [],
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: The written control — \"place detailed timings in OPTIONAL INSPECTION or the later review rather than long crisis dialogue\". This action is that instruction, implemented."
+    },
+    {
+      "id": "consult.01.02.rami",
+      "type": "consult",
+      "target": {
+        "kind": "person",
+        "id": "Rami"
+      },
+      "reveals": [
+        "ev.01.02.shared-board",
+        "ev.01.02.eight-beds-two-tables"
+      ],
+      "visible_to_roles": null,
+      "requires": [],
+      "response": {
+        "character_id": "Rami",
+        "does": "Isolates the affected board, checks for a downstream fault and operates the approved manual alternate feed, under existing authority.",
+        "withholds": "He will not energize a circuit whose condition is unknown, and he will not let “restored” be read as “the dependency is corrected”.",
+        "acts_independently": true,
+        "dialogue_unresolved": "Canon describes what Rami does and what he refuses, and writes no line for him."
+      },
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Rami's want, the fail-forward rule — \"Rami isolates the board under existing authority\" — and \"Rami defines what may be safely energized\"."
+    },
+    {
+      "id": "inspect.01.02.sealed-arch",
+      "type": "inspect",
+      "target": {
+        "kind": "place",
+        "id": "the sealed arch"
+      },
+      "reveals": [
+        "ev.01.02.emblem-match"
+      ],
+      "visible_to_roles": null,
+      "requires": [
+        "ev.01.02.shared-board"
+      ],
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: \"Rami demonstrates that both pass through one older transfer board behind a sealed arch\" — the arch is reachable because the board is known, which is the one comparison canon narrates as following from a prior sighting."
+    },
+    {
+      "id": "consult.01.02.maha",
+      "type": "consult",
+      "target": {
+        "kind": "person",
+        "id": "Maha"
+      },
+      "reveals": [
+        "ev.01.02.source-chronology"
+      ],
+      "visible_to_roles": null,
+      "requires": [],
+      "response": {
+        "character_id": "Maha",
+        "does": "Preserves the exact source and time of loss, generator start, partial restoration, local exception and manual restoration.",
+        "withholds": "She protects the evidence; she does not decide its clinical or quality meaning, and she does not approve closure.",
+        "acts_independently": false,
+        "dialogue_unresolved": "Canon describes her function and its limit, and writes no line for her."
+      },
+      "cost": {
+        "currency": "evidence",
+        "what": "The central record collapses the sequence into one successful transfer unless the source chronology is preserved now."
+      },
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Maha's want, and \"Maha administers the evidence trail and reconstructs the source chronology without deciding its meaning or approving closure\"."
+    },
+    {
+      "id": "consult.01.02.fadl",
+      "type": "consult",
+      "target": {
+        "kind": "person",
+        "id": "Fadl"
+      },
+      "reveals": [
+        "ev.01.02.near-miss-entry"
+      ],
+      "visible_to_roles": [
+        "role.quality-patient-safety"
+      ],
+      "requires": [],
+      "response": {
+        "character_id": "Fadl",
+        "does": "Classifies the event as a high-risk patient-safety near miss and sets quality follow-up.",
+        "withholds": "He does not take clinical or electrical authority, and he will not turn the quality function into a second command structure or interrupt bedside work.",
+        "acts_independently": false,
+        "dialogue_unresolved": "Canon describes his function and both of its limits, and writes no line for him."
+      },
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Fadl's want, \"Fadl classifies the patient-safety event and sets quality follow-up without taking clinical or electrical authority\", and the role table, which pairs the Quality and Patient Safety role with Fadl by name."
+    },
+    {
+      "id": "consult.01.02.nursing-leader",
+      "type": "consult",
+      "target": {
+        "kind": "person",
+        "id": "the duty nursing leader"
+      },
+      "reveals": [
+        "ev.01.02.no-single-owner"
+      ],
+      "visible_to_roles": [
+        "role.resilience-lead"
+      ],
+      "requires": [],
+      "response": {
+        "character_id": "the duty nursing leader",
+        "does": "States what she can sustain: enough competent hands for manual fallback, and no more.",
+        "withholds": "She will not abandon the other thirty ICU beds or the emergency department to staff the fallback.",
+        "acts_independently": false,
+        "dialogue_unresolved": "Canon gives her want and its limit and writes no line for her."
+      },
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: The duty nursing leader's want, and the role table's first evidence for the Resilience Lead — the outage, fallback, capacity shortage and network option have no single coordinating owner."
+    }
+  ]
 }

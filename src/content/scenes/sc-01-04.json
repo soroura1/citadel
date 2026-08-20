@@ -270,6 +270,9 @@
           "role_id": "role.quality-patient-safety",
           "route": "Sees the Hall's green readings against the nurse, bed, emergency, or transfer capability still being consumed below."
         }
+      ],
+      "evidence_ids": [
+        "ev.01.04.competing-statements"
       ]
     }
   ],
@@ -327,6 +330,7 @@
       "friction"
     ],
     "interactive": [
+      "actions",
       "choice_or_discovery"
     ],
     "post_commit": [
@@ -424,5 +428,96 @@
         ]
       }
     ]
-  }
+  },
+  "evidence": [
+    {
+      "id": "ev.01.04.competing-statements",
+      "what": "All of these are true at once: backup generation started; stable power was restored; no permanent patient harm was detected; emergency care remained open; ICU has two physically empty beds; the ICU roster was already below the requirement for its thirty occupied beds; one emergency resuscitation place, another service or a partner hospital now carries the new patient’s care; and the map omitted the shared board.",
+      "source": {
+        "kind": "instrument",
+        "id": "the Measure"
+      },
+      "partial": false,
+      "satisfies_reveal": "reveal.01.power-is-not-readiness",
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Scene 4 \"Competing statements\" — all eight, verbatim in substance."
+    },
+    {
+      "id": "ev.01.04.measure-counted",
+      "what": "The Measure counted a successful generator start and restored critical power, according to its current definition.",
+      "source": {
+        "kind": "person",
+        "id": "Qays"
+      },
+      "partial": true,
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Qays's want — \"record successful generator start and restored critical power according to the current Measure definition\" — and \"Qays explains what the Measure counted\"."
+    },
+    {
+      "id": "ev.01.04.roster-below-requirement",
+      "what": "The two physically empty ICU beds sit against a roster that was already below the requirement for the thirty beds already occupied.",
+      "source": {
+        "kind": "person",
+        "id": "the clinical and nursing leaders"
+      },
+      "partial": false,
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Scene 4 character wants — \"Clinical and nursing leaders: stop physical beds from being reported as safely available capacity.\""
+    }
+  ],
+  "actions": [
+    {
+      "id": "inspect.01.04.the-measure",
+      "type": "inspect",
+      "target": {
+        "kind": "instrument",
+        "id": "the Measure"
+      },
+      "reveals": [
+        "ev.01.04.competing-statements"
+      ],
+      "visible_to_roles": null,
+      "requires": [],
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Scene 4 \"Competing statements\"."
+    },
+    {
+      "id": "consult.01.04.qays",
+      "type": "consult",
+      "target": {
+        "kind": "person",
+        "id": "Qays"
+      },
+      "reveals": [
+        "ev.01.04.measure-counted"
+      ],
+      "visible_to_roles": null,
+      "requires": [],
+      "response": {
+        "character_id": "Qays",
+        "does": "Explains what the Measure counted.",
+        "withholds": null,
+        "acts_independently": false,
+        "dialogue_unresolved": "Canon gives Qays a want and a function and writes no line for him. It assigns him no refusal either, so none is recorded."
+      },
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: \"Qays explains what the Measure counted.\""
+    },
+    {
+      "id": "consult.01.04.leaders",
+      "type": "consult",
+      "target": {
+        "kind": "person",
+        "id": "the clinical and nursing leaders"
+      },
+      "reveals": [
+        "ev.01.04.roster-below-requirement"
+      ],
+      "visible_to_roles": null,
+      "requires": [],
+      "response": {
+        "character_id": "the clinical and nursing leaders",
+        "does": "Set out what the two empty beds actually are.",
+        "withholds": "They will not have physical beds reported as safely available capacity.",
+        "acts_independently": false,
+        "dialogue_unresolved": "Canon states the want and the refusal and writes no line for them."
+      },
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Scene 4 character wants — clinical and nursing leaders."
+    }
+  ]
 }

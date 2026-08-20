@@ -52,7 +52,7 @@ export function assertDecisionIsReal(decision) {
  * have weighed anything, which is the opposite of a decision that costs
  * something. The engine has no notion of a best option and must not acquire one.
  */
-export function presentOptions(decision, { role } = {}) {
+export function presentOptions(decision, { role, held = new Set() } = {}) {
   assertDecisionIsReal(decision);
 
   const gated = Array.isArray(decision.requires_authority) && decision.requires_authority.length > 0;
@@ -94,15 +94,34 @@ export function presentOptions(decision, { role } = {}) {
   return {
     prompt: decision.prompt,
     // Authored order, preserved.
-    options: decision.options.map((o) => ({
+    options: decision.options.map((o) => {
+      /**
+       * ★ EVS-4 — FPE-05, INVERTED. A RISK IS SHOWN WHEN IT COULD BE KNOWN.
+       *
+       * "Option risks are available before commitment WHENEVER THE PLAYER'S
+       * ROLE COULD REASONABLY KNOW THEM." Until EVS-4 every risk was
+       * unconditionally visible, which reads as a briefing: the trade-offs
+       * arrived with the options and nothing had to be found out.
+       *
+       * ⚠️ `protects` IS NEVER WITHHELD, and there is no field with which to
+       * withhold it. An option whose protection is hidden is not a position
+       * anyone can weigh — that would be FPE-03 broken from the other side.
+       * The same reasoning is why not every option may be gated, which is
+       * asserted over the content rather than left to an author's judgement.
+       */
+      const needs = o.risk_requires_evidence ?? [];
+      const knowable = needs.every((id) => held.has(id));
+      return {
       id: o.id,
       label: o.label,
       protects: o.protects,
-      risks: o.risks,
+      risks: knowable ? o.risks : null,
+      riskRequires: knowable ? [] : needs,
       // Shown so the player can see WHO would defend it -- the thing that makes
       // it a position rather than a trap.
       defensibleBy: o.defensible_by,
-    })),
+      };
+    }),
     authorised,
     mayCommit,
     commitAs,

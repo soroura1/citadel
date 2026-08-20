@@ -4,6 +4,56 @@
 **Topology:** [`../CLAUDE.md`](../CLAUDE.md) — `citadel.endura-assess.com` → `172.17.0.1:8087`,
 `TARGET=/opt/citadel/citadel`.
 
+## ★ EVS-4 — INSPECT, CONSULT, COMMIT. THE PARTICIPANT INVESTIGATES.
+
+Through EVS-3 a scene presented its movements and then its options: nothing was found, everything
+was told. **Both new action types are canon's, transcribed rather than designed:**
+
+> *"place detailed timings in **optional inspection** or the later review rather than long crisis
+> dialogue"*
+> *"The selected role supplies one direct authority. The player must **seek other judgments** from
+> named clinical, nursing, operational, safety, information, and city partners."*
+
+`src/engine/evidence.js` · `contracts@v0.6.0` · **17 actions, 21 pieces of evidence**, each citing the
+canon passage it came from — the schema refuses one that does not.
+
+| | |
+|---|---|
+| **Inspect** | Reads a place, instrument or record. Always answers |
+| **Consult** | Asks a person — who may answer, **qualify, refuse or withhold**. Only a person can decline, which is why they are separate controls |
+| **Commit** | Already existed. The only one that moves the beat |
+
+### Evidence carries its source, because the chapter turns on that
+
+The Hall reads *"backup generation active"*, which is true, while eight ICU beds have no supply,
+which is also true. **A run holding one world state cannot express that; one holding who-said-what
+can.** Every discovery records the action it came through and the person, instrument, place or
+record behind it.
+
+### ⚠️ The guarantee is now a LOAD-TIME property
+
+Canon: *"a required mystery clue... **cannot disappear because of role selection**."* EVS-3's check
+was that every role had a route *sentence* — true of prose, silent about play. The moment an action
+carries `visible_to_roles` a reveal can become genuinely unreachable for one role, **and it looks
+correct in review because the other role reaches it.** `loadBundle` refuses such a bundle, and the
+walk follows `requires` chains rather than checking one step.
+
+### FPE-05, inverted — and the trap on the other side
+
+A risk may be withheld until the evidence is held. ⚠️ **`protects` is never withheld and no field
+exists to withhold it**, and **at least one risk per decision stays ungated** — a participant who
+investigated nothing must still meet a real trade-off, or three options read as three ways of being
+right.
+
+⚠️ **A cost is a declared note in canon's own currency, never a quantity.** Canon names time, trust,
+workload, service capacity and evidence, and sets no prices. Nothing sums them.
+
+⚠️ **No dialogue was written.** Canon authors the **act** — *"Fadl classifies the patient-safety event
+and sets quality follow-up **without taking clinical or electrical authority**"* — and not the line.
+`says` is unrepresentable; `dialogue_unresolved` records the owed line.
+
+**Bundle `v0.3` → `v0.4`.**
+
 ## ⚠️ ONE CALL SHAPE. `PlayRoute` composes the play surface; `main.jsx` mounts it.
 
 `main.jsx` enumerated `PlayScreen`'s props by hand while every test spread the whole view. **Two

@@ -1,5 +1,5 @@
 {
-  "bundle": "v0.3",
+  "bundle": "v0.4",
   "state": "owner-attested-provisional",
   "attestedBy": "owner",
   "reason": "The owner authored this canon and therefore cannot review it. citadel refuses self-approval, so no reviewer separation was available at the time of publication.",

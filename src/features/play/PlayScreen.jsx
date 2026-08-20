@@ -1,5 +1,6 @@
 import { t } from '../../locales/index.js';
 import { ResponseView } from './ResponseView.jsx';
+import { ActionsPanel } from './ActionsPanel.jsx';
 
 /**
  * The Play surface. (R3 F3, F4, F5, F7 · EVS-2)
@@ -78,7 +79,8 @@ const sceneArt = {
 
 export function PlayScreen({
   scene, phase, presents = [], decision, presented, response,
-  roleVariant, acknowledgeStake, state, onChoose, onAdvance, textPath = false,
+  roleVariant, acknowledgeStake, actions = [], discoveries = [], lastResponse,
+  state, onChoose, onAct, onAdvance, textPath = false,
 }) {
   if (!scene) return <main><p role="alert">{t('play.no_scene')}</p></main>;
 
@@ -186,6 +188,14 @@ export function PlayScreen({
         )
       )}
 
+      {/* ★ EVS-4 — INVESTIGATION COMES FIRST, IN THE SAME BEAT.
+          `staging.interactive` lists ["actions", "choice_or_discovery"] in that
+          order, and this is that order. The commitment is below, so a
+          participant meets what they can find out before what they must
+          decide. */}
+      <ActionsPanel actions={actions} discoveries={discoveries}
+                    lastResponse={lastResponse} onAct={onAct} />
+
       {/* ★ THE DECISION EXISTS ONLY AT `interactive`. `view()` supplies it
           nowhere else, so this is not a conditional protecting a secret — there
           is nothing here to protect at any other beat. */}
@@ -230,9 +240,14 @@ export function PlayScreen({
                     {t(o.label.key)}
                   </button>
                   <p>{o.protects}</p>
-                  {/* FPE-05 — the risk is available BEFORE commitment, because
-                      the role could reasonably know it. */}
-                  <p className="risk">{o.risks}</p>
+                  {/* ★ FPE-05 — the risk is available before commitment WHEN
+                      the role could reasonably know it. EVS-4 made some of them
+                      findable rather than given: an option whose cost depends on
+                      what a donating service would lose says so, and says how to
+                      find out, rather than pretending the cost does not exist. */}
+                  {o.risks
+                    ? <p className="risk">{o.risks}</p>
+                    : <p className="risk-unknown">{t('play.risk_not_yet_known')}</p>}
                   {/* Available on request, not shouted: who would defend this.
                       It is what makes the option a position rather than a trap. */}
                   <details>
