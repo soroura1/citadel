@@ -45,16 +45,24 @@ export const LOCATIONS = Object.freeze(PLACES.locations.map((l) => Object.freeze
 export const locationIndex = () => new Map(LOCATIONS.map((l) => [l.id, l]));
 
 /**
- * ★ THE PLAN'S OWN SLOT — declared, and empty. (EVS-5)
+ * ★ THE PLAN'S OWN SLOT — filled with a CANDIDATE, and still not bound. (EVS-5A)
  *
- * The cutaway that would carry this place is not made. `VA-012` is drafted as a
- * prompt in the planning folder and has not been generated, so `candidate_file`
- * is null; `Q10` is open, so `inclusion_reviewed` is false. Neither is a defect.
+ * `VA-012` was generated and derived to 354,077 of the 400,000 bytes this slot
+ * declared BEFORE the image existed — which is the whole reason the budget was
+ * declared first. The master lives in the story record; the derivative is
+ * `public/scenes/bimaristan-cutaway.jpg`.
  *
- * ⚠️ IT IS DECLARED ANYWAY, IN THE SAME SHAPE A SCENE'S SLOT TAKES. A slot that
- * appears only once there is a file to put in it is a slot whose alt text and
- * weight budget get decided by the file — and EVS-5 is the session that made
- * both a precondition rather than a consequence.
+ * ⚠️ A CANDIDATE IS NOT A BINDING, AND THE DIFFERENCE IS THE GATE.
+ * `inclusion_reviewed` stays false and `reviewed_by` stays null because `Q10`
+ * — the inclusion reviewer — is open. Building against a candidate is
+ * permitted; treating one as canonical is not, and the story record says the
+ * same in its own words: incidental architectural, costume, equipment and
+ * emblem details do not become canon by appearing in an image.
+ *
+ * ⚠️ AND THE PLAN IS ONE ITEM OF A PACKAGE. EVS-5 §3 also asks for target
+ * frames for the Gate/emergency and ICU power-interruption STATES, character
+ * treatments, Measure/board states and the two transitions. None exists. The
+ * package is partial; the gate stays held.
  */
 export const PLAN_SLOT = Object.freeze({ ...PLACES.plan_slot });
 
@@ -237,11 +245,20 @@ export function visualBindingStatus(scenes) {
     plan: {
       slot: PLAN_SLOT.id,
       candidate: PLAN_SLOT.candidate_ref,
+      // ★ MADE, and still not bound. Two different facts, reported separately
+      // so neither can be read as the other.
       made: Boolean(PLAN_SLOT.candidate_file),
+      file: PLAN_SLOT.candidate_file,
+      reviewed: Boolean(PLAN_SLOT.inclusion_reviewed),
       textEquivalent: PLAN_SLOT.alt_key,
     },
     blocked: reviewed.length < slots.length,
     blockedBy: reviewed.length < slots.length ? 'Q10' : null,
-    designPackage: 'absent',
+    // ⚠️ PARTIAL, NOT PRESENT. The plan exists as a generated candidate; the
+    // state frames, character treatments, instrument states and transitions
+    // EVS-5 §3 also requires do not. Reporting "present" because one item
+    // arrived would be the status claiming more than the content holds — which
+    // is what this function exists to prevent.
+    designPackage: PLAN_SLOT.candidate_file ? 'partial-candidate-generated' : 'absent',
   };
 }

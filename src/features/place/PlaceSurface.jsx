@@ -63,7 +63,36 @@ export function PlaceSurface({ run = null, scenes = [], here = [] }) {
           this block renders the image beside it. */}
       <section className="plan" aria-label={t('place.plan_slot')}>
         <h2>{t('place.plan_slot')}</h2>
-        {!PLAN_SLOT.candidate_file && <p className="provisional-note">{t('place.plan_not_yet_made')}</p>}
+
+        {/* ★ EVS-5A — THE CANDIDATE RENDERS, AND SAYS WHAT IT IS.
+            `VA-012` was generated and derived inside the budget this slot
+            declared before the image existed. It is rendered from
+            `PLAN_SLOT.candidate_file` — there is no second inventory of the
+            art anywhere, which is the mistake `PlayScreen`'s hardcoded filename
+            map made until EVS-5.
+
+            ⚠️ A CANDIDATE IS NOT A BINDING. `inclusion_reviewed` is false while
+            `Q10` is open, so the provisional band renders on it. Building
+            against a candidate is permitted; treating one as canonical is not. */}
+        {PLAN_SLOT.candidate_file && (
+          <figure className="plan-figure" data-provisional={t('provisional.badge')}>
+            <img
+              src={PLAN_SLOT.candidate_file}
+              alt={t(PLAN_SLOT.alt_key)}
+              width="1600" height="1066" loading="lazy" decoding="async"
+            />
+            <figcaption className="provisional-note">
+              {t('place.plan_provisional')} {PLAN_SLOT.candidate_ref}
+            </figcaption>
+          </figure>
+        )}
+
+        {/* ★ THE TEXT EQUIVALENT STAYS VISIBLE, WHOLE, BESIDE THE IMAGE —
+            not tucked into the alt attribute and not collapsed behind a
+            control. The image's alt carries the same words for a reader who
+            never sees it; this paragraph carries them for the participant on a
+            slow connection whose image has not arrived, for the printed page,
+            and for anyone who would rather read than look. */}
         <p>{t(PLAN_SLOT.alt_key)}</p>
       </section>
 

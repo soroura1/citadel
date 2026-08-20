@@ -299,16 +299,16 @@
       "why": "Canon places the network partners beyond the walls under \"Rawafid and the Outer Care Houses\" but assigns the liaison POSITION no tier. It is recorded as `rawafid` because that is what it reaches, and the assignment is a derivation."
     },
     {
-      "field": "the Bimaristan plan asset",
-      "why": "EVS-5 section 3 requires a reviewed plan or plan prototype with a complete text equivalent. None exists: the planning folder holds a PROPOSED prompt for one and the story record holds no plan asset. This model is the text equivalent, standing alone until the plan is made."
-    },
-    {
       "field": "states for loc.service-passage after a commitment",
       "why": "Canon narrates the passage before the incident and does not say what it is like afterwards. No state is written for it, rather than one being invented."
     },
     {
       "field": "plan_slot.max_bytes - one derivative or two",
       "why": "The existing three assets are 121-159 KB derivatives from 2.5-3.3 MB masters. A cutaway carries far more detail and may want a larger derivative AND a small one, which is a decision that belongs with the design package rather than ahead of it. One budget is declared so the slot is complete; a second size is a change to make when there is an image to measure."
+    },
+    {
+      "field": "the rest of the design package",
+      "why": "VA-012 closes the plan requirement and nothing else. EVS-5 section 3 also asks for target frames for the Gate/emergency and ICU power-interruption STATES, character-state treatments, Measure/board states, and response and residue transitions. None of those exists, so the design package remains partial and the visual-binding gate remains held on Q10."
     }
   ],
   "plan_slot": {
@@ -318,11 +318,11 @@
     "max_bytes": 400000,
     "crop": null,
     "candidate_ref": "VA-012",
-    "candidate_file": null,
+    "candidate_file": "/scenes/bimaristan-cutaway.jpg",
     "inclusion_reviewed": false,
     "reviewed_by": null,
-    "_what": "The Bimaristan seen as a cutaway section, four tiers at once. EVS-5 section 3 requires a plan or plan prototype WITH a complete text equivalent; the text equivalent is `art.bimaristan_cutaway.alt` and the /place surface, both of which exist now. The image does not.",
+    "_what": "The Bimaristan seen as a cutaway section, four tiers at once. EVS-5 section 3 requires a plan or plan prototype WITH a complete text equivalent. Both now exist: `art.bimaristan_cutaway.alt` and the /place surface carry the text, and VA-012 carries the image.",
     "_why_a_cutaway": "A flat overhead plan cannot show the Underworks, and canon puts the chapter's argument there: 'the Underworks make every visible function possible. They are also a physical representation of hidden dependencies and neglected maintenance.' The prompt is drafted at citadel-planning/07-visual-and-art/proposed-prompt-VA-012-bimaristan-plan.md.",
-    "_status": "UNFILLED. candidate_file is null because VA-012 has not been generated. inclusion_reviewed is false because Q10 is open. Neither is a defect; both are the honest state, and the manifest reports them."
+    "_status": "GENERATED CANDIDATE, NOT BOUND. candidate_file points at the derivative (354,077 of 400,000 bytes declared here); the master is in the story record as VA-012. inclusion_reviewed stays false and reviewed_by stays null because Q10 is open — and that is the whole distinction the gate turns on: BUILDING AGAINST a candidate is permitted, TREATING ONE AS CANONICAL is not. The provisional band renders on every view of it."
   }
 }

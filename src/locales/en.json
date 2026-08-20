@@ -195,7 +195,7 @@
   "place.what_changed": "What the Bimaristan remembers",
   "place.nothing_changed_yet": "Nothing has changed yet. Everything here is as you found it.",
   "place.binding_hold": "This plan is written, not drawn",
-  "place.binding_hold_body": "The reviewed design package for the Bimaristan plan does not exist yet, so this surface is the place model in words. It is the text equivalent the finished plan will need in any case — not a placeholder for it. No concept image is bound here, because a concept is not canon until an inclusion reviewer has seen it.",
+  "place.binding_hold_body": "The plan exists as a generated candidate and the rest of the design package does not — no state frames for the Gate or the ICU interruption, no character treatments, no instrument states, no transitions. Nothing here is bound: an inclusion reviewer has seen none of it, so every asset renders provisionally and the text equivalent stands on its own.",
   "place.slots_with_candidates": "slots name a concept",
   "place.slots_reviewed": "reviewed",
   "place.blocked_by": "blocked by",
@@ -205,7 +205,6 @@
   "art.quality_house.alt": "Dar al-Itqan, the House of Quality and Patient Safety: reading desks, source-marked chronologies and hanging records, where evidence is administered and its meaning is argued over.",
   "art.bimaristan_cutaway.alt": "The Bimaristan cut open along one face, so that four levels are visible at once. At the top the Crown: wide floors with very few people on them, a signal tower, and the shelf carrying the Hall of Measure. Below it the Houses, the care rings — long wards of two rows of cots opening onto planted courts, teaching halls, laboratories, kitchens. Below those the Commons, the busiest level in the picture: the main gate, the arrival and sorting courts, storehouses and transport yards, shaded by awnings and crowded. Beneath all of it the Underworks, older than everything above and built in six centuries of layers by people who did not consult each other, so the brickwork changes character every few paces: cisterns, conduits, pressure chambers and waste channels, lamps on hooks at the junctions and darkness between them, chalk marks on almost every surface, and one sealed arch closing a forgotten junction where two conduits that the official map shows as separate pass through the same chamber. A line of towers, lanterns, bells and message rails runs the full height of the building like a spine, and a single taut wire climbs from a water-driven clock in the Underworks to the bell frame at the summit: the hour begins at the bottom and is answered downward. Beyond the walls the city of Rawafid recedes into farms, wells and waterways.",
   "place.plan_slot": "The plan itself",
-  "place.plan_not_yet_made": "The cutaway that would carry this has not been made. What follows is its text equivalent — which the finished plan will need in any case, so it is not a placeholder for one.",
   "surface.record.title": "The record",
   "surface.observation.title": "Your observation",
   "record.title": "What happened, and what you did",
@@ -235,5 +234,6 @@
   "observation.delete_heading": "Delete everything on this device",
   "observation.delete_body": "Your run, your reflection, your observation and the local identifier that ties them together. Nothing was ever sent anywhere, so this is all of it.",
   "observation.delete": "Delete it all",
-  "record.no_run": "No run on this device yet. The record fills in as you play."
+  "record.no_run": "No run on this device yet. The record fills in as you play.",
+  "place.plan_provisional": "A generated candidate, shown while it waits for inclusion review. It is not canon: incidental architectural, costume, equipment and emblem details do not become part of the world by appearing in an image."
 }

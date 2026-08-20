@@ -95,17 +95,32 @@ prior trial trimmed 203 → 196 KB deliberately) and this audience is on slow co
 absence of a stated ceiling is an owner gap rather than something to invent a number for. **Flagged
 for EVS-7's parity pass.**
 
-## ⛔ EVS-5 — THE VISUAL BINDING GATE IS **HELD**, NOT PASSED
+## ⛔ EVS-5 — THE VISUAL BINDING GATE IS STILL **HELD**, WITH THE PLAN NOW IN IT
 
-The reviewed design package EVS-5 §3 requires **does not exist**: eleven `v0.1` concepts in the story
-record, every one *"pending project-owner review"*; **no plan or cutaway asset**; no state frames, no
-crops, no declared alt text, no weight budgets; and **`Q10` — the inclusion reviewer — open.**
+**`VA-012` exists.** The Bimaristan cutaway was generated and derived to **354,077 of the 400,000
+bytes this slot declared before the image existed** — which is the whole reason declaring the budget
+first meant anything. `/place` renders it from `PLAN_SLOT.candidate_file`, at intrinsic size, lazily,
+under the provisional band, beside the **complete** text equivalent.
 
-So no image is bound, and **nothing was faked** — no CSS drawing, no handcrafted SVG, no emoji, no
+⚠️ **A candidate is not a binding, and that distinction is the gate.** `inclusion_reviewed` is false
+and `reviewed_by` is null because **`Q10` is open**. Building against a candidate is permitted;
+treating one as canonical is not — the story record says the same in its own words.
+
+**The design package is `partial-candidate-generated`, not present.** §3 also requires target frames
+for the Gate/emergency and ICU power-interruption **states**, character-state treatments,
+Measure/board states and the two transitions. **None of those exists.** Reporting "present" because
+one item arrived would be the status claiming more than the content holds.
+
+**Nothing was faked** — one real candidate, no CSS drawing, no handcrafted SVG, no emoji, no
 placeholder box. `visualBindingStatus()` is computed from the slots, so the build cannot claim more
 than the content does.
 
-### What shipped instead — the semantic place model
+> ★ **The parity test changed meaning, and that is the point.** Before `VA-012` it asserted no
+> `<img>` existed — easy, and proof of nothing. Now there is a picture, so parity has to be *earned*:
+> the test strips every `<figure>` and asserts that **every location, tier, state and route is still
+> readable in words.**
+
+### The semantic place model the plan illustrates
 
 `src/content/places.json` · `src/engine/place.js` · `/place` surface. **Ten locations, canon's five
 tiers, symmetrical routes**, and location states derived from the chapter enums.
@@ -134,6 +149,13 @@ A slot now declares `alt_key` and `max_bytes` before anything fills it, and one 
 the art comes from the slot, so the surface has no second inventory to drift from.
 
 **Bundle unchanged; `contracts` `v0.6.0` → `v0.7.0`.**
+
+### ⚠️ FIFTH APPEARANCE OF ONE SHAPE — `PlaceRoute`
+
+The `here` computation — which locations are marked *"you are here"* — lived in `main.jsx`, where no
+test can run it. `PlaceRoute` owns it now. **This shape is being removed on sight**: enumerated props
+at EVS-3, a walker pinned to one role at EVS-4, slot fixtures at EVS-5, the store/export/delete
+wiring at EVS-6, and this.
 
 ## ★ EVS-4 — INSPECT, CONSULT, COMMIT. THE PARTICIPANT INVESTIGATES.
 
