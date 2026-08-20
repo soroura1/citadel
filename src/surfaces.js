@@ -71,6 +71,19 @@ export const SURFACES = [
       'because a participant who closes the tab must be able to return to where they were.',
     release: 'R3',
   },
+  {
+    id: 'place',
+    path: '/place',
+    title: 'The Bimaristan',
+    status: 'reachable',
+    inNavigation: true,
+    reason:
+      'EVS-5. The Bimaristan as a connected place rather than a stack of pages: canon\'s four ' +
+      'tiers, the routes between locations, what each one is like now, and what the world ' +
+      'remembers. Reachable from navigation because a participant must be able to ask where ' +
+      'they are without leaving the scene to find out.',
+    release: 'EVS-5',
+  },
 ];
 
 /**

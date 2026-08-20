@@ -576,3 +576,50 @@ ol[aria-label] > li p { font-size: var(--step-1); line-height: 1.55; margin: 0; 
 [data-partial='true'] .provenance { font-style: italic; }
 
 .risk-unknown { color: var(--ink-quiet); font-style: italic; }
+
+/* ---------------------------------------------------------------------------
+   EVS-5 — the place, written rather than drawn.
+
+   ⚠️ THERE IS NO DRAWING HERE, AND NONE IS ATTEMPTED. The reviewed design
+   package does not exist, and the session plan forbids faking one with CSS.
+   What the stylesheet does is make canon's four tiers legible AS A LIST: the
+   Underworks sit last and set apart, because that is where the chapter's
+   hidden dependency lives and the official map does not go.
+   --------------------------------------------------------------------------- */
+
+.place .tier { border-block-start: 1px solid var(--rule); padding-block-start: var(--space); }
+.place .tier > h2 {
+  font-family: var(--face-utility);
+  font-size: var(--step-0);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.tier-what { color: var(--ink-quiet); }
+
+/* The layer the map does not show, set apart by ground rather than by colour
+   alone — the distinction is carried by the heading and the ordering too. */
+[data-tier='underworks'] { background: var(--wash); padding: var(--space); }
+
+.locations { list-style: none; margin: 0; padding: 0; }
+.locations > li { margin-block: var(--space); }
+.locations h3 { font-size: var(--step-1); margin-block-end: var(--space-s); }
+[data-here='true'] h3 em { color: var(--turquoise); font-style: normal; }
+[data-here='true'] { border-inline-start: 3px solid var(--turquoise); padding-inline-start: var(--space); }
+
+.location-state, .routes, .slot { font-size: var(--step--1); color: var(--ink-quiet); }
+.location-state .label, .routes .label, .slot .label {
+  font-family: var(--face-utility);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.binding-hold {
+  border: 1px dashed var(--rule);
+  background: var(--wash);
+  padding: var(--space);
+  margin-block: var(--space-l);
+}
+
+.world-memory { border-block-start: 2px solid var(--turquoise); padding-block-start: var(--space); }
+.world-memory ul { list-style: none; margin: 0; padding: 0; }
+.world-memory li { margin-block-start: var(--space-s); }
