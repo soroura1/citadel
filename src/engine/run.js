@@ -55,6 +55,7 @@ import { fireDue } from './consequence.js';
 import { startingStateFor } from './configuration.js';
 import { PHASES, phasesOf } from './staging.js';
 import { composeResponse } from './response.js';
+import { assertRoleIsPlayable, variantFor } from './roles.js';
 
 export class RunRefusal extends Error {
   constructor(refusal, detail) {
@@ -79,6 +80,14 @@ export class RunRefusal extends Error {
 export function startRun({ bundle, config = {}, scenario = null }) {
   if (!bundle?.version) throw new RunRefusal('run-needs-a-bundle');
 
+  // ★ EVS-3 — A RUN WITHOUT A ROLE IS REFUSED, NOT DEFAULTED.
+  //
+  // ⚠️ The default this codebase had was "authorised for everything":
+  // `presentOptions` read `!role` as satisfying every authority gate. Refusing
+  // here and refusing there are not redundant — the surface can be bypassed,
+  // and a bundle can be driven from a script.
+  assertRoleIsPlayable(config.role);
+
   const order = bundle.order ?? [...bundle.scenes.keys()];
   if (order.length === 0) throw new RunRefusal('bundle-has-no-scenes', bundle.version);
 
@@ -95,8 +104,14 @@ export function startRun({ bundle, config = {}, scenario = null }) {
     // The response to THIS scene's commitment, once it has been made. Cleared
     // when the run moves to the next scene, because it belongs to that scene.
     response: null,
-    role: config.role ?? null,
+    role: config.role,
+    // ★ The participant's own words, carried through the run and the save.
+    // Private: acknowledged back to them at the beat canon names ("confirms
+    // role and personal stake"), and never spoken by a character or shown on
+    // a board.
     displayName: config.displayName ?? null,
+    stake: config.stake ?? null,
+    locale: config.locale ?? 'en',
     scenarioId: scenario?.id ?? null,
     state,
     // ★ Shaped for traceback() deliberately. R4 must answer "why did this
@@ -198,6 +213,20 @@ export function view(run, bundle) {
     scene,
     phase: run.phase,
     presents: presentedIn(scene, run.phase),
+    // ★ WHAT THIS ROLE SEES AND MAY CONTRIBUTE. Canon: "Every role plays the
+    // same four scenes. Each receives a distinct first fact and one direct
+    // contribution." Before EVS-3 the role reached the engine and nothing
+    // rendered it, so choosing one changed nothing a participant could point at.
+    roleVariant: variantFor(scene, run.role),
+    // ★ THE STAKE, ACKNOWLEDGED PRIVATELY, AT THE BEAT CANON NAMES.
+    //
+    // Scene 1's playable actions open with "confirms role and personal stake".
+    // It is shown back to the participant once, on their own encounter screen —
+    // never in scene prose, never spoken by a character, never on a board. The
+    // rule lives here rather than in the component so it is testable.
+    acknowledgeStake: run.index === 0 && run.phase === 'pre_commit'
+      ? { displayName: run.displayName, stake: run.stake }
+      : null,
     // ★ The decision exists only where it is staged. Handing it to the surface
     // at `pre_commit` would let an encounter screen draw the options, which is
     // the commitment happening before the encounter has finished.
@@ -228,7 +257,7 @@ export function view(run, bundle) {
  * short stories; the decision in scene 2 matters because scene 1 already
  * happened to the same person.
  */
-export function commit(run, bundle, optionId) {
+export function commit(run, bundle, optionId, { as = null } = {}) {
   if (run.complete) throw new RunRefusal('run-already-complete');
 
   // ⚠️ Refused BY THE ENGINE, not merely by the surface not drawing a button.
@@ -244,14 +273,32 @@ export function commit(run, bundle, optionId) {
   if (!decision) throw new RunRefusal('scene-has-no-decision', scene?.id);
 
   const presented = presentOptions(decision, { role: run.role });
-  if (!presented.authorised) {
-    // A role without authority observes. It must not be able to decide by
-    // calling this directly -- the surface hiding a button is not enforcement.
+
+  // ★ EVS-3 — COMMITTING IS TWO THINGS, AND THE RECORD SAYS WHICH.
+  //
+  // A role that holds the authority DECIDES. A role that does not SUPPORTS a
+  // pathway — the Final Product Experience Contract's own commit beat: "the
+  // player decides, escalates, delegates, negotiates or supports another
+  // person's proposal under a named constraint."
+  //
+  // ⚠️ Deciding is still refused for a role without authority. The surface
+  // hiding a button is not enforcement, and a caller that asks to DECIDE is
+  // told which rule applied rather than quietly being given support instead.
+  if (!presented.mayCommit) {
     throw new RunRefusal(presented.refusal, `${run.role} on ${decision.id}`);
+  }
+  if (as === 'decision' && presented.commitAs !== 'decision') {
+    throw new RunRefusal('role-lacks-authority-to-decide', `${run.role} on ${decision.id}`);
   }
 
   const { state, changes } = decide(run.state, decision, optionId);
-  const response = composeResponse({ scene, decision, optionId, changes });
+  // ★ The record must be able to say DECIDED or SUPPORTED. A response that
+  // cannot tell them apart cannot answer "what did my role change?".
+  const response = Object.freeze({
+    ...composeResponse({ scene, decision, optionId, changes }),
+    committedAs: presented.commitAs,
+    authorityHeldBy: presented.authorityHeldBy,
+  });
 
   const history = [...run.history, {
     sequence: run.history.length + 1,
@@ -259,6 +306,11 @@ export function commit(run, bundle, optionId) {
     sceneTitle: scene.id,          // the surface resolves the title from locale
     decisionId: decision.id,
     optionId,
+    // ★ Decided, or supported. Two different acts, and a record that cannot
+    // tell them apart cannot answer "what did my role change?" -- which is the
+    // question EVS-3 exists to make answerable.
+    committedAs: presented.commitAs,
+    authorityHeldBy: presented.authorityHeldBy,
     // ★ FPE-04 wants the specific option permanently readable. Recording HOW
     // the response was told is what stops a thin derived beat from later being
     // mistaken for authored narrative in the record.
@@ -269,6 +321,7 @@ export function commit(run, bundle, optionId) {
     run: Object.freeze({ ...run, phase: 'post_commit', response, state, history }),
     changes,
     response,
+    committedAs: presented.commitAs,
   };
 }
 
@@ -342,6 +395,10 @@ export function deserialise(text, bundle) {
   if (!PHASES.includes(run.phase)) {
     throw new RunRefusal('unknown-phase', String(run.phase));
   }
+  // ⚠️ A save from before the slice narrowed its roles carries a role that is
+  // no longer playable. Resuming it would put a participant back into a
+  // configuration the build cannot honour.
+  assertRoleIsPlayable(run.role);
   if (run.phase === 'post_commit' && !run.response) {
     throw new RunRefusal('resumed-response-beat-has-no-response', currentSceneId(run) ?? '(no scene)');
   }

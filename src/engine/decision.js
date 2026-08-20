@@ -55,8 +55,41 @@ export function assertDecisionIsReal(decision) {
 export function presentOptions(decision, { role } = {}) {
   assertDecisionIsReal(decision);
 
-  const authorised =
-    !decision.requires_authority || !role || decision.requires_authority.includes(role);
+  const gated = Array.isArray(decision.requires_authority) && decision.requires_authority.length > 0;
+
+  // ⚠️ A MISSING ROLE IS NOT A PASS. This read `!requires_authority || !role || …`
+  // until EVS-3, so a run with no role satisfied every authority gate — the
+  // check was present, correct, and short-circuited by the one case every test
+  // exercised. Same shape as an isolation test run on the owner connection.
+  const hasRole = Boolean(role);
+  const authorised = hasRole && (!gated || decision.requires_authority.includes(role));
+
+  /**
+   * ★ SUPPORT — WHAT A ROLE WITHOUT AUTHORITY MAY STILL DO. (EVS-3)
+   *
+   * Canon is explicit in both directions and they look contradictory until you
+   * read the third line:
+   *
+   *   "No solo player gains fictional authority to make every decision."
+   *   "The responsible clinicians define eligibility and minimum safety.
+   *    The player influences which system carries the resulting pressure."
+   *
+   * The Final Product Experience Contract's commit beat is what reconciles
+   * them: "the player decides, escalates, delegates, negotiates OR SUPPORTS
+   * ANOTHER PERSON'S PROPOSAL under a named constraint."
+   *
+   * So an unauthorised role is not a spectator. It puts its weight behind a
+   * pathway, the authored effects apply, and the record says which of the two
+   * it was. Neither EVS role holds authority over the power-pressure or
+   * capacity decisions — that is canon, not an oversight — and without support
+   * the slice's own two roles could not reach the capacity commitment the EVS
+   * gate requires.
+   *
+   * ⚠️ DECIDING REMAINS REFUSED. `role-lacks-authority-to-decide` still fires
+   * for a caller that asks to decide; support is what is offered instead.
+   */
+  const mayCommit = hasRole;
+  const commitAs = authorised ? 'decision' : 'support';
 
   return {
     prompt: decision.prompt,
@@ -70,10 +103,16 @@ export function presentOptions(decision, { role } = {}) {
       // it a position rather than a trap.
       defensibleBy: o.defensible_by,
     })),
-    // A role without authority OBSERVES, and the surface can say why rather
-    // than silently hiding the decision.
     authorised,
-    refusal: authorised ? null : 'role-lacks-authority-to-decide',
+    mayCommit,
+    commitAs,
+    // WHO holds it, so the surface names the constraint rather than saying
+    // "not permitted". Canon: "the relevant professional explains the binding
+    // constraint... This is authority, not a game hint."
+    authorityHeldBy: gated ? [...decision.requires_authority] : null,
+    refusal: hasRole
+      ? (authorised ? null : 'role-lacks-authority-to-decide')
+      : 'run-has-no-role',
   };
 }
 

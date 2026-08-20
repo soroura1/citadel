@@ -20,7 +20,7 @@ export const CHAPTER_1 = {
   // saved under v0.1 must not resume into a chapter that is staged differently
   // from the one it played -- `resume()` refuses the mismatch by design, and
   // that refusal is the whole reason the version is pinned into the save.
-  version: 'v0.2',
+  version: 'v0.3',
   scenes: [s1, s2, s3, s4],
   decisions: [d1, d2, d3, d4],
   order: ["sc-01-01", "sc-01-02", "sc-01-03", "sc-01-04"],

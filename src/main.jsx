@@ -13,7 +13,8 @@ import { bundleFrom, startRun, view, commit, advance } from './engine/run.js';
 import { Navigation } from './layout/navigation.jsx';
 import { HttpCatalogueGateway } from './gateways/catalogue-gateway.js';
 import { SURFACES } from './surfaces.js';
-import { setLocale } from './locales/index.js';
+import { setLocale, localeCoverage } from './locales/index.js';
+import { SELECTABLE_ROLES, notYetPlayable } from './engine/roles.js';
 
 setLocale('en');
 
@@ -63,17 +64,37 @@ function App() {
       {surface.id === 'item' && <ItemScreen gateway={gateway} />}
       {surface.id === 'setup' && (
         <SetupScreen
-          roles={[]}
-          scenarios={[]}
-          onBegin={(config) => { setRun(startRun({ bundle: chapter, config })); go('/play'); }}
+          roles={SELECTABLE_ROLES}
+          notYetPlayable={notYetPlayable(CHAPTER_1.scenes)}
+          localeCoverage={localeCoverage()}
+          onBegin={(config) => {
+            // ★ EVS-3 — THE LANGUAGE APPLIES BEFORE THE NEXT SCREEN RENDERS.
+            // It was collected and discarded: setLocale('en') ran once at module
+            // load and `config.locale` reached the run and nothing else.
+            setLocale(config.locale);
+            setRun(startRun({ bundle: chapter, config }));
+            go('/play');
+          }}
         />
       )}
       {surface.id === 'play' && (() => {
-        // Arriving at /play directly — a deep link, or a reload — starts a run
-        // rather than showing an empty screen. R0-US-04's reachability applies
-        // to a URL somebody typed, not only to a path through the app.
-        const active = run ?? startRun({ bundle: chapter });
-        if (!run) setRun(active);
+        // ⚠️ EVS-3 — A DEEP LINK TO /play NOW GOES TO SETUP, NOT TO A RUN.
+        //
+        // This used to call `startRun({ bundle: chapter })` with no config. A
+        // run has required a role since EVS-3, so that call THROWS — and a
+        // throw during render is exactly the blank production page that took a
+        // human to find on 17 August. There is no configuration to guess: a
+        // role chosen for the participant is the "unrestricted authority"
+        // default this session exists to remove.
+        if (!run) {
+          return <SetupScreen
+            roles={SELECTABLE_ROLES}
+            notYetPlayable={notYetPlayable(CHAPTER_1.scenes)}
+            localeCoverage={localeCoverage()}
+            onBegin={(config) => { setLocale(config.locale); setRun(startRun({ bundle: chapter, config })); }}
+          />;
+        }
+        const active = run;
         const v = view(active, chapter);
 
         // ★ The chapter ENDS. P7 — without this the last decision left a blank

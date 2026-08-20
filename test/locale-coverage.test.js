@@ -127,7 +127,8 @@ test('★ no raw identifier is ever rendered as prose', async () => {
   const { CHAPTER_1 } = await import('../src/content/chapter-1.js');
 
   const bundle = bundleFrom(CHAPTER_1);
-  const atDecision = advance(startRun({ bundle }), bundle);   // pre_commit -> interactive
+  const EVS = { role: 'role.resilience-lead' };
+  const atDecision = advance(startRun({ bundle, config: EVS }), bundle);   // pre_commit -> interactive
   const v = view(atDecision, bundle);
   const html = renderToStaticMarkup(PlayScreen({ ...v, textPath: false }));
 

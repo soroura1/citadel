@@ -33,13 +33,21 @@ import { t } from '../src/locales/index.js';
 const bundle = () => bundleFrom(CHAPTER_1);
 const sceneOf = (id) => CHAPTER_1.scenes.find((s) => s.id === id);
 
+/**
+ * ⚠️ EVS-3 — A RUN REQUIRES A PLAYABLE ROLE. There is no roleless run any more:
+ * `!role` used to satisfy every authority gate, which is why every test in this
+ * file passed through those gates without exercising one.
+ */
+const EVS = { role: 'role.resilience-lead' };
+
+
 /** Render whatever beat the run is on. */
 const draw = (run, b, textPath = false) =>
   renderToStaticMarkup(PlayScreen({ ...view(run, b), textPath }));
 
 /** Every beat of one scene, in order, as markup. */
 function beatsOf(sceneIndex, b, { textPath = false, pick } = {}) {
-  let run = startRun({ bundle: b });
+  let run = startRun({ bundle: b, config: EVS });
   for (let i = 0; i < sceneIndex; i++) {
     run = advance(run, b);
     run = commit(run, b, view(run, b).presented.options[0].id).run;
@@ -66,7 +74,7 @@ function beatsOf(sceneIndex, b, { textPath = false, pick } = {}) {
 
 test('★ the page RENDERS AT ALL — the assertion owed since 17 August', () => {
   const b = bundle();
-  const html = draw(startRun({ bundle: b }), b);
+  const html = draw(startRun({ bundle: b, config: EVS }), b);
   assert.ok(html.includes('<main'), 'the surface produced no markup');
   assert.ok(html.includes(t('scene.sc-01-01.title')), 'and it produced the scene');
 });
@@ -145,7 +153,7 @@ test('the text path substitutes at the ENCOUNTER, and nowhere else', () => {
 
 test('★ FPE-04 — the response names the SPECIFIC option chosen', () => {
   const b = bundle();
-  const atDecision = advance(startRun({ bundle: b }), b);
+  const atDecision = advance(startRun({ bundle: b, config: EVS }), b);
   const chosen = view(atDecision, b).presented.options[1];
   const after = commit(atDecision, b, chosen.id).run;
 
@@ -155,7 +163,7 @@ test('★ FPE-04 — the response names the SPECIFIC option chosen', () => {
 
 test('★ FPE-03 — the response shows what moved, in bands and never in numbers', () => {
   const b = bundle();
-  const atDecision = advance(startRun({ bundle: b }), b);
+  const atDecision = advance(startRun({ bundle: b, config: EVS }), b);
   const step = commit(atDecision, b, view(atDecision, b).presented.options[0].id);
   const html = draw(step.run, b);
 
@@ -183,7 +191,7 @@ test('★ there is NO advance control at the decision — the choice is the way 
 
 test('★ the response is on the page BEFORE the control that leaves it', () => {
   const b = bundle();
-  const atDecision = advance(startRun({ bundle: b }), b);
+  const atDecision = advance(startRun({ bundle: b, config: EVS }), b);
   const chosen = view(atDecision, b).presented.options[0];
   const html = draw(commit(atDecision, b, chosen.id).run, b);
 
@@ -197,7 +205,7 @@ test('★ the response is on the page BEFORE the control that leaves it', () => 
 
 test('★ a DERIVED response is marked provisional; the mark is not decoration', () => {
   const b = bundle();
-  const atDecision = advance(startRun({ bundle: b }), b);
+  const atDecision = advance(startRun({ bundle: b, config: EVS }), b);
   const step = commit(atDecision, b, view(atDecision, b).presented.options[0].id);
 
   assert.equal(step.response.narrative.provenance, 'derived');
@@ -209,7 +217,7 @@ test('★ a DERIVED response is marked provisional; the mark is not decoration',
 
 test('★ Scene 4 renders canon\'s characters VERBATIM', () => {
   const b = bundle();
-  let run = startRun({ bundle: b });
+  let run = startRun({ bundle: b, config: EVS });
   while (currentSceneId(run) !== 'sc-01-04') {
     run = advance(run, b);
     run = commit(run, b, view(run, b).presented.options[0].id).run;
@@ -234,7 +242,7 @@ test('★ Scene 4 renders canon\'s characters VERBATIM', () => {
 
 test('no character is invented where canon is silent', () => {
   const b = bundle();
-  const atDecision = advance(startRun({ bundle: b }), b);
+  const atDecision = advance(startRun({ bundle: b, config: EVS }), b);
   const step = commit(atDecision, b, view(atDecision, b).presented.options[0].id);
   const html = draw(step.run, b);
 
@@ -272,7 +280,7 @@ test('★ and the chapter ENDS — the last advance reaches a page, not a blank'
   // swaps to ChapterEnd; without this the last decision left a blank screen,
   // which reads as a crash rather than a conclusion.
   const b = bundle();
-  let run = startRun({ bundle: b });
+  let run = startRun({ bundle: b, config: EVS });
   let guard = 0;
   while (!run.complete && guard++ < 100) {
     run = run.phase === 'interactive'
@@ -303,7 +311,7 @@ test('★ THE MIXED CASE — Scene 4 carries authored characters AND a derived n
   //
   // The badge must sit on the narrative and nowhere else.
   const b = bundle();
-  let run = startRun({ bundle: b });
+  let run = startRun({ bundle: b, config: EVS });
   while (currentSceneId(run) !== 'sc-01-04') {
     run = advance(run, b);
     run = commit(run, b, view(run, b).presented.options[0].id).run;

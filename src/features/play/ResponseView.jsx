@@ -27,7 +27,7 @@ import { t } from '../../locales/index.js';
  */
 export function ResponseView({ response }) {
   if (!response) return null;
-  const { narrative, characters, changes, turn, label } = response;
+  const { narrative, characters, changes, turn, label, committedAs, authorityHeldBy } = response;
   const derived = narrative.provenance === 'derived';
 
   return (
@@ -40,6 +40,17 @@ export function ResponseView({ response }) {
         <span className="visually-hidden">{t('play.you_chose')} </span>
         <b>{t(label.key)}</b>
       </p>
+
+      {/* ★ DECIDED, OR SUPPORTED. Two different acts, and canon distinguishes
+          them: a solo player holds one direct authority and seeks other
+          judgments. A record that flattens the two cannot answer what the
+          participant's role actually changed. */}
+      {committedAs === 'support' && authorityHeldBy && (
+        <p className="committed-as">
+          {t('play.you_supported')}{' '}
+          {authorityHeldBy.map((r) => t(`role.${r.replace('role.', '')}.title`)).join(', ')}
+        </p>
+      )}
 
       {/* What changed in the world's own words. Staged in post_commit, so this
           is the first moment it exists at all. */}

@@ -4,6 +4,48 @@
 **Topology:** [`../CLAUDE.md`](../CLAUDE.md) — `citadel.endura-assess.com` → `172.17.0.1:8087`,
 `TARGET=/opt/citadel/citadel`.
 
+## ★ EVS-3 — SETUP IS A CONTRACT. THREE CONTROLS WERE REMOVED.
+
+`src/content/roles.json` names the **two** roles the slice carries; the other **fourteen are
+computed** from the scenes' own `role_variants`, so a hand-written exclusion list cannot go stale.
+
+| Control | EVS-3 |
+|---|---|
+| Role | **Two selectable.** The variant renders — evidence and contribution — so the choice is visible |
+| Stake · name | Kept. Acknowledged **once**, privately, at the beat canon names ("confirms role and personal stake") |
+| Language | Kept, and it now **applies** — it was collected and discarded |
+| Tendency · scenario · severity | ⛔ **Removed.** Canon authors none of the three for Chapter 1 |
+
+A disabled control still promises, so they were removed rather than greyed. **`defineScenario` and
+`startingStateFor` stay** — the synthetic eighth scenario is R3's configurability proof.
+
+### ⚠️ A missing role WAS unrestricted authority
+
+`presentOptions` read `!requires_authority || !role || …`. A run with no role passed **every**
+authority gate — and every test started a roleless run, which is exactly the case that skipped it.
+`startRun` now refuses `run-has-no-role` and `role-not-selectable-in-this-slice`; the decision layer
+refuses too, because a bundle can be driven from a script.
+
+> ⚠️ **Consequence for `/play`:** a deep link used to call `startRun` with no config. That now
+> **throws during render** — the blank-page shape from 17 August. `/play` without a run renders
+> setup instead. Never guess a role: a role chosen for the participant is the same default.
+
+### ★ SUPPORT — the decision EVS-3 had to take
+
+Canon holds both *"no solo player gains fictional authority to make every decision"* and *"the player
+influences which system carries the resulting pressure"*. **Neither EVS role holds authority over the
+power-pressure or capacity decisions** — that is canon, not an oversight — so the slice's own two
+roles could not reach the commitment the EVS gate requires.
+
+`FPE` §2's commit beat reconciles them: the player *"decides, escalates, delegates, negotiates **or
+supports another person's proposal** under a named constraint."* An unauthorised role **supports** a
+pathway, the authored effects apply, and the record says `committedAs: 'decision' | 'support'`.
+
+⚠️ **Deciding stays refused.** `role-lacks-authority-to-decide` fires for a caller that asks to
+decide. Nothing was invented and no authored decision was edited.
+
+**Bundle `v0.2` → `v0.3`** — the run shape gained `stake` and `locale`, and requires a role.
+
 ## ★ EVS-2 — ONE BEAT AT A TIME. `chooseAndAdvance` IS GONE.
 
 `view()` **projects**: it carries only what the current phase stages. At `pre_commit` the turn is

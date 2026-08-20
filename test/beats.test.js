@@ -28,9 +28,17 @@ import {
 const bundle = () => bundleFrom(CHAPTER_1);
 const sceneOf = (id) => CHAPTER_1.scenes.find((s) => s.id === id);
 
+/**
+ * ⚠️ EVS-3 — A RUN REQUIRES A PLAYABLE ROLE. There is no roleless run any more:
+ * `!role` used to satisfy every authority gate, which is why every test in this
+ * file passed through those gates without exercising one.
+ */
+const EVS = { role: 'role.resilience-lead' };
+
+
 /** Walk the whole chapter, recording every beat entered and what it carried. */
 function trace(b, pick = (v) => v.presented.options[0].id) {
-  let run = startRun({ bundle: b });
+  let run = startRun({ bundle: b, config: EVS });
   const events = [];
   let guard = 0;
 
@@ -118,7 +126,7 @@ test('★ the decision exists ONLY at `interactive` — one beat, not four', () 
 
 test('★ committing does NOT advance the scene', () => {
   const b = bundle();
-  const atDecision = advance(startRun({ bundle: b }), b);
+  const atDecision = advance(startRun({ bundle: b, config: EVS }), b);
   const after = commit(b && atDecision, b, view(atDecision, b).presented.options[0].id).run;
 
   assert.equal(currentSceneId(after), 'sc-01-01', 'the commitment happened here, and stays here');
@@ -131,7 +139,7 @@ test('★ a commitment out of turn is refused BY THE ENGINE', () => {
   // while the encounter is still on screen is FPE-01 broken, and it would be
   // held only by every caller behaving.
   const b = bundle();
-  const atEncounter = startRun({ bundle: b });
+  const atEncounter = startRun({ bundle: b, config: EVS });
   assert.equal(atEncounter.phase, 'pre_commit');
 
   assert.throws(() => commit(atEncounter, b, 'dec-01-gate-access.assign-owner'),
@@ -144,7 +152,7 @@ test('★ a commitment out of turn is refused BY THE ENGINE', () => {
 
 test('★ you cannot walk PAST a decision without making one', () => {
   const b = bundle();
-  const atDecision = advance(startRun({ bundle: b }), b);
+  const atDecision = advance(startRun({ bundle: b, config: EVS }), b);
   assert.throws(() => advance(atDecision, b),
     (e) => e.refusal === 'cannot-advance-past-an-undecided-commitment');
 });
@@ -156,7 +164,7 @@ test('★ a run saved AT THE RESPONSE resumes at the response, not past it', () 
   // player has not read yet is gone. The chapter would have answered them
   // while they were not looking.
   const b = bundle();
-  const atDecision = advance(startRun({ bundle: b }), b);
+  const atDecision = advance(startRun({ bundle: b, config: EVS }), b);
   const committed = commit(atDecision, b, view(atDecision, b).presented.options[0].id).run;
 
   const resumed = deserialise(serialise(committed), b);
@@ -168,7 +176,7 @@ test('★ a run saved AT THE RESPONSE resumes at the response, not past it', () 
 
 test('every beat of every scene round-trips through serialise', () => {
   const b = bundle();
-  let run = startRun({ bundle: b });
+  let run = startRun({ bundle: b, config: EVS });
   let guard = 0;
   while (!run.complete && guard++ < 100) {
     const resumed = deserialise(serialise(run), b);
@@ -185,7 +193,7 @@ test('★ a response beat saved with NO response is refused by name', () => {
   // ⚠️ This renders as a page that says a choice was made and shows nothing it
   // did — worse than a crash, because it looks like a finished screen.
   const b = bundle();
-  const atDecision = advance(startRun({ bundle: b }), b);
+  const atDecision = advance(startRun({ bundle: b, config: EVS }), b);
   const committed = commit(atDecision, b, view(atDecision, b).presented.options[0].id).run;
 
   const broken = JSON.stringify({ ...committed, response: null });
@@ -195,7 +203,7 @@ test('★ a response beat saved with NO response is refused by name', () => {
 
 test('an unknown beat is refused rather than defaulted', () => {
   const b = bundle();
-  const run = startRun({ bundle: b });
+  const run = startRun({ bundle: b, config: EVS });
   const broken = JSON.stringify({ ...run, phase: 'whenever' });
   assert.throws(() => deserialise(broken, b), (e) => e.refusal === 'unknown-phase');
 });
@@ -204,7 +212,7 @@ test('an unknown beat is refused rather than defaulted', () => {
 
 test('★ the response names the chosen option and what moved', () => {
   const b = bundle();
-  const atDecision = advance(startRun({ bundle: b }), b);
+  const atDecision = advance(startRun({ bundle: b, config: EVS }), b);
   const optionId = view(atDecision, b).presented.options[0].id;
   const { response, changes } = commit(atDecision, b, optionId);
 
@@ -216,7 +224,7 @@ test('★ the response names the chosen option and what moved', () => {
 
 test('a derived narrative cites the effects when the content declares them', () => {
   const b = bundle();
-  const atDecision = advance(startRun({ bundle: b }), b);
+  const atDecision = advance(startRun({ bundle: b, config: EVS }), b);
   const { response } = commit(atDecision, b, 'dec-01-gate-access.assign-owner');
 
   assert.equal(response.narrative.provenance, 'derived');
@@ -240,7 +248,7 @@ test('★ a DERIVED narrative uses ONLY the sources the content declares', () =>
     return copy;
   });
   const b = bundleFrom({ ...CHAPTER_1, scenes });
-  const atDecision = advance(startRun({ bundle: b }), b);
+  const atDecision = advance(startRun({ bundle: b, config: EVS }), b);
   const { response } = commit(atDecision, b, scenes[0].immediate_effect.responses[0].option_id);
 
   assert.deepEqual(response.narrative.from, ['protects']);
@@ -262,7 +270,7 @@ test('a response with nothing to derive from is refused, not rendered blank', as
     return copy;
   });
   const b = bundleFrom({ ...CHAPTER_1, scenes });
-  const atDecision = advance(startRun({ bundle: b }), b);
+  const atDecision = advance(startRun({ bundle: b, config: EVS }), b);
   assert.throws(
     () => commit(atDecision, b, scenes[0].immediate_effect.responses[0].option_id),
     (e) => e instanceof ResponseRefusal && e.refusal === 'nothing-to-derive-the-response-from',
@@ -271,7 +279,7 @@ test('a response with nothing to derive from is refused, not rendered blank', as
 
 test('★ Scene 4 carries canon\'s characters VERBATIM, and nowhere else invents one', () => {
   const b = bundle();
-  let run = startRun({ bundle: b });
+  let run = startRun({ bundle: b, config: EVS });
   const seen = [];
 
   let guard = 0;
@@ -314,7 +322,7 @@ test('★ an AUTHORED narrative takes precedence over the derived composition', 
     return copy;
   });
   const b = bundleFrom({ ...CHAPTER_1, scenes });
-  const atDecision = advance(startRun({ bundle: b }), b);
+  const atDecision = advance(startRun({ bundle: b, config: EVS }), b);
   const { response } = commit(atDecision, b, scenes[0].immediate_effect.responses[0].option_id);
 
   assert.equal(response.narrative.provenance, 'authored');
