@@ -1,8 +1,34 @@
 # `citadel` — status
 
-**Last updated:** 2026-08-17 · ⚠️ **Merged (`5fead70`) but NOT DEPLOYED**
+**Last updated:** 2026-08-20 · ⚠️ **Merged but NOT DEPLOYED** — the owner raises deployments
 **Topology:** [`../CLAUDE.md`](../CLAUDE.md) — `citadel.endura-assess.com` → `172.17.0.1:8087`,
 `TARGET=/opt/citadel/citadel`.
+
+## ★ EVS-1 — the content is now VALIDATED against the contract it pins
+
+`test/content-conformance.test.js`. Until it existed, **this repository pinned a schema it never
+ran**: `check-repo.sh` proved the pin was an exact tag, and `npm run conformance` ran *contracts'*
+suite against *itself*. Neither looked at a scene.
+
+> **It failed on its first run.** `bell` had shipped in all four scenes (PR #25) and was never added
+> to `scene.schema.json`, which is `additionalProperties: false` — so every Chapter 1 scene had been
+> invalid against its own contract since that merge. Fixed in `contracts@v0.5.1`.
+
+⚠️ **The defect was the missing check, not the missing field.** A consumer that pins a contract and
+never runs it has paid the tag-and-pin cost and bought none of the safety.
+
+## The scene contract now says WHEN — and nothing renders it YET
+
+`contracts@v0.5.0` added `staging` (four phases) and `immediate_effect`. All four Chapter 1 scenes
+carry both. `src/engine/staging.js` holds what a schema cannot see — a movement staged twice or
+nowhere, an option with no response — because those need two documents at once.
+
+⚠️ **`PlayScreen` still renders all six movements as one `<ol>`, so `turn` and `residue` are still on
+the page before the player chooses.** That is `FPE-01` still broken, deliberately: **EVS-2** is the
+session that consumes the staging. EVS-1 built the vocabulary; the renderer is untouched.
+
+**Bundle `v0.1` → `v0.2`.** The scenes changed shape, so a run saved under `v0.1` refuses to resume —
+which is what pinning the version into the save is for.
 
 ## To finish the first deploy
 

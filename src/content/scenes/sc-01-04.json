@@ -319,5 +319,110 @@
     "register": "unease",
     "derivedFrom": "first unease",
     "unresolved": "Canon gives Chapter 1's arc at CHAPTER level in one line and assigns no register to an individual scene. This distribution is a derivation, not canon."
+  },
+  "staging": {
+    "pre_commit": [
+      "orientation",
+      "desire",
+      "friction"
+    ],
+    "interactive": [
+      "choice_or_discovery"
+    ],
+    "post_commit": [
+      "turn",
+      "immediate_effect"
+    ],
+    "scene_exit": [
+      "residue"
+    ]
+  },
+  "immediate_effect": {
+    "state_change_source": "decision_effects",
+    "responses": [
+      {
+        "option_id": "dec-01-closure-characterization.integrated",
+        "narrative_response": null,
+        "derived_from": [
+          "protects",
+          "risks",
+          "effects"
+        ],
+        "character_response": [
+          {
+            "character_id": "Fadl",
+            "responds": "Retains the high-risk near-miss classification."
+          },
+          {
+            "character_id": "Maha",
+            "responds": "Links the raw chronology."
+          },
+          {
+            "character_id": "Rami",
+            "responds": "With frontline clinical staff, volunteers more evidence in Chapter 2."
+          }
+        ],
+        "unresolved": [
+          {
+            "field": "narrative_response",
+            "why": "Canon Scene 4 authors this pathway as bullets and the character actions recorded above; it authors no narration in the game’s own voice."
+          }
+        ]
+      },
+      {
+        "option_id": "dec-01-closure-characterization.separate-reviews",
+        "narrative_response": null,
+        "derived_from": [
+          "protects",
+          "risks",
+          "effects"
+        ],
+        "character_response": [
+          {
+            "character_id": "Fadl",
+            "responds": "Names separate owners and review times for electrical dependency, usable capacity, and patient-safety follow-up."
+          },
+          {
+            "character_id": "Maha",
+            "responds": "Preserves the link between their records."
+          }
+        ],
+        "unresolved": [
+          {
+            "field": "narrative_response",
+            "why": "Canon Scene 4 authors this pathway as bullets and the character actions recorded above; it authors no narration in the game’s own voice. It assigns Rami no action on this pathway, so none is written for him."
+          }
+        ]
+      },
+      {
+        "option_id": "dec-01-closure-characterization.normal-service",
+        "narrative_response": null,
+        "derived_from": [
+          "protects",
+          "risks",
+          "effects"
+        ],
+        "character_response": [
+          {
+            "character_id": "Fadl",
+            "responds": "Keeps the high-risk quality classification, records his dissent from the phrase “normal service resumed”, and escalates the unresolved risk through governance. He does not have electrical or executive authority to keep the whole hospital incident open."
+          },
+          {
+            "character_id": "Maha",
+            "responds": "Preserves the raw time discrepancy."
+          },
+          {
+            "character_id": "Rami",
+            "responds": "Becomes less willing to rely on the operational summary."
+          }
+        ],
+        "unresolved": [
+          {
+            "field": "narrative_response",
+            "why": "Canon Scene 4 authors this pathway as bullets and the character actions recorded above; it authors no narration in the game’s own voice."
+          }
+        ]
+      }
+    ]
   }
 }

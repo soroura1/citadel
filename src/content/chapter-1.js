@@ -15,7 +15,12 @@ import d3 from './decisions/dec-01-gate-access.json' with { type: 'json' };
 import d4 from './decisions/dec-01-power-pressure.json' with { type: 'json' };
 
 export const CHAPTER_1 = {
-  version: 'v0.1',
+  // ⚠️ BUMPED AT EVS-1, from v0.1. The scenes gained `staging` and
+  // `immediate_effect`, which change WHEN their material is presented. A run
+  // saved under v0.1 must not resume into a chapter that is staged differently
+  // from the one it played -- `resume()` refuses the mismatch by design, and
+  // that refusal is the whole reason the version is pinned into the save.
+  version: 'v0.2',
   scenes: [s1, s2, s3, s4],
   decisions: [d1, d2, d3, d4],
   order: ["sc-01-01", "sc-01-02", "sc-01-03", "sc-01-04"],

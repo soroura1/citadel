@@ -11,6 +11,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { attest, canClaimApproved, isExpired, PROVISIONAL, AttestationRefusal }
   from '../src/engine/attestation.js';
+import { CHAPTER_1 } from '../src/content/chapter-1.js';
 
 const record = JSON.parse(readFileSync(new URL('../src/content/attestation.json', import.meta.url), 'utf8'));
 
@@ -77,4 +78,12 @@ test('★ the label is USER-VISIBLE — it reaches the page, not only the record
   }
   assert.match(en['provisional.body'], /not been through review|does not carry approved/i,
     'the label must say plainly what the content is, not merely that it is provisional');
+});
+
+test('★ the attestation names the bundle that actually ships', () => {
+  // ⚠️ NOTHING COUPLED THESE UNTIL EVS-1. `attestation.json` said `v0.1` and
+  // `CHAPTER_1.version` could have said anything; an attestation naming a
+  // bundle nobody plays is a control that attests to nothing, and it would
+  // look completely correct in review.
+  assert.equal(record.bundle, CHAPTER_1.version);
 });

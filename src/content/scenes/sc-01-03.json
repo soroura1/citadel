@@ -297,5 +297,87 @@
     "register": "pressure",
     "derivedFrom": "concentrated fear",
     "unresolved": "Canon gives Chapter 1's arc at CHAPTER level in one line and assigns no register to an individual scene. This distribution is a derivation, not canon."
+  },
+  "staging": {
+    "pre_commit": [
+      "orientation",
+      "desire",
+      "friction"
+    ],
+    "interactive": [
+      "choice_or_discovery"
+    ],
+    "post_commit": [
+      "turn",
+      "immediate_effect"
+    ],
+    "scene_exit": [
+      "residue"
+    ]
+  },
+  "immediate_effect": {
+    "state_change_source": "decision_effects",
+    "responses": [
+      {
+        "option_id": "dec-01-critical-path.ed-hold",
+        "narrative_response": null,
+        "character_response": null,
+        "derived_from": [
+          "protects",
+          "risks",
+          "effects"
+        ],
+        "unresolved": [
+          {
+            "field": "narrative_response",
+            "why": "Canon Scene 3 authors this pathway as operational bullets and the state line `C1_CRITICAL_PATH = ED_HOLD`; `ED_USABLE_CAPACITY -1`; `WORKFORCE_LOAD +1`. It authors no post-commitment narration."
+          },
+          {
+            "field": "character_response",
+            "why": "Canon Scene 3 states that the responsible clinicians define eligibility and minimum safety, and that the player influences which system carries the pressure. It assigns no named character a reaction to the pathway chosen."
+          }
+        ]
+      },
+      {
+        "option_id": "dec-01-critical-path.redeploy",
+        "narrative_response": null,
+        "character_response": null,
+        "derived_from": [
+          "protects",
+          "risks",
+          "effects"
+        ],
+        "unresolved": [
+          {
+            "field": "narrative_response",
+            "why": "Canon Scene 3 authors this pathway as operational bullets and the state line `C1_CRITICAL_PATH = REDEPLOY`; `ICU_PHYSICAL_USE +1`; `DONOR_SERVICE_CAPACITY -1`; `WORKFORCE_LOAD +1`. It authors no post-commitment narration."
+          },
+          {
+            "field": "character_response",
+            "why": "Canon Scene 3 names the donating service but not a person in it, and assigns no named character a reaction to the pathway chosen."
+          }
+        ]
+      },
+      {
+        "option_id": "dec-01-critical-path.network-transfer",
+        "narrative_response": null,
+        "character_response": null,
+        "derived_from": [
+          "protects",
+          "risks",
+          "effects"
+        ],
+        "unresolved": [
+          {
+            "field": "narrative_response",
+            "why": "Canon Scene 3 authors this pathway as operational bullets and the state line `C1_CRITICAL_PATH = NETWORK_TRANSFER`; `NETWORK_TRUST` changes according to candor and coordination; `TRANSFER_DELAY +1`. It authors no post-commitment narration."
+          },
+          {
+            "field": "character_response",
+            "why": "Canon Scene 3 names the Regional Health Authority, the Emergency Medical Transport Service and North River Hospital as institutions, and assigns no named character a reaction to the pathway chosen."
+          }
+        ]
+      }
+    ]
   }
 }
