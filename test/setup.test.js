@@ -347,3 +347,47 @@ test('★ roles.json records three content gaps — and each is still TRUE', () 
     }
   }
 });
+
+test('★ the UI offers exactly two roles — asserted on the OPTIONS, not on the text', () => {
+  // ⚠️ NOT `!html.includes(title)`. The not-yet-playable note deliberately
+  // NAMES the other fourteen, so their titles are in the markup as prose. An
+  // absence assertion over the whole page would fail for the right reason and
+  // pass for the wrong one; the question is what is SELECTABLE.
+  const html = drawSetup({
+    roles: SELECTABLE_ROLES,
+    notYetPlayable: notYetPlayable(CHAPTER_1.scenes),
+    localeCoverage: localeCoverage(),
+  });
+
+  const select = html.slice(html.indexOf('<select id="role"'));
+  const options = select.slice(0, select.indexOf('</select>')).match(/<option/g) ?? [];
+  assert.equal(options.length, 2, 'the role selector offers something other than the two EVS roles');
+  for (const r of SELECTABLE_ROLES) {
+    assert.ok(select.includes(`value="${r.id}"`), `${r.id} is not selectable`);
+  }
+  for (const id of notYetPlayable(CHAPTER_1.scenes)) {
+    assert.ok(!select.slice(0, select.indexOf('</select>')).includes(`value="${id}"`),
+      `${id} is selectable and is not at slice depth`);
+  }
+
+  // ...and the fourteen ARE named, so the participant can see the world is
+  // larger than the slice rather than finding fourteen roles quietly missing.
+  assert.ok(html.includes(t('setup.roles_not_yet_playable')));
+  assert.ok(html.includes(t('role.operations.title')));
+});
+
+test('★ every locale key roles.json names exists — the content walk did not reach this file', () => {
+  // ⚠️ A COVERAGE BLIND SPOT, CLOSED. `locale-coverage.test.js` walks
+  // `scenes/` and `decisions/`, and its code check only matches single-quoted
+  // `t('literal')` — so `roles.json`'s title_keys and the fourteen titles built
+  // as `t(\`role.${id}.title\`)` were guarded by nothing. Renaming a role would
+  // have printed its own key at the reader.
+  const en = JSON.parse(readFileSync(new URL('../src/locales/en.json', import.meta.url), 'utf8'));
+  const missing = [];
+  for (const r of SELECTABLE_ROLES) if (en[r.title_key] === undefined) missing.push(r.title_key);
+  for (const id of rolesInContent(CHAPTER_1.scenes)) {
+    const key = `role.${id.replace('role.', '')}.title`;
+    if (en[key] === undefined) missing.push(key);
+  }
+  assert.deepEqual(missing, []);
+});

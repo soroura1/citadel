@@ -4,6 +4,20 @@
 **Topology:** [`../CLAUDE.md`](../CLAUDE.md) — `citadel.endura-assess.com` → `172.17.0.1:8087`,
 `TARGET=/opt/citadel/citadel`.
 
+## ⚠️ ONE CALL SHAPE. `PlayRoute` composes the play surface; `main.jsx` mounts it.
+
+`main.jsx` enumerated `PlayScreen`'s props by hand while every test spread the whole view. **Two
+call shapes, one of them tested.** EVS-3 added `roleVariant` and `acknowledgeStake`; the tests saw
+them and `main.jsx` dropped them — so the role panel and the private stake **would not have rendered
+in the deployed build, with 203 tests green.**
+
+`main.jsx` cannot be executed by a test (`createRoot`, `document`), so the fix was not a guard over
+the enumeration — it was **removing the second call shape.** `src/features/play/PlayRoute.jsx`
+spreads the view once, and both `main.jsx` and `test/render.test.js` use it.
+
+> **Never enumerate `PlayScreen`'s props.** A named list is a second definition of what the surface
+> needs, and the two drift silently.
+
 ## ★ EVS-3 — SETUP IS A CONTRACT. THREE CONTROLS WERE REMOVED.
 
 `src/content/roles.json` names the **two** roles the slice carries; the other **fourteen are

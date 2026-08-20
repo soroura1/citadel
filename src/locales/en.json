@@ -74,7 +74,7 @@
   "play.state": "Where things stand",
   "play.text_path": "The scene, in full",
   "play.who_would_defend": "Who would defend this?",
-  "refusal.role-lacks-authority-to-decide": "This decision is not yours to make in this role. You are here, and you are watching it happen.",
+  "refusal.role-lacks-authority-to-decide": "This decision belongs to another role. You can put your weight behind a pathway, not take the decision.",
   "setup.title": "Before you go in",
   "setup.intro": "A few things shape what you will see. None of them is a difficulty setting.",
   "setup.help": "Every choice here changes what happens in play — who talks to you, what you are told, and what you are able to decide.",
