@@ -69,3 +69,14 @@ test('state is described, never scored — no bars, no ranking colours', () => {
   assert.ok(!/progress|meter|--score|\.bar\b/.test(rules),
     'a bar or a meter turns a resilience state into something to optimise');
 });
+
+test('★ EVS-6 — the PRINT ROUTE exists, and is not decoration', () => {
+  // The observation has to survive leaving the browser. A participant with no
+  // printer still gets a clean PDF from the print dialogue — and a print block
+  // nothing asserts is a block that quietly stops working.
+  assert.match(rules, /@media print/, 'there is no print route for the note taken away');
+  const print = rules.slice(rules.indexOf('@media print'));
+  assert.match(print, /\.prompt textarea/,
+    'a textarea prints its box and clips its text; the content must escape the control');
+  assert.match(print, /display:\s*none/, 'the navigation prints with the note');
+});

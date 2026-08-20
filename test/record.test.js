@@ -377,3 +377,93 @@ test('no locale key reaches the record or the observation screen', () => {
     renderToStaticMarkup(createElement(ObservationScreen, { record })),
   ]) assert.ok(!html.includes('⟨'));
 });
+
+// --- the composition the BROWSER runs -------------------------------------------
+
+test('★ the PRODUCTION observation route round-trips a SAVED note back into the page', async () => {
+  // ⚠️ THE FOURTH TIME THIS SHAPE HAS APPEARED. `main.jsx` cannot be executed by
+  // a test, so anything composed there is untested by construction — and here
+  // that would have been the store wiring, the export and the DELETE, the two
+  // paths whose whole point is what does and does not leave the device.
+  //
+  // The `saved` mapping is bespoke: the screen holds `{ key: text }` while the
+  // stored records hold `responses: [{promptKey, text}]` and
+  // `sections: { name: {promptKey, text} }`, because that is what the contracts
+  // require. That is exactly the small translation that works until the day it
+  // returns `{}` and a participant's saved note appears to have vanished.
+  const { ObservationRoute } = await import('../src/features/record/ObservationRoute.jsx');
+  const b = bundle();
+  const run = playAll(b);
+  const s = store.memoryStore();
+
+  const ref = store.participantRef(s, newParticipantRef);
+  store.saveObservation(s, buildObservation({ participantRef: ref, answers: ANSWERS }));
+  store.saveReflection(s, buildReflection({
+    participantRef: ref, answers: { 'reflection.principle.prompt': 'Capacity is not capability.' },
+  }));
+
+  const html = renderToStaticMarkup(createElement(ObservationRoute, { run, bundle: b, local: s, t }));
+  for (const section of SECTIONS) {
+    assert.ok(html.includes(ANSWERS[section]), `${section} did not come back out of the store`);
+  }
+  assert.ok(html.includes('Capacity is not capability.'), 'the saved reflection did not come back');
+});
+
+test('★ the route\'s DELETE actually empties the store, and tells the app', async () => {
+  const { ObservationRoute } = await import('../src/features/record/ObservationRoute.jsx');
+  const b = bundle();
+  const s = store.memoryStore();
+  store.saveRun(s, playAll(b));
+  store.saveObservation(s, buildObservation({
+    participantRef: store.participantRef(s, newParticipantRef), answers: ANSWERS,
+  }));
+  assert.equal(s.keys().length, 3);
+
+  let notified = false;
+  // Render to reach the handler the surface would call, then call it.
+  const element = createElement(ObservationRoute, {
+    run: null, bundle: b, local: s, t, onDeleted: () => { notified = true; },
+  });
+  const removed = element.type(element.props).props.onDelete();
+
+  assert.equal(removed.length, 3);
+  assert.deepEqual(s.keys(), [], 'the store still holds something after delete');
+  assert.equal(notified, true, 'the app was not told to drop the run');
+});
+
+test('★ the route EXPORTS through the same builder the boundaries are enforced on', async () => {
+  const { ObservationRoute } = await import('../src/features/record/ObservationRoute.jsx');
+  const b = bundle();
+  const s = store.memoryStore();
+  const written = [];
+  const element = createElement(ObservationRoute, {
+    run: playAll(b), bundle: b, local: s, t,
+    download: ({ text, filename }) => { written.push({ text, filename }); return { downloaded: true }; },
+  });
+  const props = element.type(element.props).props;
+
+  props.onExport('text', ANSWERS);
+  props.onExport('json', ANSWERS);
+  assert.equal(written.length, 2);
+  assert.match(written[0].filename, /\.txt$/);
+  assert.match(written[1].filename, /\.json$/);
+  // ★ B5 travels on both, because both go through the same builder.
+  for (const { text } of written) assert.ok(text.includes(EXPORT_LABEL) || text.includes(EXPORT_LABEL.toUpperCase()));
+});
+
+test('a refusal from the route is RETURNED, not lost', async () => {
+  // The swallow is deliberate — an incomplete observation has nothing to store
+  // yet — but a caller that reaches the handler another way is told which rule
+  // applied rather than seeing nothing happen.
+  const { ObservationRoute } = await import('../src/features/record/ObservationRoute.jsx');
+  const b = bundle();
+  const element = createElement(ObservationRoute, {
+    run: null, bundle: b, local: store.memoryStore(), t,
+  });
+  const props = element.type(element.props).props;
+
+  assert.deepEqual(props.onSaveObservation({ service: 'only one answer' }),
+    { saved: false, refusal: 'observation-section-is-empty' });
+  assert.deepEqual(props.onSaveReflection({}), { saved: false, refusal: 'reflection-is-empty' });
+  assert.deepEqual(props.onSaveObservation(ANSWERS), { saved: true });
+});
