@@ -4,6 +4,53 @@
 **Topology:** [`../CLAUDE.md`](../CLAUDE.md) — `citadel.endura-assess.com` → `172.17.0.1:8087`,
 `TARGET=/opt/citadel/citadel`.
 
+## ★ EVS-7 — THE SLICE IS TEST-READY. THE NEXT GATE IS PEOPLE.
+
+`test/evs-walk.test.js` runs the arc a participant runs — setup, four scenes with every action taken,
+response, residue, record, reflection, private observation, export, **a reload at every beat**, and
+the delete — **for both roles × both paths**, through the production routes.
+
+| | |
+|---|---|
+| **Text parity is a DIFF, not a claim** | From the decision onward the two paths are asserted **byte-identical once `<figure>` is stripped**. The authored `text_equivalent` at `pre_commit` is the one designed difference, skipped by name |
+| **Resume at every beat** | *"Runnable from a clean local start"* includes closing the tab mid-scene, which is what an interrupted professional does |
+| **Both roles reach the clue** | Canon's promise, asserted on the walk and not only in the loader |
+| **Every exit sealed on all four walks** | A beacon added to a scene renderer would escape a test that only walks the note |
+
+`test/accessibility-parity.test.js` is the **mechanical floor**: keyboard-completable at every beat,
+no interactive `div`, no positive `tabindex`, no text container clipping, reduced motion with the
+register still in words, every image lazy with real alt text, and **strip every image and the chapter
+still plays**.
+
+⛔ **That is not the gate's Accessibility dimension.** That is a person using their own assistive
+technology, and **`Q11` is open.**
+
+### ⚠️ Sixth and final appearance of one shape
+
+`SetupRoute` took the last wiring out of `main.jsx` — which roles are offered, and the `setLocale`
+that must run **before the next screen renders**. That line was EVS-3's fix for a language collected
+and discarded, and no test had ever run it.
+
+### The evidence pack is generated, not typed
+
+```bash
+npm test && npm run build && ./scripts/evidence-pack.mjs        # add --json for CI
+```
+
+Commit, tree-clean flag, Node, contracts pin, bundle version and attestation state, test result,
+**the weight a participant downloads**, language coverage, visual binding, and what the slice
+contains. The human half — protocol, observation sheet, eight dimensions, twelve limitations — is
+[`citadel-planning/06-releases/EVS-evidence-pack.md`](../../citadel-planning/06-releases/EVS-evidence-pack.md).
+
+> **A pack with hand-written counts is stale the first time somebody adds a test.** `check-plan.sh`
+> refuses one in a normative document for that exact reason.
+
+### ⚠️ Two checks pass because a feature is absent — and both fail when it arrives
+
+The timer scan (no timer) and the audio check (no audio). Recorded as limitations rather than counted
+as coverage, and the audio one asserts the **absence** of `<audio>`, so the day a sound is added the
+captions, independent volume and silent-equivalent path become due.
+
 ## ★ EVS-6 — THE RECORD, THE REFLECTION, AND THE NOTE THEY TAKE AWAY
 
 ### FPE-04's named failure is closed
