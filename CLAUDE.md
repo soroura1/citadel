@@ -111,7 +111,7 @@ validates presence only. **Two lines, marked for deletion.**
 ⚠️ That is R2 task **`E6`, which needs Phase C** — deleting it before the native issuer exists breaks
 the deployed walk.
 
-## Reachability — three assertions, and a fourth that is OWED
+## Reachability — four assertions, the fourth closed at EVS-2
 
 Routing · navigation inventory · **deployed bytes**. The prior attempt shipped **six screens nobody
 could reach**, one for four consecutive releases.

@@ -47,6 +47,12 @@ function beatsOf(sceneIndex, b, { textPath = false, pick } = {}) {
   }
   const out = {};
   for (const phase of PHASES) {
+    // ⚠️ THE SNAPSHOT MUST BE OF THE BEAT IT IS FILED UNDER. This loop walks
+    // `run` while iterating `PHASES`, so a single misstep would file
+    // `pre_commit`'s markup under `interactive` — and every absence assertion
+    // below would then pass by looking at the wrong screen. A helper that
+    // silently misaligns makes its own tests vacuous.
+    assert.equal(view(run, b).phase, phase, 'the walk and the labels came apart');
     out[phase] = draw(run, b, textPath);
     if (run.phase === 'interactive') {
       const v = view(run, b);
@@ -279,4 +285,50 @@ test('★ and the chapter ENDS — the last advance reaches a page, not a blank'
     ChapterEnd({ state: run.state, history: run.history, owed: run.state.pending ?? [] }));
   assert.ok(html.includes(t('chapter_end.heading')));
   assert.equal(run.history.length, 4, 'every scene contributed a decision to the record');
+});
+
+test('★ THE MIXED CASE — Scene 4 carries authored characters AND a derived narrative', () => {
+  // ============================================================================
+  // THE ONE COMBINATION CANON ACTUALLY PRODUCES, AND THE ONE MOST EASILY GOT
+  // WRONG.
+  // ============================================================================
+  // Every Scene 4 response has an AUTHORED `character_response` and a NULL
+  // `narrative_response` at the same time. Tested apart, both pass. Together
+  // there are two ways to be wrong, and neither shows up in a separate test:
+  //
+  //   · the authored characters suppress the provisional mark, so a beat that
+  //     is still waiting for its narration looks finished; or
+  //   · the mark spreads to the authored characters, so canon's own sentences
+  //     are labelled provisional when they are not.
+  //
+  // The badge must sit on the narrative and nowhere else.
+  const b = bundle();
+  let run = startRun({ bundle: b });
+  while (currentSceneId(run) !== 'sc-01-04') {
+    run = advance(run, b);
+    run = commit(run, b, view(run, b).presented.options[0].id).run;
+    run = advance(advance(run, b), b);
+  }
+  run = advance(run, b);
+  const chosen = view(run, b).presented.options[0];
+  const step = commit(run, b, chosen.id);
+  const html = draw(step.run, b);
+
+  // The premise: this really is the mixed case.
+  assert.equal(step.response.narrative.provenance, 'derived');
+  assert.equal(step.response.charactersProvenance, 'authored');
+
+  // Both are on the page, in the same beat.
+  assert.ok(html.includes(t('play.response_derived')), 'the derived narrative is missing');
+  assert.ok(html.includes(t('play.who_responded')), 'the authored characters are missing');
+
+  // ★ And the mark is on the narrative alone. The characters section opens
+  // after the narrative block closes, so a badge on the response as a whole
+  // would put `data-provisional` before the characters heading too.
+  const badge = `data-provisional="${t('provisional.badge')}"`;
+  assert.equal(html.split(badge).length - 1, 1, 'the provisional mark was applied more than once');
+  assert.ok(html.indexOf(badge) < html.indexOf(t('play.who_responded')));
+  const charactersMarkup = html.slice(html.indexOf(t('play.who_responded')));
+  assert.ok(!charactersMarkup.includes('data-provisional'),
+    'canon\u2019s own sentences were labelled provisional');
 });
