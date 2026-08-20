@@ -467,3 +467,45 @@ ol[aria-label] > li p { font-size: var(--step-1); line-height: 1.55; margin: 0; 
   cursor: pointer;
 }
 .advance button:hover { border-color: var(--turquoise); }
+
+/* ---------------------------------------------------------------------------
+   EVS-3 — the role, and what is private.
+   --------------------------------------------------------------------------- */
+
+.role-position {
+  border-inline-start: 3px solid var(--turquoise);
+  padding-inline-start: var(--space);
+}
+.role-position h2 { font-size: var(--step-0); text-transform: uppercase;
+  letter-spacing: 0.06em; font-family: var(--face-utility); color: var(--ink-quiet); }
+.role-position h3 { font-size: var(--step-0); }
+.role-position .evidence { font-size: var(--step-1); line-height: 1.4; }
+
+/* ★ PRIVATE MEANS PRIVATE. The participant's own words, shown back to them and
+   to no one in the story. Set apart by ground and a dashed edge so it reads as
+   a note to self rather than as something the Bimaristan knows. */
+.private {
+  border: 1px dashed var(--rule);
+  background: var(--wash);
+  padding: var(--space);
+  margin-block: var(--space-l);
+}
+.private-label {
+  font-family: var(--face-utility);
+  font-size: var(--step--1);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-quiet);
+  margin-block-end: var(--space-s);
+}
+.private .stake { font-style: italic; }
+
+/* The named constraint. Canon: "the relevant professional explains the binding
+   constraint... This is authority, not a game hint." */
+.constraint { color: var(--ink-quiet); }
+.committed-as { color: var(--ink-quiet); font-size: var(--step--1); }
+
+.role-because, .not-yet-playable, .field-note {
+  color: var(--ink-quiet);
+  font-size: var(--step--1);
+}

@@ -78,7 +78,7 @@ const sceneArt = {
 
 export function PlayScreen({
   scene, phase, presents = [], decision, presented, response,
-  state, onChoose, onAdvance, textPath = false,
+  roleVariant, acknowledgeStake, state, onChoose, onAdvance, textPath = false,
 }) {
   if (!scene) return <main><p role="alert">{t('play.no_scene')}</p></main>;
 
@@ -133,6 +133,42 @@ export function PlayScreen({
           bar removed. */}
       <p className="beat"><span className="visually-hidden">{t('play.beat')} </span>{t(`beat.${phase}`)}</p>
 
+      {/* ★ EVS-3 — WHERE THIS ROLE STANDS. Canon gives every role a distinct
+          first fact and one direct contribution; before EVS-3 the role reached
+          the engine and nothing rendered it, so the choice changed nothing a
+          participant could point at.
+
+          ⚠️ ONE evidence line, not two. `starting_position` and
+          `information_held` hold the same string in all 64 variants — canon's
+          role table has a single evidence column and the content wrote it into
+          two fields. Rendering both would show the same sentence twice under
+          two headings, which reads as a fault in the writing. */}
+      {roleVariant && (
+        <section className="role-position" aria-label={t('play.your_position')}>
+          <h2>{t('play.your_position')}</h2>
+          <p className="evidence">{roleVariant.evidence}</p>
+          {roleVariant.contribution.length > 0 && (
+            <>
+              <h3>{t('play.your_contribution')}</h3>
+              <ul>{roleVariant.contribution.map((c) => <li key={c}>{c}</li>)}</ul>
+            </>
+          )}
+        </section>
+      )}
+
+      {/* ★ THE STAKE, ACKNOWLEDGED AND KEPT PRIVATE.
+          Canon's Scene 1 opens with "confirms role and personal stake". These
+          are the participant's own words shown back to them once — marked
+          private in the markup, absent from scene prose, and never spoken by a
+          character or written on a board. */}
+      {acknowledgeStake && (acknowledgeStake.stake || acknowledgeStake.displayName) && (
+        <aside className="private" data-private="true" aria-label={t('play.private_to_you')}>
+          <p className="private-label">{t('play.private_to_you')}</p>
+          {acknowledgeStake.displayName && <p>{acknowledgeStake.displayName}</p>}
+          {acknowledgeStake.stake && <p className="stake">{acknowledgeStake.stake}</p>}
+        </aside>
+      )}
+
       {textPathEncounter ? (
         <section aria-label={t('play.text_path')}>
           <p>{t(scene.text_equivalent.key)}</p>
@@ -157,10 +193,29 @@ export function PlayScreen({
         <section className="decision" aria-label={t('play.decision')}>
           <h2>{t(presented.prompt?.key ?? 'play.decision')}</h2>
 
-          {!presented.authorised ? (
-            /* A role without authority OBSERVES, and is told WHICH rule applied
-               rather than having the decision silently disappear. */
-            <p role="status">{t(`refusal.${presented.refusal}`)}</p>
+          {/* ★ EVS-3 — SUPPORT, NOT SPECTATING.
+              Canon holds both "no solo player gains fictional authority to make
+              every decision" and "the player influences which system carries
+              the resulting pressure". The commit beat reconciles them: the
+              player may support another person's proposal under a named
+              constraint. So a role without authority still commits — and is
+              told WHOSE authority this is, because canon says "the relevant
+              professional explains the binding constraint... This is authority,
+              not a game hint." */}
+          {presented.commitAs === 'support' && presented.authorityHeldBy && (
+            <p className="constraint" role="status">
+              {t('play.authority_held_by')}{' '}
+              {presented.authorityHeldBy
+                .map((r) => t(`role.${r.replace('role.', '')}.title`)).join(', ')}
+              {'. '}{t('play.you_may_support')}
+            </p>
+          )}
+
+          {!presented.mayCommit ? (
+            /* No role at all. Refused by name rather than silently permitted —
+               the default this engine used to have was "authorised for
+               everything". */
+            <p role="alert">{t(`refusal.${presented.refusal}`)}</p>
           ) : (
             <ul>
               {/* Authored order. Never sorted by desirability — sorting would
@@ -168,7 +223,12 @@ export function PlayScreen({
                   weighed anything. */}
               {presented.options.map((o) => (
                 <li key={o.id}>
-                  <button type="button" onClick={() => onChoose?.(o.id)}>{t(o.label.key)}</button>
+                  <button type="button" onClick={() => onChoose?.(o.id)}>
+                    <span className="visually-hidden">
+                      {t(`play.commit_as.${presented.commitAs}`)}{' '}
+                    </span>
+                    {t(o.label.key)}
+                  </button>
                   <p>{o.protects}</p>
                   {/* FPE-05 — the risk is available BEFORE commitment, because
                       the role could reasonably know it. */}
