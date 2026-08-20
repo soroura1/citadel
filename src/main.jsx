@@ -10,11 +10,8 @@ import ATTESTATION from './content/attestation.json' with { type: 'json' };
 import { PlayRoute } from './features/play/PlayRoute.jsx';
 import { PlaceSurface } from './features/place/PlaceSurface.jsx';
 import { RecordView } from './features/record/RecordView.jsx';
-import { ObservationScreen } from './features/record/ObservationScreen.jsx';
+import { ObservationRoute } from './features/record/ObservationRoute.jsx';
 import { buildRecord } from './engine/record.js';
-import { buildObservation, newParticipantRef } from './engine/observation.js';
-import { buildReflection } from './engine/reflection.js';
-import { observationAsText, observationAsJson, downloadAsFile } from './engine/export.js';
 import * as store from './engine/local-store.js';
 import { currentSceneId } from './engine/run.js';
 import { bundleFrom, startRun, commit, act, advance } from './engine/run.js';
@@ -114,40 +111,14 @@ function App() {
           : <main><p role="status">{t('record.no_run')}</p></main>
       )}
 
+      {/* ★ ONE COMPOSITION, SHARED WITH THE TESTS. The store wiring, the
+          export and the DELETE live in `ObservationRoute` — this file cannot be
+          executed by a test, and those are the two paths whose whole point is
+          what does and does not leave the device. */}
       {surface.id === 'observation' && (
-        <ObservationScreen
-          record={run ? buildRecord(run, chapter) : null}
-          saved={{
-            reflection: Object.fromEntries(
-              (store.loadReflection(local)?.responses ?? []).map((r) => [r.promptKey, r.text])),
-            observation: Object.fromEntries(
-              Object.entries(store.loadObservation(local)?.sections ?? {}).map(([k, v]) => [k, v.text])),
-          }}
-          onSaveReflection={(answers) => {
-            // ⚠️ NOTHING IS SENT. There is no submit, because there is nowhere
-            // to submit to — the privacy tests prove it by making fetch, XHR,
-            // sendBeacon and WebSocket throw.
-            try {
-              store.saveReflection(local, buildReflection({
-                participantRef: store.participantRef(local, newParticipantRef), answers,
-              }));
-            } catch { /* an empty reflection is refused; the page keeps the text */ }
-          }}
-          onSaveObservation={(answers) => {
-            try {
-              store.saveObservation(local, buildObservation({
-                participantRef: store.participantRef(local, newParticipantRef), answers, run,
-              }));
-            } catch { /* an incomplete observation is refused until all four are answered */ }
-          }}
-          onExport={(format, answers) => {
-            const record = buildObservation({
-              participantRef: store.participantRef(local, newParticipantRef), answers, run,
-            });
-            const text = format === 'json' ? observationAsJson(record) : observationAsText(record, t);
-            downloadAsFile({ text, filename: `citadel-observation.${format === 'json' ? 'json' : 'txt'}` });
-          }}
-          onDelete={() => { store.deleteEverything(local); setRun(null); go('/'); }}
+        <ObservationRoute
+          run={run} bundle={chapter} local={local} t={t}
+          onDeleted={() => { setRun(null); go('/'); }}
         />
       )}
 

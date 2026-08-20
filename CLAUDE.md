@@ -69,6 +69,32 @@ store afterwards; a deletion test that cannot list what remains is asserting the
 **Bundle `v0.4` → `v0.5`** (history gained `changes`). Surfaces: `/record` and `/observation` added,
 and both removed from `PLANNED_SURFACES`.
 
+### ⚠️ ONE COMPOSITION — and the fourth time this shape appeared
+
+`main.jsx` cannot be executed by a test (`createRoot`, `document`), so anything composed there is
+untested **by construction**. This build has now paid for that four times: enumerated props at EVS-3,
+a walker pinned to one role at EVS-4, slot fixtures the content never produced at EVS-5, and here the
+store wiring, the export and the **delete** — the two paths whose whole point is what does and does
+not leave the device.
+
+`ObservationRoute` owns that wiring, `main.jsx` mounts it, and the tests render the same component
+the browser does with an enumerable memory store.
+
+> The `saved` mapping is bespoke — the screen holds `{key: text}`, the contracts require
+> `responses: [{promptKey, text}]` and `sections: {name: {promptKey, text}}`. **Exactly the small
+> translation that works until the day it returns `{}` and a participant's saved note appears to have
+> vanished.** Breaking it fails 3 tests.
+
+### ⚠️ The JS bundle has no budget, and it grew 25% in one session
+
+**366 KB / 103 KB gzip**, from ~293 KB before EVS-6. Verified: **no Ajv, no `postgres`, no
+TanStack** in the output — it is React plus the new screens.
+
+`Q24` covers the **image** weight budget; **nothing covers JavaScript.** The precedent is real (the
+prior trial trimmed 203 → 196 KB deliberately) and this audience is on slow connections, so the
+absence of a stated ceiling is an owner gap rather than something to invent a number for. **Flagged
+for EVS-7's parity pass.**
+
 ## ⛔ EVS-5 — THE VISUAL BINDING GATE IS **HELD**, NOT PASSED
 
 The reviewed design package EVS-5 §3 requires **does not exist**: eleven `v0.1` concepts in the story
