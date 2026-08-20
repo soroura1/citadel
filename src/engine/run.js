@@ -528,6 +528,22 @@ export function deserialise(text, bundle) {
   // no longer playable. Resuming it would put a participant back into a
   // configuration the build cannot honour.
   assertRoleIsPlayable(run.role);
+
+  // ⚠️ EVS-4 — A DISCOVERY MUST STILL EXIST IN THE BUNDLE IT RESUMES INTO.
+  //
+  // Held evidence feeds the risk gate, so a save carrying an id the pinned
+  // bundle no longer knows would silently unlock — or silently withhold — a
+  // trade-off the participant never earned. The version pin makes this rare and
+  // does not make it impossible: a save can be hand-edited, and a bundle
+  // rebuilt from loose documents need not match the one it was played on.
+  const known = new Set(
+    [...bundle.scenes.values()].flatMap((s) => (s.evidence ?? []).map((e) => e.id)));
+  for (const d of run.discovered ?? []) {
+    if (!known.has(d.evidenceId)) {
+      throw new RunRefusal('resumed-run-holds-unknown-evidence', d.evidenceId);
+    }
+  }
+
   if (run.phase === 'post_commit' && !run.response) {
     throw new RunRefusal('resumed-response-beat-has-no-response', currentSceneId(run) ?? '(no scene)');
   }

@@ -41,6 +41,8 @@ const sceneOf = (id) => CHAPTER_1.scenes.find((s) => s.id === id);
  * file passed through those gates without exercising one.
  */
 const EVS = { role: 'role.resilience-lead' };
+/** Both roles the slice carries. The two see different actions, so a walker pinned to one is blind to half the markup. */
+const ROLES = ['role.resilience-lead', 'role.quality-patient-safety'];
 
 
 /** Render whatever beat the run is on. */
@@ -485,8 +487,8 @@ test('★ a cost renders as a NOTE in its currency — no number anywhere', () =
  * absence assertion would be passing on a screen that never had any of this on
  * it. This walker takes everything first.
  */
-function informedBeatsOf(sceneIndex, b, { textPath = false } = {}) {
-  let run = startRun({ bundle: b, config: EVS });
+function informedBeatsOf(sceneIndex, b, { textPath = false, role = EVS.role } = {}) {
+  let run = startRun({ bundle: b, config: { role } });
   const take = (r) => {
     let guard = 0;
     while (view(r, b).actions.length > 0 && guard++ < 20) r = act(r, b, view(r, b).actions[0].id).run;
@@ -511,21 +513,22 @@ function informedBeatsOf(sceneIndex, b, { textPath = false } = {}) {
   return out;
 }
 
-test('★ FPE-01 holds on the INFORMED path too — investigating reveals nothing post-commitment', () => {
-  // The absence assertions above walk a participant who did nothing. Discovery
-  // is exactly the mechanism that could leak the turn early, so the same
-  // assertions are made again after taking every action available.
+test('★ FPE-01 holds on the INFORMED path too — for BOTH roles', () => {
+  // The absence assertions above walk a participant who did nothing, as ONE
+  // role. Discovery is exactly the mechanism that could leak the turn early,
+  // and the two roles see different actions — so the same assertions are made
+  // again after taking everything available, on each of them.
   const b = bundle();
-  for (const i of [0, 1, 2, 3]) {
+  for (const role of ROLES) for (const i of [0, 1, 2, 3]) {
     const scene = CHAPTER_1.scenes[i];
-    const beats = informedBeatsOf(i, b);
+    const beats = informedBeatsOf(i, b, { role });
     const turn = scene.turn.slice(0, 60);
     const residue = scene.residue.slice(0, 60);
 
-    assert.ok(!beats.pre_commit.includes(turn), `${scene.id}: the turn is on the encounter`);
-    assert.ok(!beats.interactive.includes(turn), `${scene.id}: the turn is on the decision screen`);
-    assert.ok(!beats.interactive.includes(residue), `${scene.id}: the residue is on the decision screen`);
-    assert.ok(beats.post_commit.includes(turn), `${scene.id}: the turn never arrived`);
+    assert.ok(!beats.pre_commit.includes(turn), `${role} ${scene.id}: the turn is on the encounter`);
+    assert.ok(!beats.interactive.includes(turn), `${role} ${scene.id}: the turn is on the decision screen`);
+    assert.ok(!beats.interactive.includes(residue), `${role} ${scene.id}: the residue is on the decision screen`);
+    assert.ok(beats.post_commit.includes(turn), `${role} ${scene.id}: the turn never arrived`);
     assert.ok(beats.scene_exit.includes(residue));
   }
 });
@@ -539,11 +542,40 @@ test('the informed path actually found things, or the test above proves nothing'
   assert.ok(!draw(run, b).includes(t('play.risk_not_yet_known')) || true);
 });
 
-test('★ no locale key reaches the markup on the INFORMED path either', () => {
+test('★ no locale key reaches the markup on the INFORMED path, for either role', () => {
+  // ⚠️ THE TWO ROLES SEE DIFFERENT ACTIONS. Quality alone reaches Fadl; the
+  // lead alone reaches the nursing leader. A string missing from one of those
+  // branches would print its own key at exactly one participant, and a walker
+  // hardcoded to one role would never see it.
   const b = bundle();
-  for (const i of [0, 1, 2, 3]) {
-    for (const [phase, html] of Object.entries(informedBeatsOf(i, b))) {
-      assert.ok(!html.includes('⟨'), `a missing string reached scene ${i}'s ${phase}`);
+  for (const role of ROLES) for (const i of [0, 1, 2, 3]) {
+    for (const [phase, html] of Object.entries(informedBeatsOf(i, b, { role }))) {
+      assert.ok(!html.includes('⟨'), `${role}: a missing string reached scene ${i}'s ${phase}`);
     }
+  }
+});
+
+test('★ the informed walker really takes the GATED action — or it proves nothing', () => {
+  // `inspect.01.02.sealed-arch` needs Rami's board first. The walker takes
+  // `actions[0]` repeatedly and availability reorders as actions are consumed,
+  // so reaching the arch is a property of that loop rather than an obvious
+  // one — and if it never reached it, the chain path would be unexercised in
+  // markup while every count-based assertion still passed.
+  const b = bundle();
+  for (const role of ROLES) {
+    let run = startRun({ bundle: b, config: { role } });
+    while (currentSceneId(run) !== 'sc-01-02') {
+      run = run.phase === 'interactive'
+        ? commit(run, b, view(run, b).presented.options[0].id).run
+        : advance(run, b);
+    }
+    run = advance(run, b);
+    let guard = 0;
+    while (view(run, b).actions.length > 0 && guard++ < 20) run = act(run, b, view(run, b).actions[0].id).run;
+
+    const taken = run.actionsTaken.filter((a) => a.sceneId === 'sc-01-02').map((a) => a.actionId);
+    assert.ok(taken.includes('inspect.01.02.sealed-arch'), `${role} never reached the sealed arch`);
+    const html = draw(run, b);
+    assert.ok(html.includes('bears the same one'), `${role}: the emblem match is not on the page`);
   }
 });
