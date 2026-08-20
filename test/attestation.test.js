@@ -12,6 +12,7 @@ import { readFileSync } from 'node:fs';
 import { attest, canClaimApproved, isExpired, PROVISIONAL, AttestationRefusal }
   from '../src/engine/attestation.js';
 import { CHAPTER_1 } from '../src/content/chapter-1.js';
+import { t } from '../src/locales/index.js';
 
 const record = JSON.parse(readFileSync(new URL('../src/content/attestation.json', import.meta.url), 'utf8'));
 
@@ -67,10 +68,28 @@ test('the attestation has not silently expired', () => {
     'an expired attestation means provisional content is still being served past its stated life');
 });
 
-test('★ the label is USER-VISIBLE — it reaches the page, not only the record', () => {
-  const main = readFileSync(new URL('../src/main.jsx', import.meta.url), 'utf8');
-  assert.match(main, /ProvisionalNotice/,
+test('★ the label is USER-VISIBLE — it reaches the page, not only the record', async () => {
+  // ⚠️ THIS WAS A GREP OF `main.jsx` FOR THE STRING "ProvisionalNotice", and it
+  // failed the moment the play composition moved into `PlayRoute.jsx` — while
+  // the notice still rendered. The second test in this repository pinned to an
+  // implementation location rather than to behaviour; the first was
+  // locale-coverage's decision-pointer check, corrected at EVS-2.
+  //
+  // It renders the real route now. A grep cannot tell whether a component is
+  // MOUNTED, which is the whole question here.
+  const { createElement } = await import('react');
+  const { renderToStaticMarkup } = await import('react-dom/server');
+  const { PlayRoute } = await import('../src/features/play/PlayRoute.jsx');
+  const { bundleFrom, startRun } = await import('../src/engine/run.js');
+
+  const bundle = bundleFrom(CHAPTER_1);
+  const run = startRun({ bundle, config: { role: 'role.resilience-lead' } });
+  const html = renderToStaticMarkup(
+    createElement(PlayRoute, { run, bundle, attestation: record }));
+
+  assert.ok(html.includes(t('provisional.label')),
     'a provisional record nobody sees is a record, not a label');
+  assert.ok(html.includes(t('provisional.heading')));
 
   const en = JSON.parse(readFileSync(new URL('../src/locales/en.json', import.meta.url), 'utf8'));
   for (const k of ['provisional.heading', 'provisional.body', 'provisional.remediation']) {

@@ -23,11 +23,13 @@
  */
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { PlayScreen } from '../src/features/play/PlayScreen.jsx';
 import { CHAPTER_1 } from '../src/content/chapter-1.js';
 import { bundleFrom, startRun, view, commit, advance, currentSceneId } from '../src/engine/run.js';
 import { PHASES } from '../src/engine/staging.js';
+import { variantFor } from '../src/engine/roles.js';
 import { t } from '../src/locales/index.js';
 
 const bundle = () => bundleFrom(CHAPTER_1);
@@ -339,4 +341,62 @@ test('★ THE MIXED CASE — Scene 4 carries authored characters AND a derived n
   const charactersMarkup = html.slice(html.indexOf(t('play.who_responded')));
   assert.ok(!charactersMarkup.includes('data-provisional'),
     'canon\u2019s own sentences were labelled provisional');
+});
+
+// --- the composition the BROWSER runs ------------------------------------------
+
+test('★ the PRODUCTION composition renders EVS-3\'s observables — main.jsx dropped them', async () => {
+  // ============================================================================
+  // ⚠️ THIS TEST EXISTS BECAUSE 203 TESTS WERE GREEN AND THE BUILD WAS WRONG.
+  // ============================================================================
+  // `main.jsx` enumerated PlayScreen's props by hand while every test spread the
+  // whole view. Two call shapes, one of them tested. EVS-3 added `roleVariant`
+  // and `acknowledgeStake`; the tests saw them and the browser did not — so the
+  // role panel and the private stake, the two things EVS-3 delivers, would not
+  // have rendered in the deployed build.
+  //
+  // The fix was not a guard over the enumeration. It was removing the second
+  // call shape: `PlayRoute` spreads the view once, and both `main.jsx` and this
+  // test use it. `main.jsx` itself cannot be executed here — it calls
+  // `createRoot` and reads `document` — which is exactly why the composition
+  // had to come out of it.
+  const { PlayRoute } = await import('../src/features/play/PlayRoute.jsx');
+  const ATTESTATION = JSON.parse(
+    (await import('node:fs')).readFileSync(
+      new URL('../src/content/attestation.json', import.meta.url), 'utf8'));
+
+  const b = bundle();
+  const stake = 'A night shift where nobody could say which circuits were live.';
+  const run = startRun({
+    bundle: b,
+    config: { role: 'role.quality-patient-safety', stake, displayName: 'Sorour' },
+  });
+
+  const html = renderToStaticMarkup(
+    createElement(PlayRoute, { run, bundle: b, attestation: ATTESTATION }));
+
+  // EVS-1: the provisional band is still on the page.
+  assert.ok(html.includes(t('provisional.label')));
+  // EVS-2: the beat is named.
+  assert.ok(html.includes(t('beat.pre_commit')));
+  // ★ EVS-3: the role's own position, and the private acknowledgement.
+  const evidence = variantFor(CHAPTER_1.scenes[0], 'role.quality-patient-safety').evidence;
+  assert.ok(html.includes(t('play.your_position')), 'the role panel is missing from the real route');
+  assert.ok(html.includes(evidence), 'the role\'s evidence is missing from the real route');
+  assert.ok(html.includes(stake), 'the stake is missing from the real route');
+  assert.ok(html.includes('data-private="true"'));
+});
+
+test('the production composition ends the chapter too', async () => {
+  const { PlayRoute } = await import('../src/features/play/PlayRoute.jsx');
+  const b = bundle();
+  let run = startRun({ bundle: b, config: EVS });
+  let guard = 0;
+  while (!run.complete && guard++ < 100) {
+    run = run.phase === 'interactive'
+      ? commit(run, b, view(run, b).presented.options[0].id).run
+      : advance(run, b);
+  }
+  const html = renderToStaticMarkup(createElement(PlayRoute, { run, bundle: b, attestation: null }));
+  assert.ok(html.includes(t('chapter_end.heading')));
 });

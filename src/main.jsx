@@ -7,9 +7,8 @@ import { SetupScreen } from './features/setup/SetupScreen.jsx';
 import { PlayScreen } from './features/play/PlayScreen.jsx';
 import { CHAPTER_1 } from './content/chapter-1.js';
 import ATTESTATION from './content/attestation.json' with { type: 'json' };
-import { ProvisionalNotice } from './features/play/ProvisionalNotice.jsx';
-import { ChapterEnd } from './features/play/ChapterEnd.jsx';
-import { bundleFrom, startRun, view, commit, advance } from './engine/run.js';
+import { PlayRoute } from './features/play/PlayRoute.jsx';
+import { bundleFrom, startRun, commit, advance } from './engine/run.js';
 import { Navigation } from './layout/navigation.jsx';
 import { HttpCatalogueGateway } from './gateways/catalogue-gateway.js';
 import { SURFACES } from './surfaces.js';
@@ -78,7 +77,7 @@ function App() {
         />
       )}
       {surface.id === 'play' && (() => {
-        // ⚠️ EVS-3 — A DEEP LINK TO /play NOW GOES TO SETUP, NOT TO A RUN.
+        // ⚠️ EVS-3 — A DEEP LINK TO /play GOES TO SETUP, NOT TO A RUN.
         //
         // This used to call `startRun({ bundle: chapter })` with no config. A
         // run has required a role since EVS-3, so that call THROWS — and a
@@ -94,42 +93,19 @@ function App() {
             onBegin={(config) => { setLocale(config.locale); setRun(startRun({ bundle: chapter, config })); }}
           />;
         }
-        const active = run;
-        const v = view(active, chapter);
 
-        // ★ The chapter ENDS. P7 — without this the last decision left a blank
-        // screen, which reads as a crash rather than a conclusion.
-        if (v.complete) {
-          return (
-            <>
-              <ProvisionalNotice attestation={ATTESTATION} />
-              <ChapterEnd state={active.state} history={active.history}
-                          owed={active.state.pending ?? []} />
-            </>
-          );
-        }
-
+        // ★ ONE COMPOSITION, SHARED WITH THE TESTS. `PlayRoute` spreads the
+        // view; this file previously enumerated PlayScreen's props by hand
+        // while the tests spread it, and the two shapes drifted — EVS-3's role
+        // panel and private stake reached the tests and not the browser.
         return (
-          <>
-          <ProvisionalNotice attestation={ATTESTATION} />
-          {/* ★ EVS-2 — TWO HANDLERS, BECAUSE THEY ARE TWO ACTS.
-              Committing applies the decision and stops at the response beat;
-              advancing leaves it. The old single `chooseAndAdvance` did both,
-              so the response had nowhere to happen — the player chose and got
-              another page. It was deleted rather than kept, so this surface
-              cannot fall back to it. */}
-          <PlayScreen
-            scene={v.scene}
-            phase={v.phase}
-            presents={v.presents}
-            decision={v.decision}
-            presented={v.presented}
-            response={v.response}
-            state={v.state}
-            onChoose={(optionId) => setRun(commit(active, chapter, optionId).run)}
-            onAdvance={() => setRun(advance(active, chapter))}
+          <PlayRoute
+            run={run}
+            bundle={chapter}
+            attestation={ATTESTATION}
+            onChoose={(optionId) => setRun(commit(run, chapter, optionId).run)}
+            onAdvance={() => setRun(advance(run, chapter))}
           />
-          </>
         );
       })()}
     </>
