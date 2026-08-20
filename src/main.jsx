@@ -8,12 +8,11 @@ import { PlayScreen } from './features/play/PlayScreen.jsx';
 import { CHAPTER_1 } from './content/chapter-1.js';
 import ATTESTATION from './content/attestation.json' with { type: 'json' };
 import { PlayRoute } from './features/play/PlayRoute.jsx';
-import { PlaceSurface } from './features/place/PlaceSurface.jsx';
+import { PlaceRoute } from './features/place/PlaceRoute.jsx';
 import { RecordView } from './features/record/RecordView.jsx';
 import { ObservationRoute } from './features/record/ObservationRoute.jsx';
 import { buildRecord } from './engine/record.js';
 import * as store from './engine/local-store.js';
-import { currentSceneId } from './engine/run.js';
 import { bundleFrom, startRun, commit, act, advance } from './engine/run.js';
 import { Navigation } from './layout/navigation.jsx';
 import { HttpCatalogueGateway } from './gateways/catalogue-gateway.js';
@@ -91,20 +90,12 @@ function App() {
           out. It renders with or without a run: before one starts it is the
           Bimaristan as it stands; during one it says where you are and what
           your decisions changed. */}
+      {/* ★ ONE COMPOSITION, SHARED WITH THE TESTS. The `here` computation
+          lived in this file, where no test could run it. */}
       {surface.id === 'place' && (
-        <PlaceSurface
-          run={run}
-          scenes={CHAPTER_1.scenes}
-          here={run && !run.complete
-            ? (CHAPTER_1.scenes.find((s) => s.id === currentSceneId(run))?.location_ids ?? [])
-            : []}
-        />
+        <PlaceRoute run={run} bundle={chapter} scenes={CHAPTER_1.scenes} />
       )}
 
-      {/* ★ EVS-6 — THE RECORD AND THE NOTE, EACH ON ITS OWN PATH.
-          A participant must be able to return to what they wrote without
-          replaying a chapter, and the record must be readable after the run
-          rather than only at the moment it ends. */}
       {surface.id === 'record' && (
         run
           ? <main><h1>{t('record.title')}</h1><RecordView record={buildRecord(run, chapter)} /></main>
