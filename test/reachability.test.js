@@ -240,7 +240,11 @@ test('★ F10 — Setup and Play are REACHABLE, and no longer merely planned', a
     assert.ok(!PLANNED_SURFACES.some((p) => p.id === id),
       `${id} is both built and still listed as planned — two states for one surface`);
   }
-  assert.equal(reachableSurfaces().length, 4);
+  // ⚠️ COUNTED, so adding a surface is a deliberate act rather than a drift.
+  // Five since EVS-5 added the Place: entry, item, setup, play, place.
+  assert.equal(reachableSurfaces().length, 5);
+  assert.ok(SURFACES.find((x) => x.id === 'place')?.inNavigation,
+    'the Bimaristan must be findable without leaving the scene to look for it');
 });
 
 test('★ no surface sits at "routed but not reachable" without a dated justification', async () => {

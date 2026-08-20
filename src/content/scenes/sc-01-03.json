@@ -489,5 +489,10 @@
       },
       "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: \"The city/network representative establishes what an external transfer actually requires\", and \"What cannot be selected\" — sending the patient away without an accepted clinical transfer."
     }
+  ],
+  "location_ids": [
+    "loc.emergency-resuscitation",
+    "loc.icu-threshold",
+    "loc.network-liaison"
   ]
 }

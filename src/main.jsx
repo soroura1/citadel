@@ -8,6 +8,8 @@ import { PlayScreen } from './features/play/PlayScreen.jsx';
 import { CHAPTER_1 } from './content/chapter-1.js';
 import ATTESTATION from './content/attestation.json' with { type: 'json' };
 import { PlayRoute } from './features/play/PlayRoute.jsx';
+import { PlaceSurface } from './features/place/PlaceSurface.jsx';
+import { currentSceneId } from './engine/run.js';
 import { bundleFrom, startRun, commit, act, advance } from './engine/run.js';
 import { Navigation } from './layout/navigation.jsx';
 import { HttpCatalogueGateway } from './gateways/catalogue-gateway.js';
@@ -76,6 +78,21 @@ function App() {
           }}
         />
       )}
+      {/* ★ EVS-5 — THE PLACE. Reachable from navigation, because a participant
+          must be able to ask where they are without leaving the scene to find
+          out. It renders with or without a run: before one starts it is the
+          Bimaristan as it stands; during one it says where you are and what
+          your decisions changed. */}
+      {surface.id === 'place' && (
+        <PlaceSurface
+          run={run}
+          scenes={CHAPTER_1.scenes}
+          here={run && !run.complete
+            ? (CHAPTER_1.scenes.find((s) => s.id === currentSceneId(run))?.location_ids ?? [])
+            : []}
+        />
+      )}
+
       {surface.id === 'play' && (() => {
         // ⚠️ EVS-3 — A DEEP LINK TO /play GOES TO SETUP, NOT TO A RUN.
         //

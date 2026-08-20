@@ -96,17 +96,58 @@ test('★ a scene with no text equivalent is REFUSED — that removes an access 
     (e) => e instanceof AssetRefusal && e.refusal === 'scene-has-no-text-equivalent');
 });
 
+/**
+ * ⚠️ THESE FIXTURES WERE THE DEFECT. They were `{ id: 'key-art', required: true }`
+ * — objects — while the content shipped bare strings, so `assertPlayableWithoutArt`
+ * passed here and could never fire there. EVS-5 made one shape, and the fixture
+ * is now a slot the content would recognise.
+ */
+const declaredSlot = (over = {}) => ({
+  id: 'slot.test.key-art', kind: 'environment',
+  alt_key: 'art.gate_of_names.alt', max_bytes: 300000,
+  crop: null, candidate_ref: null, candidate_file: null,
+  inclusion_reviewed: false, reviewed_by: null, ...over,
+});
+
 test('★ a REQUIRED asset slot is refused — play must never depend on an image', () => {
-  const s = { ...scenes[0], asset_slots: [{ id: 'key-art', required: true }] };
+  const s = { ...scenes[0], asset_slots: [declaredSlot({ required: true })] };
   assert.throws(() => assertPlayableWithoutArt(s), (e) => e.refusal === 'asset-slot-marked-required');
   // An optional slot, filled or not, is fine.
-  assert.ok(assertPlayableWithoutArt({ ...scenes[0], asset_slots: [{ id: 'key-art' }] }));
+  assert.ok(assertPlayableWithoutArt({ ...scenes[0], asset_slots: [declaredSlot()] }));
+});
+
+test('★ EVS-5 — a BARE STRING slot is refused, by name', () => {
+  // The shape that made the rule above inert for four releases. Refusing it
+  // explicitly is what stops it drifting back the next time someone hand-writes
+  // a scene.
+  const s = { ...scenes[0], asset_slots: ['slot.test.key-art'] };
+  assert.throws(() => assertPlayableWithoutArt(s), (e) => e.refusal === 'asset-slot-is-not-declared');
+});
+
+test('★ a slot must declare ALT TEXT and a WEIGHT BUDGET before anything fills it', () => {
+  for (const [field, refusal] of [['alt_key', 'asset-slot-has-no-alt-text'],
+                                  ['max_bytes', 'asset-slot-has-no-weight-budget']]) {
+    const slot = declaredSlot();
+    delete slot[field];
+    assert.throws(() => assertPlayableWithoutArt({ ...scenes[0], asset_slots: [slot] }),
+      (e) => e.refusal === refusal, `a slot with no ${field} was accepted`);
+  }
+});
+
+test('★ a slot claiming inclusion review must NAME the reviewer', () => {
+  assert.throws(
+    () => assertPlayableWithoutArt({ ...scenes[0], asset_slots: [declaredSlot({ inclusion_reviewed: true })] }),
+    (e) => e.refusal === 'asset-slot-claims-unattributed-review');
+  assert.ok(assertPlayableWithoutArt({
+    ...scenes[0],
+    asset_slots: [declaredSlot({ inclusion_reviewed: true, reviewed_by: 'the named inclusion reviewer' })],
+  }));
 });
 
 test('★ G1 — the asset manifest is DERIVED, and unfilled is honest, not broken', () => {
   const m = assetManifest([
-    { id: 'a', static_fallback: 'x', text_equivalent: 't', asset_slots: [{ id: 's1', asset_id: 'img-1' }] },
-    { id: 'b', static_fallback: 'x', text_equivalent: 't', asset_slots: [{ id: 's2' }] },
+    { id: 'a', static_fallback: 'x', text_equivalent: 't', asset_slots: [declaredSlot({ id: 's1', asset_id: 'img-1' })] },
+    { id: 'b', static_fallback: 'x', text_equivalent: 't', asset_slots: [declaredSlot({ id: 's2' })] },
   ]);
   assert.deepEqual(m.filled, ['a:s1']);
   assert.deepEqual(m.unfilled, ['b:s2']);

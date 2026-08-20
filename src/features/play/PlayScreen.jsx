@@ -68,14 +68,22 @@ function renderMovement(content) {
   return null;
 }
 
-/* Which scene carries which candidate image. Only the scenes an image exists
- * for appear here; the rest render text-only, which is the designed state and
- * not a gap. Binding is still gated on Q10 — these are candidates, and the
- * provisional band says so on every one. */
-const sceneArt = {
-  'sc-01-01': 'gate-of-names',
-  'sc-01-02': 'bay-that-went-dark',
-};
+/**
+ * ★ THE ART COMES FROM THE SLOT. (EVS-5)
+ *
+ * ⚠️ THIS WAS A HARDCODED MAP OF TWO FILENAMES — a second inventory of the art,
+ * kept beside the computed manifest, which is the shape that drifts. A slot now
+ * declares its own file, its alt key and its weight budget, so this component
+ * has nothing of its own to disagree with.
+ *
+ * A slot may be filled and STILL not bound: `inclusion_reviewed` is false on
+ * every one, because Q10 — the inclusion reviewer — is open and the story
+ * record calls all eleven assets "v0.1 concepts pending project-owner review".
+ * The provisional band says so on every image, which is what makes rendering a
+ * candidate honest rather than a quiet binding.
+ */
+const candidateArt = (scene) =>
+  (scene.asset_slots ?? []).find((slot) => slot.candidate_file && !slot.inclusion_reviewed) ?? null;
 
 export function PlayScreen({
   scene, phase, presents = [], decision, presented, response,
@@ -119,10 +127,10 @@ export function PlayScreen({
 
       {/* Atmosphere, never information. `art is additive`: the scene is
           complete in text, so no clue lives only here. */}
-      {!textPath && sceneArt[scene.id] && (
+      {!textPath && candidateArt(scene) && (
         <figure className="scene-image" data-provisional={t('provisional.badge')}>
-          <img src={`/scenes/${sceneArt[scene.id]}.jpg`}
-               alt={t(`art.${sceneArt[scene.id].replace(/-/g, '_')}.alt`)}
+          <img src={candidateArt(scene).candidate_file}
+               alt={t(candidateArt(scene).alt_key)}
                width="1100" height="733" loading="lazy" />
         </figure>
       )}

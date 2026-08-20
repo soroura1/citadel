@@ -304,9 +304,43 @@
   "static_fallback": null,
   "keyboard_reachable": true,
   "asset_slots": [
-    "slot.ch01.bay-that-went-dark",
-    "slot.ch01.sealed-arch",
-    "slot.prop.keyed-transfer-token"
+    {
+      "id": "slot.ch01.bay-that-went-dark",
+      "kind": "environment",
+      "alt_key": "art.bay_that_went_dark.alt",
+      "max_bytes": 300000,
+      "crop": null,
+      "candidate_ref": "VA-002",
+      "inclusion_reviewed": false,
+      "reviewed_by": null,
+      "states": [
+        "supplied",
+        "interrupted"
+      ],
+      "candidate_file": "/scenes/bay-that-went-dark.jpg"
+    },
+    {
+      "id": "slot.ch01.sealed-arch",
+      "kind": "environment",
+      "alt_key": "art.sealed_arch.alt",
+      "max_bytes": 300000,
+      "crop": null,
+      "candidate_ref": null,
+      "inclusion_reviewed": false,
+      "reviewed_by": null,
+      "candidate_file": null
+    },
+    {
+      "id": "slot.prop.keyed-transfer-token",
+      "kind": "prop",
+      "alt_key": "art.keyed_transfer_token.alt",
+      "max_bytes": 120000,
+      "crop": null,
+      "candidate_ref": "VA-003",
+      "inclusion_reviewed": false,
+      "reviewed_by": null,
+      "candidate_file": null
+    }
   ],
   "unresolved": [
     {
@@ -637,5 +671,11 @@
       },
       "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: The duty nursing leader's want, and the role table's first evidence for the Resilience Lead — the outage, fallback, capacity shortage and network option have no single coordinating owner."
     }
+  ],
+  "location_ids": [
+    "loc.icu-far-bay",
+    "loc.emergency-resuscitation",
+    "loc.service-passage",
+    "loc.sealed-arch"
   ]
 }

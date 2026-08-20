@@ -297,7 +297,17 @@
   "static_fallback": null,
   "keyboard_reachable": true,
   "asset_slots": [
-    "slot.ch01.quality-house"
+    {
+      "id": "slot.ch01.quality-house",
+      "kind": "environment",
+      "alt_key": "art.quality_house.alt",
+      "max_bytes": 300000,
+      "crop": null,
+      "candidate_ref": "VA-005",
+      "inclusion_reviewed": false,
+      "reviewed_by": null,
+      "candidate_file": null
+    }
   ],
   "unresolved": [
     {
@@ -519,5 +529,8 @@
       },
       "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Scene 4 character wants — clinical and nursing leaders."
     }
+  ],
+  "location_ids": [
+    "loc.hall-of-measure"
   ]
 }

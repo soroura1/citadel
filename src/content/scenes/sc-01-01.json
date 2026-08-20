@@ -287,10 +287,50 @@
   "static_fallback": null,
   "keyboard_reachable": true,
   "asset_slots": [
-    "slot.world.bimaristan-first-light",
-    "slot.ch01.ordinary-shift",
-    "slot.ch01.gate-of-names",
-    "slot.prop.keyed-transfer-token"
+    {
+      "id": "slot.world.bimaristan-first-light",
+      "kind": "environment",
+      "alt_key": "art.first_light.alt",
+      "max_bytes": 300000,
+      "crop": null,
+      "candidate_ref": "VA-001",
+      "inclusion_reviewed": false,
+      "reviewed_by": null,
+      "candidate_file": "/scenes/first-light.jpg"
+    },
+    {
+      "id": "slot.ch01.ordinary-shift",
+      "kind": "environment",
+      "alt_key": "art.ordinary_shift.alt",
+      "max_bytes": 300000,
+      "crop": null,
+      "candidate_ref": null,
+      "inclusion_reviewed": false,
+      "reviewed_by": null,
+      "candidate_file": null
+    },
+    {
+      "id": "slot.ch01.gate-of-names",
+      "kind": "environment",
+      "alt_key": "art.gate_of_names.alt",
+      "max_bytes": 300000,
+      "crop": null,
+      "candidate_ref": "VA-004",
+      "inclusion_reviewed": false,
+      "reviewed_by": null,
+      "candidate_file": "/scenes/gate-of-names.jpg"
+    },
+    {
+      "id": "slot.prop.keyed-transfer-token",
+      "kind": "prop",
+      "alt_key": "art.keyed_transfer_token.alt",
+      "max_bytes": 120000,
+      "crop": null,
+      "candidate_ref": "VA-003",
+      "inclusion_reviewed": false,
+      "reviewed_by": null,
+      "candidate_file": null
+    }
   ],
   "unresolved": [
     {
@@ -519,5 +559,10 @@
       },
       "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Ayyash's want — \"finish a night shift that officially ended while ensuring the morning team receives the patients, equipment, and unresolved movements he is still carrying\"."
     }
+  ],
+  "location_ids": [
+    "loc.gate-of-names",
+    "loc.sorting-court",
+    "loc.emergency-courts"
   ]
 }

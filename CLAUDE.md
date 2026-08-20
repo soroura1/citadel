@@ -4,6 +4,46 @@
 **Topology:** [`../CLAUDE.md`](../CLAUDE.md) — `citadel.endura-assess.com` → `172.17.0.1:8087`,
 `TARGET=/opt/citadel/citadel`.
 
+## ⛔ EVS-5 — THE VISUAL BINDING GATE IS **HELD**, NOT PASSED
+
+The reviewed design package EVS-5 §3 requires **does not exist**: eleven `v0.1` concepts in the story
+record, every one *"pending project-owner review"*; **no plan or cutaway asset**; no state frames, no
+crops, no declared alt text, no weight budgets; and **`Q10` — the inclusion reviewer — open.**
+
+So no image is bound, and **nothing was faked** — no CSS drawing, no handcrafted SVG, no emoji, no
+placeholder box. `visualBindingStatus()` is computed from the slots, so the build cannot claim more
+than the content does.
+
+### What shipped instead — the semantic place model
+
+`src/content/places.json` · `src/engine/place.js` · `/place` surface. **Ten locations, canon's five
+tiers, symmetrical routes**, and location states derived from the chapter enums.
+
+> **The tiers do the design package's dramatic work, in text.** Canon: *"the Underworks make every
+> visible function possible. They are also a physical representation of **hidden dependencies** and
+> neglected maintenance."* Chapter 1's mystery is two supplies shown as independent on the official
+> map, passing through one chamber in that layer. Grouping the place by tier puts the map's own blind
+> spot on the page **as a heading** — at no visual cost, and the drawn plan inherits it rather than
+> replacing it.
+
+**World memory is derived, not stored.** The chapter enums already record what was committed; a
+second copy of *"what the ICU is like now"* would disagree with the first the moment one was updated.
+
+### ⚠️ The asset slot was a string, and two rules were inert because of it
+
+`contracts@v0.7.0` — **breaking.** The manifest read `slot.id` while the content shipped bare
+strings, so **all eight of Chapter 1's slots reported as `sc-01-01:?`**, and
+`assertPlayableWithoutArt`'s REQUIRED check — the rule that keeps play from depending on an image —
+read `slot.required` on a string and **could never fire**.
+
+Both were tested. Both were tested on **object fixtures the content never produced.**
+
+A slot now declares `alt_key` and `max_bytes` before anything fills it, and one claiming
+`inclusion_reviewed` must **name the reviewer**. `PlayScreen`'s hardcoded two-filename map is gone —
+the art comes from the slot, so the surface has no second inventory to drift from.
+
+**Bundle unchanged; `contracts` `v0.6.0` → `v0.7.0`.**
+
 ## ★ EVS-4 — INSPECT, CONSULT, COMMIT. THE PARTICIPANT INVESTIGATES.
 
 Through EVS-3 a scene presented its movements and then its options: nothing was found, everything
