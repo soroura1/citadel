@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { useState } from 'react';
 import { EntryScreen } from './features/entry/EntryScreen.jsx';
 import { ItemScreen } from './features/item/ItemScreen.jsx';
-import { SetupScreen } from './features/setup/SetupScreen.jsx';
+import { SetupRoute } from './features/setup/SetupRoute.jsx';
 import { PlayScreen } from './features/play/PlayScreen.jsx';
 import { CHAPTER_1 } from './content/chapter-1.js';
 import ATTESTATION from './content/attestation.json' with { type: 'json' };
@@ -17,8 +17,7 @@ import { bundleFrom, startRun, commit, act, advance } from './engine/run.js';
 import { Navigation } from './layout/navigation.jsx';
 import { HttpCatalogueGateway } from './gateways/catalogue-gateway.js';
 import { SURFACES } from './surfaces.js';
-import { setLocale, localeCoverage, t } from './locales/index.js';
-import { SELECTABLE_ROLES, notYetPlayable } from './engine/roles.js';
+import { setLocale, t } from './locales/index.js';
 
 setLocale('en');
 
@@ -70,26 +69,16 @@ function App() {
           could navigate to. */}
       {surface.id === 'entry' && <EntryScreen onContinue={() => go('/setup')} />}
       {surface.id === 'item' && <ItemScreen gateway={gateway} />}
+      {/* ★ ONE COMPOSITION, SHARED WITH THE TESTS. `SetupRoute` owns which
+          roles are offered and the setLocale that must run before the next
+          screen renders — the last wiring this file still held alone. */}
       {surface.id === 'setup' && (
-        <SetupScreen
-          roles={SELECTABLE_ROLES}
-          notYetPlayable={notYetPlayable(CHAPTER_1.scenes)}
-          localeCoverage={localeCoverage()}
-          onBegin={(config) => {
-            // ★ EVS-3 — THE LANGUAGE APPLIES BEFORE THE NEXT SCREEN RENDERS.
-            // It was collected and discarded: setLocale('en') ran once at module
-            // load and `config.locale` reached the run and nothing else.
-            setLocale(config.locale);
-            setRun(startRun({ bundle: chapter, config }));
-            go('/play');
-          }}
+        <SetupRoute
+          scenes={CHAPTER_1.scenes}
+          onStarted={Object.assign((run) => { setRun(run); go('/play'); }, { bundle: chapter })}
         />
       )}
-      {/* ★ EVS-5 — THE PLACE. Reachable from navigation, because a participant
-          must be able to ask where they are without leaving the scene to find
-          out. It renders with or without a run: before one starts it is the
-          Bimaristan as it stands; during one it says where you are and what
-          your decisions changed. */}
+
       {/* ★ ONE COMPOSITION, SHARED WITH THE TESTS. The `here` computation
           lived in this file, where no test could run it. */}
       {surface.id === 'place' && (
@@ -123,11 +112,9 @@ function App() {
         // role chosen for the participant is the "unrestricted authority"
         // default this session exists to remove.
         if (!run) {
-          return <SetupScreen
-            roles={SELECTABLE_ROLES}
-            notYetPlayable={notYetPlayable(CHAPTER_1.scenes)}
-            localeCoverage={localeCoverage()}
-            onBegin={(config) => { setLocale(config.locale); setRun(startRun({ bundle: chapter, config })); }}
+          return <SetupRoute
+            scenes={CHAPTER_1.scenes}
+            onStarted={Object.assign((started) => setRun(started), { bundle: chapter })}
           />;
         }
 
