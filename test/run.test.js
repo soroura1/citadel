@@ -11,7 +11,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-import { bundleFrom, startRun, view, chooseAndAdvance, currentSceneId,
+import { bundleFrom, startRun, view, commit, advance, currentSceneId,
          serialise, deserialise, RunRefusal } from '../src/engine/run.js';
 import { traceback, defer } from '../src/engine/consequence.js';
 import { defineScenario } from '../src/engine/configuration.js';
@@ -25,13 +25,29 @@ const scenes = all('scenes');
 const decisions = all('decisions');
 const bundle = () => bundleFrom({ version: 'v0.1', scenes, decisions });
 
+/**
+ * Walk ONE scene, beat by beat.
+ *
+ * ⚠️ EVS-2 REPLACED `chooseAndAdvance` WITH TWO CALLS, and this helper is where
+ * the difference shows. The old call applied the effects and moved to the next
+ * scene in one step, so the response beat had nowhere to happen. Now committing
+ * stops at the response and leaving it is a separate act — which is exactly
+ * what a player experiences, and what these tests now walk.
+ */
+function playScene(run, b, pick = (v) => v.presented.options[0].id) {
+  run = advance(run, b);                      // pre_commit  -> interactive
+  const step = commit(run, b, pick(view(run, b)));
+  run = step.run;                             //             -> post_commit
+  run = advance(run, b);                      //             -> scene_exit
+  run = advance(run, b);                      //             -> the next scene
+  return { run, changes: step.changes, response: step.response };
+}
+
 /** Play the whole chapter, always taking the first authorised option. */
 function playThrough(run, b) {
   const changesPerScene = [];
   while (!run.complete) {
-    const v = view(run, b);
-    const option = v.presented.options[0].id;
-    const step = chooseAndAdvance(run, b, option);
+    const step = playScene(run, b);
     changesPerScene.push(step.changes);
     run = step.run;
   }
@@ -45,7 +61,7 @@ test('★ Chapter 1 plays from scene 1 to scene 4, in the BUNDLE\'s order', () =
   const visited = [];
   while (!run.complete) {
     visited.push(currentSceneId(run));
-    run = chooseAndAdvance(run, b, view(run, b).presented.options[0].id).run;
+    run = playScene(run, b).run;
   }
 
   assert.deepEqual(visited, ['sc-01-01', 'sc-01-02', 'sc-01-03', 'sc-01-04']);
@@ -97,8 +113,8 @@ test('★ the history is shaped for TRACEBACK — a later consequence is explain
 test('a run resumes mid-chapter, at the scene it left, with the state it had', () => {
   const b = bundle();
   let run = startRun({ bundle: b });
-  run = chooseAndAdvance(run, b, view(run, b).presented.options[0].id).run;
-  run = chooseAndAdvance(run, b, view(run, b).presented.options[0].id).run;
+  run = playScene(run, b).run;
+  run = playScene(run, b).run;
 
   const resumed = deserialise(serialise(run), b);
   assert.equal(currentSceneId(resumed), 'sc-01-03');
@@ -125,9 +141,13 @@ test('★ a role without authority CANNOT decide by calling the engine directly'
   // was navigating a chapter it had assumed was ungated until its target.
   let reached = null;
   while (!run.complete) {
+    // The decision only exists at `interactive`, so the walk steps into the
+    // beat before asking whether this role may decide.
+    run = advance(run, b);
     const v = view(run, b);
     if (v.presented && !v.presented.authorised) { reached = v; break; }
-    run = chooseAndAdvance(run, b, v.presented.options[0].id).run;
+    const step = commit(run, b, v.presented.options[0].id);
+    run = advance(advance(step.run, b), b);
   }
 
   assert.ok(reached, 'no decision in Chapter 1 gates on authority — this test would prove nothing');
@@ -135,16 +155,16 @@ test('★ a role without authority CANNOT decide by calling the engine directly'
 
   // ★ The surface hiding a button is not enforcement. Calling the engine
   // directly must refuse too — I3: the client may propose, only the server decides.
-  assert.throws(() => chooseAndAdvance(run, b, reached.decision.options[0].id),
+  assert.throws(() => commit(run, b, reached.decision.options[0].id),
     (e) => e instanceof RunRefusal && e.refusal === 'role-lacks-authority-to-decide');
 
   // ...and a role that DOES hold authority proceeds, or the gate refuses everyone.
   const authorised = startRun({ bundle: b, config: { role: reached.decision.requires_authority[0] } });
   let ar = authorised;
   while (currentSceneId(ar) !== reached.scene.id) {
-    ar = chooseAndAdvance(ar, b, view(ar, b).presented.options[0].id).run;
+    ar = playScene(ar, b).run;
   }
-  assert.equal(view(ar, b).presented.authorised, true);
+  assert.equal(view(advance(ar, b), b).presented.authorised, true);
 });
 
 test('★ order comes from the BUNDLE, not from sorting scene ids', () => {
@@ -179,5 +199,6 @@ test('★ a deferred consequence owed to Chapter 2 does NOT arrive at the end of
 test('choosing after the chapter is complete is refused', () => {
   const b = bundle();
   const { run } = playThrough(startRun({ bundle: b }), b);
-  assert.throws(() => chooseAndAdvance(run, b, 'anything'), (e) => e.refusal === 'run-already-complete');
+  assert.throws(() => commit(run, b, 'anything'), (e) => e.refusal === 'run-already-complete');
+  assert.throws(() => advance(run, b), (e) => e.refusal === 'run-already-complete');
 });

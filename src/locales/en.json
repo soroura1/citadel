@@ -122,5 +122,20 @@
   "register.pressure": "Too much at once, and not enough room.",
   "register.loss": "Where there was activity, there is none.",
   "register.recognition": "Something you had already seen, seen differently.",
-  "register.earned-hope": "Light returning — changed, not restored."
+  "register.earned-hope": "Light returning — changed, not restored.",
+  "play.beat": "Where you are:",
+  "beat.pre_commit": "What is happening",
+  "beat.interactive": "What you can do",
+  "beat.post_commit": "What your decision did",
+  "beat.scene_exit": "What is left",
+  "advance.pre_commit": "Consider what can be done",
+  "advance.post_commit": "What is left behind",
+  "advance.scene_exit": "Leave this scene",
+  "play.response": "What followed",
+  "play.you_chose": "You chose:",
+  "play.protected": "This protected",
+  "play.cost": "This cost",
+  "play.what_moved": "What moved",
+  "play.who_responded": "Who responded",
+  "play.response_derived": "This account is assembled from what the option itself said it would protect and cost. The story has not yet written what happens next in its own voice."
 }

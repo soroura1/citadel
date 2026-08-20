@@ -114,8 +114,26 @@ test('★ no raw identifier is ever rendered as prose', async () => {
   // `choice_or_discovery` holds a decision id. It reached the screen once as
   // "dec-01-gate-access" — the same class of failure as a locale key on screen:
   // an internal name shown to a person who has no use for it.
-  const { readFileSync } = await import('node:fs');
-  const play = readFileSync(new URL('../src/features/play/PlayScreen.jsx', import.meta.url), 'utf8');
-  assert.match(play, /movement !== 'choice_or_discovery'/,
-    'the decision pointer must not be rendered as a movement');
+  //
+  // ⚠️ THIS USED TO BE A GREP for a line in PlayScreen.jsx. EVS-2 moved the
+  // filter into `view()`'s projection, where "what may be shown" belongs — and
+  // the grep failed while the behaviour was correct, which is what a test
+  // pinned to an implementation line does. It renders the beat now instead. A
+  // behavioural assertion survives the code moving; it also catches the pointer
+  // arriving through a route nobody thought to grep for.
+  const { renderToStaticMarkup } = await import('react-dom/server');
+  const { PlayScreen } = await import('../src/features/play/PlayScreen.jsx');
+  const { bundleFrom, startRun, view, advance } = await import('../src/engine/run.js');
+  const { CHAPTER_1 } = await import('../src/content/chapter-1.js');
+
+  const bundle = bundleFrom(CHAPTER_1);
+  const atDecision = advance(startRun({ bundle }), bundle);   // pre_commit -> interactive
+  const v = view(atDecision, bundle);
+  const html = renderToStaticMarkup(PlayScreen({ ...v, textPath: false }));
+
+  assert.ok(!html.includes('dec-01-'),
+    'a decision identifier reached the markup — the pointer was rendered as prose');
+  // ...and the decision ITSELF is on screen, so this is not passing by absence.
+  assert.ok(html.includes(en[v.presented.options[0].label.key]),
+    'the decision must be present; otherwise nothing was tested');
 });

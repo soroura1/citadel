@@ -9,7 +9,7 @@ import { CHAPTER_1 } from './content/chapter-1.js';
 import ATTESTATION from './content/attestation.json' with { type: 'json' };
 import { ProvisionalNotice } from './features/play/ProvisionalNotice.jsx';
 import { ChapterEnd } from './features/play/ChapterEnd.jsx';
-import { bundleFrom, startRun, view, chooseAndAdvance } from './engine/run.js';
+import { bundleFrom, startRun, view, commit, advance } from './engine/run.js';
 import { Navigation } from './layout/navigation.jsx';
 import { HttpCatalogueGateway } from './gateways/catalogue-gateway.js';
 import { SURFACES } from './surfaces.js';
@@ -91,12 +91,22 @@ function App() {
         return (
           <>
           <ProvisionalNotice attestation={ATTESTATION} />
+          {/* ★ EVS-2 — TWO HANDLERS, BECAUSE THEY ARE TWO ACTS.
+              Committing applies the decision and stops at the response beat;
+              advancing leaves it. The old single `chooseAndAdvance` did both,
+              so the response had nowhere to happen — the player chose and got
+              another page. It was deleted rather than kept, so this surface
+              cannot fall back to it. */}
           <PlayScreen
             scene={v.scene}
+            phase={v.phase}
+            presents={v.presents}
             decision={v.decision}
+            presented={v.presented}
+            response={v.response}
             state={v.state}
-            role={active.role}
-            onChoose={(optionId) => setRun(chooseAndAdvance(active, chapter, optionId).run)}
+            onChoose={(optionId) => setRun(commit(active, chapter, optionId).run)}
+            onAdvance={() => setRun(advance(active, chapter))}
           />
           </>
         );
