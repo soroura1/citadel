@@ -4,6 +4,71 @@
 **Topology:** [`../CLAUDE.md`](../CLAUDE.md) — `citadel.endura-assess.com` → `172.17.0.1:8087`,
 `TARGET=/opt/citadel/citadel`.
 
+## ★ EVS-6 — THE RECORD, THE REFLECTION, AND THE NOTE THEY TAKE AWAY
+
+### FPE-04's named failure is closed
+
+*"A chapter end that lists only scene titles"* is what `ChapterEnd` did, verbatim. Flagged at EVS-2,
+owned here. `src/engine/record.js` + `RecordView` name the **specific option** committed to in each
+scene, whether it was **decided or supported**, what was known at the time and **where each fact came
+from**, and what moved.
+
+⚠️ **The record is the second copy, by design — so it has to prove it agrees.** `recordRefusals()`
+checks every `set_enum` effect against the live chapter state. A record that says one thing while the
+state says another is worse than no record: the participant debriefs from one and the next chapter
+runs from the other.
+
+⚠️ **A history entry with no `changes` is REFUSED, not defaulted.** Runs saved before bundle `v0.5`
+have none, and `?? []` would render *"nothing changed"* for a commitment that changed something.
+
+### ⛔ Nothing leaves the client, and it is over-proved
+
+`test/privacy.test.js` runs the whole flow — play, reflect, observe, export, resume, delete — with
+**`fetch`, `XMLHttpRequest`, `sendBeacon` and `WebSocket` all replaced by throwing spies**, and a
+second test proves the spies fire.
+
+> **Four exits, not one.** A test that spies only on `fetch` proves nothing about `sendBeacon`, which
+> exists to send data on the way *out* of a page and is what someone reaches for when adding
+> analytics.
+
+The private modules also import no gateway and name no URL — a module holding an endpoint is one
+tidy-up from using it. **`participantRef` is an opaque local id**, never the display name: a record
+keyed by a name is a document about a named professional's workplace.
+
+### The six boundaries
+
+`B1` private · `B2` no status field exists · `B3` **nothing congratulates** · `B4` uncertainty and a
+follow-up question **required**, and refusing an empty one is what makes it real · `B5` the label
+verbatim on the page *and* both exports · `B6` `promotion` stays null until `Q19`.
+
+`B2`/`B3` are enforced by **absence plus `additionalProperties: false`** — such a record is
+unrepresentable, not refused. The contracts schemas refuse all six mutations in
+`content-conformance.test.js`.
+
+⚠️ **Ajv is not in the browser bundle.** It would multiply the bundle for a check the tests already
+make, and this audience is on slow connections. `observation.js` mirrors the schema with named
+refusals instead.
+
+### Reflection: open text, and the wording that is owed
+
+Three prompts, **no options anywhere**, `quality: null` until `Q20`. One is **derived** — it names the
+participant's own last commitment; two are **written**, cited to the definition of done's function
+line, with final wording recorded as owed.
+
+⛔ **Nothing enumerates what the participant did not find out.** The undiscovered evidence is knowable
+and would be easy to list. **A list of your gaps at the end of a chapter is a mark**, whatever
+sentence surrounds it.
+
+### Local, and deletable
+
+`local-store.js` takes an **injected** store. Delete removes **everything including the participant
+id** — a delete that leaves the id leaves the thread tying a future record to the same person — and
+the list is derived from `KEYS` so a key added later cannot be forgotten. Tests **enumerate** the
+store afterwards; a deletion test that cannot list what remains is asserting the call did not throw.
+
+**Bundle `v0.4` → `v0.5`** (history gained `changes`). Surfaces: `/record` and `/observation` added,
+and both removed from `PLANNED_SURFACES`.
+
 ## ⛔ EVS-5 — THE VISUAL BINDING GATE IS **HELD**, NOT PASSED
 
 The reviewed design package EVS-5 §3 requires **does not exist**: eleven `v0.1` concepts in the story

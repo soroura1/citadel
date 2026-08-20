@@ -623,3 +623,71 @@ ol[aria-label] > li p { font-size: var(--step-1); line-height: 1.55; margin: 0; 
 .world-memory { border-block-start: 2px solid var(--turquoise); padding-block-start: var(--space); }
 .world-memory ul { list-style: none; margin: 0; padding: 0; }
 .world-memory li { margin-block-start: var(--space-s); }
+
+/* ---------------------------------------------------------------------------
+   EVS-6 — the record, the reflection, and the note taken away.
+
+   ⚠️ NOTHING HERE CELEBRATES. No badge, no checkmark, no total. B3: the
+   observation earns no recognition, and the honest end state is that the
+   participant has their note.
+   --------------------------------------------------------------------------- */
+
+.record-scenes { list-style: none; margin: 0; padding: 0; }
+.record-scenes > li {
+  border-block-start: 1px solid var(--rule);
+  padding-block: var(--space);
+}
+.record-option b { color: var(--turquoise); }
+.record-option .label, .record-changes .moved-name {
+  font-family: var(--face-utility);
+  font-size: var(--step--1);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-quiet);
+}
+.record-authority, .record-residue { color: var(--ink-quiet); }
+.record-changes { list-style: none; margin: 0; padding: 0; }
+.record-evidence summary { cursor: pointer; color: var(--ink-quiet); }
+
+/* Open text, and plenty of it. A three-line box asks for three lines. */
+.prompt { margin-block: var(--space); }
+.prompt label { display: block; margin-block-end: var(--space-s); }
+.prompt textarea {
+  inline-size: 100%;
+  font-family: var(--face-body);
+  font-size: var(--step-0);
+  line-height: 1.5;
+  padding: var(--space-s);
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  color: var(--ink);
+}
+.prompt textarea:focus-visible { border-color: var(--turquoise); }
+
+/* ★ B5 on the page, not only on the export. A participant should know what
+   they are writing before they write it. */
+.export-label {
+  font-family: var(--face-utility);
+  font-size: var(--step--1);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-quiet);
+  border-block-end: 1px solid var(--rule);
+  padding-block-end: var(--space-s);
+}
+
+/* ⚠️ THE PRINT ROUTE. The note has to survive leaving the browser, and a
+   participant with no printer still gets a clean PDF from the print dialogue.
+   Everything that is not the note itself goes. */
+@media print {
+  nav, .advance, .provisional, .binding-hold { display: none; }
+  .prompt textarea {
+    border: none;
+    padding: 0;
+    /* A textarea prints its box and clips its text; this is the one place the
+       content has to escape the control. */
+    block-size: auto;
+    overflow: visible;
+  }
+  .export-label { border-block-end: 1px solid #000; }
+}

@@ -9,12 +9,19 @@ import { CHAPTER_1 } from './content/chapter-1.js';
 import ATTESTATION from './content/attestation.json' with { type: 'json' };
 import { PlayRoute } from './features/play/PlayRoute.jsx';
 import { PlaceSurface } from './features/place/PlaceSurface.jsx';
+import { RecordView } from './features/record/RecordView.jsx';
+import { ObservationScreen } from './features/record/ObservationScreen.jsx';
+import { buildRecord } from './engine/record.js';
+import { buildObservation, newParticipantRef } from './engine/observation.js';
+import { buildReflection } from './engine/reflection.js';
+import { observationAsText, observationAsJson, downloadAsFile } from './engine/export.js';
+import * as store from './engine/local-store.js';
 import { currentSceneId } from './engine/run.js';
 import { bundleFrom, startRun, commit, act, advance } from './engine/run.js';
 import { Navigation } from './layout/navigation.jsx';
 import { HttpCatalogueGateway } from './gateways/catalogue-gateway.js';
 import { SURFACES } from './surfaces.js';
-import { setLocale, localeCoverage } from './locales/index.js';
+import { setLocale, localeCoverage, t } from './locales/index.js';
 import { SELECTABLE_ROLES, notYetPlayable } from './engine/roles.js';
 
 setLocale('en');
@@ -46,6 +53,10 @@ const gateway = new HttpCatalogueGateway({ baseUrl: import.meta.env.VITE_API ?? 
 // Built once. loadBundle validates every scene and decision at load, so a
 // broken bundle fails HERE rather than when a participant reaches the scene.
 const chapter = bundleFrom(CHAPTER_1);
+
+// ★ EVS-6 — LOCAL, AND ONLY LOCAL. Injected everywhere it is used, so a test
+// can enumerate what is stored and prove the delete control removed it.
+const local = store.browserStore() ?? store.memoryStore();
 
 function App() {
   const [path, setPath] = useState(window.location.pathname);
@@ -90,6 +101,53 @@ function App() {
           here={run && !run.complete
             ? (CHAPTER_1.scenes.find((s) => s.id === currentSceneId(run))?.location_ids ?? [])
             : []}
+        />
+      )}
+
+      {/* ★ EVS-6 — THE RECORD AND THE NOTE, EACH ON ITS OWN PATH.
+          A participant must be able to return to what they wrote without
+          replaying a chapter, and the record must be readable after the run
+          rather than only at the moment it ends. */}
+      {surface.id === 'record' && (
+        run
+          ? <main><h1>{t('record.title')}</h1><RecordView record={buildRecord(run, chapter)} /></main>
+          : <main><p role="status">{t('record.no_run')}</p></main>
+      )}
+
+      {surface.id === 'observation' && (
+        <ObservationScreen
+          record={run ? buildRecord(run, chapter) : null}
+          saved={{
+            reflection: Object.fromEntries(
+              (store.loadReflection(local)?.responses ?? []).map((r) => [r.promptKey, r.text])),
+            observation: Object.fromEntries(
+              Object.entries(store.loadObservation(local)?.sections ?? {}).map(([k, v]) => [k, v.text])),
+          }}
+          onSaveReflection={(answers) => {
+            // ⚠️ NOTHING IS SENT. There is no submit, because there is nowhere
+            // to submit to — the privacy tests prove it by making fetch, XHR,
+            // sendBeacon and WebSocket throw.
+            try {
+              store.saveReflection(local, buildReflection({
+                participantRef: store.participantRef(local, newParticipantRef), answers,
+              }));
+            } catch { /* an empty reflection is refused; the page keeps the text */ }
+          }}
+          onSaveObservation={(answers) => {
+            try {
+              store.saveObservation(local, buildObservation({
+                participantRef: store.participantRef(local, newParticipantRef), answers, run,
+              }));
+            } catch { /* an incomplete observation is refused until all four are answered */ }
+          }}
+          onExport={(format, answers) => {
+            const record = buildObservation({
+              participantRef: store.participantRef(local, newParticipantRef), answers, run,
+            });
+            const text = format === 'json' ? observationAsJson(record) : observationAsText(record, t);
+            downloadAsFile({ text, filename: `citadel-observation.${format === 'json' ? 'json' : 'txt'}` });
+          }}
+          onDelete={() => { store.deleteEverything(local); setRun(null); go('/'); }}
         />
       )}
 
