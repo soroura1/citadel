@@ -496,3 +496,23 @@ test('★ an action pointing at evidence that does not exist fails AT LOAD', () 
   assert.throws(() => bundleFrom({ ...CHAPTER_1, scenes }),
     (e) => e.refusal === 'action-reveals-unknown-evidence');
 });
+
+test('★ a resumed run holding evidence the bundle does not know is refused', () => {
+  // ⚠️ Held evidence feeds the risk gate, so a save carrying an id the pinned
+  // bundle no longer knows would silently unlock — or silently withhold — a
+  // trade-off the participant never earned. The version pin makes this rare and
+  // not impossible: a save can be hand-edited, and a bundle rebuilt from loose
+  // documents need not match the one it was played on.
+  const b = bundle();
+  const { run } = atDecision(LEAD);
+  const found = act(run, b, 'consult.01.01.nour').run;
+
+  assert.ok(deserialise(serialise(found), b), 'the honest save still resumes');
+
+  const tampered = JSON.stringify({
+    ...found,
+    discovered: [...found.discovered, { ...found.discovered[0], evidenceId: 'ev.01.01.invented' }],
+  });
+  assert.throws(() => deserialise(tampered, b),
+    (e) => e.refusal === 'resumed-run-holds-unknown-evidence');
+});
