@@ -1,5 +1,5 @@
 import { t } from '../../locales/index.js';
-import { byTier, worldMemory, REQUIRED_PLACES, visualBindingStatus } from '../../engine/place.js';
+import { byTier, worldMemory, visualBindingStatus, PLAN_SLOT } from '../../engine/place.js';
 
 /**
  * ★ THE BIMARISTAN, AS A PLACE. (EVS-5)
@@ -54,6 +54,18 @@ export function PlaceSurface({ run = null, scenes = [], here = [] }) {
           </p>
         </aside>
       )}
+
+      {/* ★ THE PLAN'S TEXT EQUIVALENT, WHICH EXISTS EVEN THOUGH THE PLAN DOES
+          NOT. EVS-5 §3 requires the plan AND its text equivalent; the finished
+          cutaway will need this paragraph in any case, so writing it now is not
+          a placeholder — it is the half of the requirement that does not depend
+          on an image. When VA-012 lands it becomes that image's alt text and
+          this block renders the image beside it. */}
+      <section className="plan" aria-label={t('place.plan_slot')}>
+        <h2>{t('place.plan_slot')}</h2>
+        {!PLAN_SLOT.candidate_file && <p className="provisional-note">{t('place.plan_not_yet_made')}</p>}
+        <p>{t(PLAN_SLOT.alt_key)}</p>
+      </section>
 
       {tiers.map(({ tier, locations }) => (
         <section key={tier.id} className="tier" data-tier={tier.id} aria-label={t(`tier.${tier.id}`)}>

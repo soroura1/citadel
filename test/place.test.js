@@ -296,3 +296,63 @@ test('the tier distinction is not carried by COLOUR alone', () => {
   assert.ok(html.indexOf(t('tier.underworks')) > html.indexOf(t('tier.commons')),
     'the Underworks sit below the rings, as canon has them');
 });
+
+// --- the plan itself: declared, empty, and its text equivalent already written ---
+
+test('★ the PLAN has a slot, and it is held to the same rules a scene\'s slot is', async () => {
+  // ⚠️ ONE SHAPE. EVS-5 spent a breaking release removing a second slot shape;
+  // giving the plan its own would rebuild the defect somewhere new.
+  const { PLAN_SLOT } = await import('../src/engine/place.js');
+  assert.equal(PLAN_SLOT.id, 'slot.plan.bimaristan-cutaway');
+  assert.equal(PLAN_SLOT.kind, 'plan');
+  assert.ok(PLAN_SLOT.max_bytes > 0, 'the budget is declared before the art exists');
+  assert.ok(en[PLAN_SLOT.alt_key], 'the text equivalent is declared before the art exists');
+  assert.equal(PLAN_SLOT.candidate_ref, 'VA-012');
+});
+
+test('★ the plan is NOT MADE, and the model says so rather than implying otherwise', () => {
+  const status = visualBindingStatus(CHAPTER_1.scenes);
+  assert.equal(status.plan.made, false, 'VA-012 has not been generated');
+  assert.equal(status.plan.candidate, 'VA-012');
+  assert.equal(status.blocked, true);
+  // The plan counts toward the tally. Leaving it out would report a binding
+  // status that looks closer to done than it is.
+  assert.equal(status.slots, 9);
+});
+
+test('★ THE TEXT EQUIVALENT EXISTS ALREADY — it is not a placeholder for the image', async () => {
+  // EVS-5 §3 requires the plan AND its text equivalent. The second half does
+  // not depend on the first: the finished cutaway needs this paragraph in any
+  // case, so writing it now is the half of the requirement that canon can
+  // already satisfy.
+  const { PLAN_SLOT } = await import('../src/engine/place.js');
+  const alt = en[PLAN_SLOT.alt_key];
+  assert.ok(alt.length > 800, 'a one-line alt text is not an equivalent for a whole-building plan');
+
+  // It must name all four tiers, or it is not a description of this plan.
+  for (const tier of ['Crown', 'Houses', 'Commons', 'Underworks']) {
+    assert.ok(alt.includes(tier), `the text equivalent does not mention the ${tier}`);
+  }
+  // ...and the two dependencies the picture exists to make visible.
+  assert.match(alt, /sealed arch/i, 'the electrical dependency is missing');
+  assert.match(alt, /taut wire|water-driven clock/i, 'the timekeeping dependency is missing');
+
+  const html = drawPlace({ run: null, scenes: CHAPTER_1.scenes });
+  assert.ok(html.includes(t('place.plan_not_yet_made')), 'the page does not say the plan is unmade');
+  assert.ok(html.includes(alt.slice(0, 80)), 'the text equivalent is not on the page');
+});
+
+test('the derive script reads the budget from the CONTENT, never from an argument', async () => {
+  // A budget that can be passed in is a budget the person in a hurry chooses.
+  const { execFileSync } = await import('node:child_process');
+  const out = execFileSync('node',
+    [new URL('../scripts/lib/slot-lookup.mjs', import.meta.url).pathname, 'slot.plan.bimaristan-cutaway'],
+    { encoding: 'utf8' }).trim().split(' ');
+  const { PLAN_SLOT } = await import('../src/engine/place.js');
+  assert.equal(Number(out[0]), PLAN_SLOT.max_bytes);
+  assert.equal(out[2], PLAN_SLOT.alt_key);
+
+  const script = readFileSync(new URL('../scripts/derive-asset.sh', import.meta.url), 'utf8');
+  assert.ok(!/BUDGET="?\$[123]/.test(script), 'the budget must not come from the command line');
+  assert.match(script, /inclusion_reviewed: false/, 'the script must not imply it binds anything');
+});
