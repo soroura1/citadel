@@ -327,5 +327,87 @@
     "register": "pressure",
     "derivedFrom": "concentrated fear",
     "unresolved": "Canon gives Chapter 1's arc at CHAPTER level in one line and assigns no register to an individual scene. This distribution is a derivation, not canon."
+  },
+  "staging": {
+    "pre_commit": [
+      "orientation",
+      "desire",
+      "friction"
+    ],
+    "interactive": [
+      "choice_or_discovery"
+    ],
+    "post_commit": [
+      "turn",
+      "immediate_effect"
+    ],
+    "scene_exit": [
+      "residue"
+    ]
+  },
+  "immediate_effect": {
+    "state_change_source": "decision_effects",
+    "responses": [
+      {
+        "option_id": "dec-01-power-pressure.stabilize-locally",
+        "narrative_response": null,
+        "character_response": null,
+        "derived_from": [
+          "protects",
+          "risks",
+          "effects"
+        ],
+        "unresolved": [
+          {
+            "field": "narrative_response",
+            "why": "Canon Scene 2 authors this pathway as operational bullets and no post-commitment narration."
+          },
+          {
+            "field": "character_response",
+            "why": "Canon Scene 2 assigns character action to the fail-forward rule and to the scene closure — Rami isolating the board, Fadl opening the near-miss entry, Maha attaching the timeline — and those happen on EVERY pathway, so none of them is a response to this one."
+          }
+        ]
+      },
+      {
+        "option_id": "dec-01-power-pressure.mobile-bridge",
+        "narrative_response": null,
+        "character_response": null,
+        "derived_from": [
+          "protects",
+          "risks",
+          "effects"
+        ],
+        "unresolved": [
+          {
+            "field": "narrative_response",
+            "why": "Canon Scene 2 authors this pathway as operational bullets and no post-commitment narration."
+          },
+          {
+            "field": "character_response",
+            "why": "Canon Scene 2 assigns character action to the fail-forward rule and to the scene closure, which happen on every pathway. Ayyash and biomedical staff bringing the mobile set is what this pathway IS, not how anyone responds to it."
+          }
+        ]
+      },
+      {
+        "option_id": "dec-01-power-pressure.selective-relocation",
+        "narrative_response": null,
+        "character_response": null,
+        "derived_from": [
+          "protects",
+          "risks",
+          "effects"
+        ],
+        "unresolved": [
+          {
+            "field": "narrative_response",
+            "why": "Canon Scene 2 authors this pathway as operational bullets and no post-commitment narration."
+          },
+          {
+            "field": "character_response",
+            "why": "Canon Scene 2 assigns character action to the fail-forward rule and to the scene closure, which happen on every pathway."
+          }
+        ]
+      }
+    ]
   }
 }

@@ -312,5 +312,67 @@
     "register": "wonder",
     "derivedFrom": "wonder",
     "unresolved": "Canon gives Chapter 1's arc at CHAPTER level in one line and assigns no register to an individual scene. This distribution is a derivation, not canon."
+  },
+  "staging": {
+    "pre_commit": [
+      "orientation",
+      "desire",
+      "friction"
+    ],
+    "interactive": [
+      "choice_or_discovery"
+    ],
+    "post_commit": [
+      "turn",
+      "immediate_effect"
+    ],
+    "scene_exit": [
+      "residue"
+    ]
+  },
+  "immediate_effect": {
+    "state_change_source": "decision_effects",
+    "responses": [
+      {
+        "option_id": "dec-01-gate-access.assign-owner",
+        "narrative_response": null,
+        "character_response": null,
+        "derived_from": [
+          "protects",
+          "risks",
+          "effects"
+        ],
+        "unresolved": [
+          {
+            "field": "narrative_response",
+            "why": "Canon Scene 1 tabulates this pathway as `C1_PUBLIC_TRUST +1`, `C1_COORDINATION +1` and authors no post-commitment narration."
+          },
+          {
+            "field": "character_response",
+            "why": "Canon Scene 1 records state effects, not people: its table has a Player behavior column and a State effect column, and no character reacts in either."
+          }
+        ]
+      },
+      {
+        "option_id": "dec-01-gate-access.keep-schedule",
+        "narrative_response": null,
+        "character_response": null,
+        "derived_from": [
+          "protects",
+          "risks",
+          "effects"
+        ],
+        "unresolved": [
+          {
+            "field": "narrative_response",
+            "why": "Canon Scene 1 tabulates this pathway as `C1_FRONTLINE_TRUST -1` and authors no post-commitment narration."
+          },
+          {
+            "field": "character_response",
+            "why": "Canon Scene 1 records state effects, not people: its table has a Player behavior column and a State effect column, and no character reacts in either."
+          }
+        ]
+      }
+    ]
   }
 }
