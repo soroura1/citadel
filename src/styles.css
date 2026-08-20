@@ -587,6 +587,20 @@ ol[aria-label] > li p { font-size: var(--step-1); line-height: 1.55; margin: 0; 
    hidden dependency lives and the official map does not go.
    --------------------------------------------------------------------------- */
 
+/* ⚠️ AN IMAGE WITHOUT AN INLINE-SIZE RULE RENDERS AT ITS INTRINSIC WIDTH.
+   The cutaway is 1600px wide. On the deployed page it pushed the document to
+   2102px against a 1512px viewport — the whole site scrolled sideways, and it
+   would have been worse on a phone and worse again at 200% zoom.
+
+   Every check was green. `width`/`height` ATTRIBUTES were present, which is
+   right for layout shift and says nothing about display size; the render tests
+   asserted the tag existed; the stylesheet tests looked for physical
+   properties and px font sizes. **A human opening the page found it in one
+   click**, which is the 17-August lesson arriving in a new shape. */
+.plan-figure { margin: 0; margin-block-end: var(--space-l); position: relative; }
+.plan-figure img { display: block; inline-size: 100%; block-size: auto; }
+.plan-figure figcaption { margin-block-start: var(--space-s); }
+
 .place .tier { border-block-start: 1px solid var(--rule); padding-block-start: var(--space); }
 .place .tier > h2 {
   font-family: var(--face-utility);

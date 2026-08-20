@@ -251,3 +251,34 @@ test('★ the record and the note are reachable by keyboard and complete without
     assert.ok(html.includes(`for="${id}"`), `the field ${id} has no label bound to it`);
   }
 });
+
+test('★ EVERY FIGURE THE SURFACES RENDER IS CONSTRAINED BY THE STYLESHEET', () => {
+  // ============================================================================
+  // ⚠️ THE DEPLOYED PAGE SCROLLED SIDEWAYS, AND EVERY CHECK WAS GREEN.
+  // ============================================================================
+  // `.plan-figure` had no `inline-size` rule, so the 1600px cutaway rendered at
+  // 1600px inside a 587px column and pushed the document to 2102px against a
+  // 1512px viewport.
+  //
+  // Nothing caught it: the `width`/`height` ATTRIBUTES were present, which is
+  // correct for layout shift and says nothing about display size; the render
+  // tests asserted the tag existed; the stylesheet tests looked for physical
+  // properties and px font sizes. A human opening the page found it at once —
+  // the 17-August lesson in a new shape.
+  //
+  // ★ THE LIST IS DERIVED FROM THE COMPONENTS, never written here. A figure
+  // class added tomorrow is covered without anyone remembering to add it.
+  const classes = new Set();
+  for (const { text } of sources()) {
+    for (const m of text.matchAll(/<figure[^>]*className="([^"]+)"/g)) {
+      for (const cls of m[1].split(/\s+/)) if (cls) classes.add(cls);
+    }
+  }
+  assert.ok(classes.size > 0, 'no figure found at all — this test would prove nothing');
+
+  for (const cls of classes) {
+    const rule = new RegExp(`\\.${cls}\\s+img\\s*\\{[^}]*inline-size:\\s*100%`);
+    assert.match(rules, rule,
+      `.${cls} img has no inline-size — the image renders at its intrinsic width and the page scrolls sideways`);
+  }
+});
