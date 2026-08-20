@@ -84,6 +84,31 @@ export const SURFACES = [
       'they are without leaving the scene to find out.',
     release: 'EVS-5',
   },
+  {
+    id: 'record',
+    path: '/record',
+    title: 'The record',
+    status: 'reachable',
+    inNavigation: true,
+    reason:
+      'EVS-6. What happened and what the participant did: the option committed to in each scene, ' +
+      'whether it was decided or supported, what was known at the time and where each fact came ' +
+      'from. FPE-04\'s named failure is "a chapter end that lists only scene titles", which is ' +
+      'what this replaced.',
+    release: 'EVS-6',
+  },
+  {
+    id: 'observation',
+    path: '/observation',
+    title: 'Your observation',
+    status: 'reachable',
+    inNavigation: true,
+    reason:
+      'EVS-6. Structured reflection and the bounded private observation about the participant\'s ' +
+      'OWN hospital, with the two export routes and the delete control. Reachable on its own path ' +
+      'because a participant must be able to return to their note without replaying a chapter.',
+    release: 'EVS-6',
+  },
 ];
 
 /**
@@ -91,8 +116,9 @@ export const SURFACES = [
  * rather than discovered — and so nobody mistakes "not built" for "forgotten".
  */
 export const PLANNED_SURFACES = [
-  { id: 'record', title: 'Record', release: 'R4' },
-  { id: 'observation', title: 'Observation record', release: 'R4' },
+  // ⚠️ `record` and `observation` were here until EVS-6 built them. A surface
+  // that is both built and still listed as planned is two states for one thing,
+  // and reachability.test.js refuses it — which is the check working.
   { id: 'results', title: 'Results', release: 'R4' },
   { id: 'doctrine', title: 'Doctrine', release: 'R5' },
   { id: 'standing', title: 'Standing', release: 'R5' },

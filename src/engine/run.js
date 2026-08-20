@@ -444,6 +444,14 @@ export function commit(run, bundle, optionId, { as = null } = {}) {
     // about the decision they took — and "they chose without knowing" and "they
     // chose knowing" are the two most different things a debrief can tell apart.
     evidenceHeld: [...heldEvidence(run)],
+    // ★ EVS-6 — WHAT MOVED, RECORDED WHERE IT HAPPENED.
+    //
+    // The record is built from history and recomputes nothing. Recomputing the
+    // changes later would evaluate the same commitment a second time, and the
+    // two evaluations would eventually disagree — which is the defect
+    // `composeResponse` already refuses by taking `changes` as an argument
+    // rather than deriving them again.
+    changes,
   }];
 
   return {
