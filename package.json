@@ -17,7 +17,7 @@
     "conformance": "node node_modules/@citadel/contracts/conformance/src/self.js"
   },
   "dependencies": {
-    "@citadel/contracts": "git+https://github.com/soroura1/contracts.git#v0.5.1",
+    "@citadel/contracts": "git+https://github.com/soroura1/contracts.git#v0.6.0",
     "@tanstack/react-router": "^1.0.0",
     "postgres": "^3.4.9",
     "react": "^19.0.0",

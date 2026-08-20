@@ -8,7 +8,7 @@ import { PlayScreen } from './features/play/PlayScreen.jsx';
 import { CHAPTER_1 } from './content/chapter-1.js';
 import ATTESTATION from './content/attestation.json' with { type: 'json' };
 import { PlayRoute } from './features/play/PlayRoute.jsx';
-import { bundleFrom, startRun, commit, advance } from './engine/run.js';
+import { bundleFrom, startRun, commit, act, advance } from './engine/run.js';
 import { Navigation } from './layout/navigation.jsx';
 import { HttpCatalogueGateway } from './gateways/catalogue-gateway.js';
 import { SURFACES } from './surfaces.js';
@@ -104,6 +104,7 @@ function App() {
             bundle={chapter}
             attestation={ATTESTATION}
             onChoose={(optionId) => setRun(commit(run, chapter, optionId).run)}
+            onAct={(actionId) => setRun(act(run, chapter, actionId).run)}
             onAdvance={() => setRun(advance(run, chapter))}
           />
         );

@@ -255,6 +255,9 @@
           "role_id": "role.quality-patient-safety",
           "route": "Receives the Hall count, the bedside staffing position, and the binding constraint from the relevant professional."
         }
+      ],
+      "evidence_ids": [
+        "ev.01.03.bedside-position"
       ]
     }
   ],
@@ -305,6 +308,7 @@
       "friction"
     ],
     "interactive": [
+      "actions",
       "choice_or_discovery"
     ],
     "post_commit": [
@@ -379,5 +383,111 @@
         ]
       }
     ]
-  }
+  },
+  "evidence": [
+    {
+      "id": "ev.01.03.hall-says-two-free",
+      "what": "The Hall reports 30 occupied ICU beds and 32 physical beds, and therefore 2 available.",
+      "source": {
+        "kind": "instrument",
+        "id": "the Hall of Measure display"
+      },
+      "partial": true,
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: \"The Hall reports: 30 occupied ICU beds; 32 physical ICU beds; therefore 2 available beds.\""
+    },
+    {
+      "id": "ev.01.03.bedside-position",
+      "what": "The roster can safely cover about 28. Staff have just sustained a power fallback, one nurse and one respiratory-capable worker remain committed to recovery checks, and the two empty physical places do not have a complete staffed team.",
+      "source": {
+        "kind": "person",
+        "id": "the critical-care lead"
+      },
+      "partial": false,
+      "satisfies_reveal": "reveal.01.empty-bed-is-not-capability",
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: \"The bedside position\" — the roster, the fallback, the committed staff and the two empty places without a team."
+    },
+    {
+      "id": "ev.01.03.donor-cost",
+      "what": "A competent nurse and supporting capability can move from theatre recovery, step-down care or another defined service, and the donating service then reduces activity, delays a procedure or loses recovery capacity.",
+      "source": {
+        "kind": "person",
+        "id": "the critical-care lead"
+      },
+      "partial": false,
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Player pathway B — \"A competent nurse and supporting capability move from theatre recovery, step-down care, or another defined service... The donating service reduces activity, delays a procedure, or loses recovery capacity.\""
+    },
+    {
+      "id": "ev.01.03.transfer-requires",
+      "what": "A network transfer needs a confirmed receiving team and route. North River Hospital may accept selected adult patients but has limited critical care and a vulnerable approach route, and the patient remains under active Bimaristan care during the transfer interval.",
+      "source": {
+        "kind": "person",
+        "id": "the city and network coordination representative"
+      },
+      "partial": false,
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Player pathway C — the Regional Health Authority and Emergency Medical Transport Service, North River Hospital, and the transfer interval."
+    }
+  ],
+  "actions": [
+    {
+      "id": "inspect.01.03.hall-report",
+      "type": "inspect",
+      "target": {
+        "kind": "instrument",
+        "id": "the Hall of Measure display"
+      },
+      "reveals": [
+        "ev.01.03.hall-says-two-free"
+      ],
+      "visible_to_roles": null,
+      "requires": [],
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: \"The capacity contradiction\" — what the Hall reports."
+    },
+    {
+      "id": "consult.01.03.critical-care-lead",
+      "type": "consult",
+      "target": {
+        "kind": "person",
+        "id": "the critical-care lead"
+      },
+      "reveals": [
+        "ev.01.03.bedside-position",
+        "ev.01.03.donor-cost"
+      ],
+      "visible_to_roles": null,
+      "requires": [],
+      "response": {
+        "character_id": "the critical-care lead",
+        "does": "Defines what care and staffing cannot be compromised, and what a redeployment would cost the donating service.",
+        "withholds": "They will not place the patient in an empty ICU bed without a safe team, and they will not report a temporary redeployment as a sustainable increase in ICU capacity.",
+        "acts_independently": false,
+        "dialogue_unresolved": "Canon states the constraint and the refusals and writes no line for them."
+      },
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: \"Clinical and nursing leaders define what care and staffing cannot be compromised\", and \"What cannot be selected\" — placing the patient in an empty ICU bed without a safe team."
+    },
+    {
+      "id": "consult.01.03.network-representative",
+      "type": "consult",
+      "target": {
+        "kind": "person",
+        "id": "the city and network coordination representative"
+      },
+      "reveals": [
+        "ev.01.03.transfer-requires"
+      ],
+      "visible_to_roles": null,
+      "requires": [],
+      "response": {
+        "character_id": "the city and network coordination representative",
+        "does": "Establishes what an external transfer actually requires.",
+        "withholds": "They will not send the patient away without an accepted clinical transfer.",
+        "acts_independently": false,
+        "dialogue_unresolved": "Canon states the function and the refusal and writes no line for them."
+      },
+      "cost": {
+        "currency": "time",
+        "what": "A receiving team and route must be confirmed before anything can be offered, and the patient remains under active Bimaristan care meanwhile."
+      },
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: \"The city/network representative establishes what an external transfer actually requires\", and \"What cannot be selected\" — sending the patient away without an accepted clinical transfer."
+    }
+  ]
 }

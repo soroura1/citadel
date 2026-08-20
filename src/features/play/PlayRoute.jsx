@@ -33,7 +33,7 @@ import { ProvisionalNotice } from './ProvisionalNotice.jsx';
  * both `main.jsx` and the render tests use. There is no second call shape left
  * to drift.
  */
-export function PlayRoute({ run, bundle, attestation, onChoose, onAdvance, textPath = false }) {
+export function PlayRoute({ run, bundle, attestation, onChoose, onAct, onAdvance, textPath = false }) {
   const v = view(run, bundle);
 
   // ★ The chapter ENDS. Without this the last decision left a blank screen,
@@ -52,7 +52,7 @@ export function PlayRoute({ run, bundle, attestation, onChoose, onAdvance, textP
       <ProvisionalNotice attestation={attestation} />
       {/* ★ SPREAD, NEVER ENUMERATED. A named prop list is a second definition of
           what the surface needs, and the two definitions drift silently. */}
-      <PlayScreen {...v} textPath={textPath} onChoose={onChoose} onAdvance={onAdvance} />
+      <PlayScreen {...v} textPath={textPath} onChoose={onChoose} onAct={onAct} onAdvance={onAdvance} />
     </>
   );
 }

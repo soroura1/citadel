@@ -61,7 +61,7 @@ test('the pinned contract is the one this content was written for', () => {
   // package.
   const installed = JSON.parse(readFileSync(
     new URL('../node_modules/@citadel/contracts/package.json', import.meta.url), 'utf8'));
-  assert.equal(installed.version, '0.5.1');
+  assert.equal(installed.version, '0.6.0');
 });
 
 test('★ and the validation actually REFUSES — a mutated scene must fail', () => {

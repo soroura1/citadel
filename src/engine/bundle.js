@@ -10,6 +10,7 @@
 
 import { assertSceneShape, assertRevealsReachable } from './scene.js';
 import { assertDecisionIsReal } from './decision.js';
+import { evidenceRefusals, unreachableRevealsByRole } from './evidence.js';
 
 export class BundleRefusal extends Error {
   constructor(refusal, where, detail) {
@@ -28,6 +29,17 @@ export function loadBundle({ version, scenes = [], decisions = [] }) {
     try {
       assertSceneShape(scene);
       assertRevealsReachable(scene);
+      // ★ EVS-4 — AN ACTION POINTING AT EVIDENCE THAT DOES NOT EXIST FAILS
+      // HERE, not when a participant clicks it. Same rule as a scene pointing
+      // at an absent decision: a content author needs the field named, and a
+      // player must never be the one who finds a dangling reference.
+      const broken = evidenceRefusals(scene);
+      if (broken.length) {
+        const e = new Error(broken[0].detail);
+        e.refusal = broken[0].refusal;
+        e.detail = broken.map((b) => `${b.refusal}: ${b.detail}`).join('; ');
+        throw e;
+      }
     } catch (e) {
       throw new BundleRefusal(e.refusal ?? 'scene-invalid', scene.id ?? '(unnamed scene)', e.detail ?? e.message);
     }
@@ -51,6 +63,19 @@ export function loadBundle({ version, scenes = [], decisions = [] }) {
     if (typeof ref === 'string' && ref.startsWith('dec-') && !decisionsById.has(ref)) {
       throw new BundleRefusal('scene-references-unknown-decision', scene.id, ref);
     }
+  }
+
+  // ★ THE GUARANTEE IS A LOAD-TIME PROPERTY, NOT A TEST-TIME ONE. (EVS-4)
+  //
+  // Canon: "A required mystery clue may be encountered through different roles,
+  // but IT CANNOT DISAPPEAR BECAUSE OF ROLE SELECTION." Once actions carry
+  // `visible_to_roles` a reveal can become genuinely unreachable for one role,
+  // and it looks correct in review because the other role reaches it. A bundle
+  // that breaks the promise must not load at all.
+  const unreachable = unreachableRevealsByRole(scenes);
+  if (unreachable.length) {
+    throw new BundleRefusal('required-reveal-unreachable-for-role',
+      unreachable[0].detail.split('/')[0], unreachable.map((u) => u.detail).join('; '));
   }
 
   return {

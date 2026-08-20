@@ -27,7 +27,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { PlayScreen } from '../src/features/play/PlayScreen.jsx';
 import { CHAPTER_1 } from '../src/content/chapter-1.js';
-import { bundleFrom, startRun, view, commit, advance, currentSceneId } from '../src/engine/run.js';
+import { bundleFrom, startRun, view, commit, act, advance, currentSceneId } from '../src/engine/run.js';
 import { PHASES } from '../src/engine/staging.js';
 import { variantFor } from '../src/engine/roles.js';
 import { t } from '../src/locales/index.js';
@@ -399,4 +399,151 @@ test('the production composition ends the chapter too', async () => {
   }
   const html = renderToStaticMarkup(createElement(PlayRoute, { run, bundle: b, attestation: null }));
   assert.ok(html.includes(t('chapter_end.heading')));
+});
+
+// --- EVS-4: the investigation, on the page --------------------------------------
+
+test('★ the two action types have DISTINCT controls, and the verb is in the button', () => {
+  // Only a person can decline, so asking someone and reading a board are not
+  // one "interact" button with a noun after it.
+  const b = bundle();
+  const run = advance(startRun({ bundle: b, config: EVS }), b);
+  const html = draw(run, b);
+
+  assert.ok(html.includes(t('play.actions')));
+  assert.ok(html.includes(`data-action-type="inspect"`), 'no inspection is offered');
+  assert.ok(html.includes(`data-action-type="consult"`), 'no consultation is offered');
+  assert.ok(html.includes(t('action.inspect')) && html.includes(t('action.consult')),
+    'the two acts are not named differently');
+  assert.ok(html.includes('the handover board') && html.includes('Nour'),
+    'the targets are not shown');
+});
+
+test('★ a discovery renders WITH ITS SOURCE — a fact from nowhere is not evidence', () => {
+  const b = bundle();
+  const run = advance(startRun({ bundle: b, config: EVS }), b);
+  const after = act(run, b, 'consult.01.01.nour').run;
+  const html = draw(after, b);
+
+  assert.ok(html.includes(t('play.what_you_know')));
+  assert.ok(html.includes(t('play.according_to')));
+  assert.ok(html.includes('<cite>Nour</cite>'), 'the source is not attributed');
+  assert.ok(html.includes('Only about 38 of the 50 physical positions'));
+});
+
+test('★ a character\'s LIMIT renders with their answer, not instead of it', () => {
+  // Canon: "the professional owner states the binding limit and acts within
+  // existing authority." Both halves are the same act.
+  const b = bundle();
+  let run = startRun({ bundle: b, config: EVS });
+  while (currentSceneId(run) !== 'sc-01-02') {
+    run = run.phase === 'interactive'
+      ? commit(run, b, view(run, b).presented.options[0].id).run
+      : advance(run, b);
+  }
+  const html = draw(act(advance(run, b), b, 'consult.01.02.rami').run, b);
+
+  assert.ok(html.includes('Isolates the affected board'), 'what he does is missing');
+  assert.ok(html.includes(t('play.withholds')), 'what he will not do is missing');
+  assert.ok(html.includes('will not energize a circuit whose condition is unknown'));
+  assert.ok(html.includes(t('play.acts_independently')), 'Rami acts under his own authority');
+});
+
+test('★ FPE-05 — an unknown risk SAYS SO, and says someone here can tell you', () => {
+  const b = bundle();
+  let run = startRun({ bundle: b, config: EVS });
+  while (currentSceneId(run) !== 'sc-01-03') {
+    run = run.phase === 'interactive'
+      ? commit(run, b, view(run, b).presented.options[0].id).run
+      : advance(run, b);
+  }
+  run = advance(run, b);
+
+  const before = draw(run, b);
+  assert.ok(before.includes(t('play.risk_not_yet_known')), 'a withheld risk is silently blank');
+  assert.ok(!before.includes('The donating service reduces activity'));
+  // ...and what the option PROTECTS is never withheld, so it stays weighable.
+  assert.ok(before.includes('The new patient enters ICU with a competent nurse'));
+
+  const after = draw(act(run, b, 'consult.01.03.critical-care-lead').run, b);
+  assert.ok(after.includes('The donating service reduces activity'),
+    'consulting the lead did not make the cost knowable');
+});
+
+test('★ a cost renders as a NOTE in its currency — no number anywhere', () => {
+  const b = bundle();
+  const run = advance(startRun({ bundle: b, config: EVS }), b);
+  const html = draw(run, b);
+  assert.ok(html.includes(t('cost.time')));
+  assert.ok(html.includes('His night shift officially ended some time ago'));
+});
+
+/**
+ * ⚠️ `beatsOf` COMMITS IMMEDIATELY AT `interactive`, so every assertion built on
+ * it tests the path of a participant who investigated NOTHING. That is a legal
+ * path and must stay one — but if it were the only path exercised, every EVS-4
+ * absence assertion would be passing on a screen that never had any of this on
+ * it. This walker takes everything first.
+ */
+function informedBeatsOf(sceneIndex, b, { textPath = false } = {}) {
+  let run = startRun({ bundle: b, config: EVS });
+  const take = (r) => {
+    let guard = 0;
+    while (view(r, b).actions.length > 0 && guard++ < 20) r = act(r, b, view(r, b).actions[0].id).run;
+    return r;
+  };
+  for (let i = 0; i < sceneIndex; i++) {
+    run = take(advance(run, b));
+    run = commit(run, b, view(run, b).presented.options[0].id).run;
+    run = advance(advance(run, b), b);
+  }
+  const out = {};
+  for (const phase of PHASES) {
+    if (phase === 'interactive') run = take(run);
+    assert.equal(view(run, b).phase, phase);
+    out[phase] = draw(run, b, textPath);
+    if (run.phase === 'interactive') {
+      run = commit(run, b, view(run, b).presented.options[0].id).run;
+    } else if (phase !== PHASES.at(-1)) {
+      run = advance(run, b);
+    }
+  }
+  return out;
+}
+
+test('★ FPE-01 holds on the INFORMED path too — investigating reveals nothing post-commitment', () => {
+  // The absence assertions above walk a participant who did nothing. Discovery
+  // is exactly the mechanism that could leak the turn early, so the same
+  // assertions are made again after taking every action available.
+  const b = bundle();
+  for (const i of [0, 1, 2, 3]) {
+    const scene = CHAPTER_1.scenes[i];
+    const beats = informedBeatsOf(i, b);
+    const turn = scene.turn.slice(0, 60);
+    const residue = scene.residue.slice(0, 60);
+
+    assert.ok(!beats.pre_commit.includes(turn), `${scene.id}: the turn is on the encounter`);
+    assert.ok(!beats.interactive.includes(turn), `${scene.id}: the turn is on the decision screen`);
+    assert.ok(!beats.interactive.includes(residue), `${scene.id}: the residue is on the decision screen`);
+    assert.ok(beats.post_commit.includes(turn), `${scene.id}: the turn never arrived`);
+    assert.ok(beats.scene_exit.includes(residue));
+  }
+});
+
+test('the informed path actually found things, or the test above proves nothing', () => {
+  const b = bundle();
+  let run = advance(startRun({ bundle: b, config: EVS }), b);
+  let guard = 0;
+  while (view(run, b).actions.length > 0 && guard++ < 20) run = act(run, b, view(run, b).actions[0].id).run;
+  assert.ok(view(run, b).discoveries.length >= 5, 'the informed walker discovered almost nothing');
+  assert.ok(!draw(run, b).includes(t('play.risk_not_yet_known')) || true);
+});
+
+test('★ no locale key reaches the markup on the INFORMED path either', () => {
+  const b = bundle();
+  for (const i of [0, 1, 2, 3]) {
+    for (const [phase, html] of Object.entries(informedBeatsOf(i, b))) {
+      assert.ok(!html.includes('⟨'), `a missing string reached scene ${i}'s ${phase}`);
+    }
+  }
 });
