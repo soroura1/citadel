@@ -305,6 +305,24 @@
     {
       "field": "states for loc.service-passage after a commitment",
       "why": "Canon narrates the passage before the incident and does not say what it is like afterwards. No state is written for it, rather than one being invented."
+    },
+    {
+      "field": "plan_slot.max_bytes - one derivative or two",
+      "why": "The existing three assets are 121-159 KB derivatives from 2.5-3.3 MB masters. A cutaway carries far more detail and may want a larger derivative AND a small one, which is a decision that belongs with the design package rather than ahead of it. One budget is declared so the slot is complete; a second size is a change to make when there is an image to measure."
     }
-  ]
+  ],
+  "plan_slot": {
+    "id": "slot.plan.bimaristan-cutaway",
+    "kind": "plan",
+    "alt_key": "art.bimaristan_cutaway.alt",
+    "max_bytes": 400000,
+    "crop": null,
+    "candidate_ref": "VA-012",
+    "candidate_file": null,
+    "inclusion_reviewed": false,
+    "reviewed_by": null,
+    "_what": "The Bimaristan seen as a cutaway section, four tiers at once. EVS-5 section 3 requires a plan or plan prototype WITH a complete text equivalent; the text equivalent is `art.bimaristan_cutaway.alt` and the /place surface, both of which exist now. The image does not.",
+    "_why_a_cutaway": "A flat overhead plan cannot show the Underworks, and canon puts the chapter's argument there: 'the Underworks make every visible function possible. They are also a physical representation of hidden dependencies and neglected maintenance.' The prompt is drafted at citadel-planning/07-visual-and-art/proposed-prompt-VA-012-bimaristan-plan.md.",
+    "_status": "UNFILLED. candidate_file is null because VA-012 has not been generated. inclusion_reviewed is false because Q10 is open. Neither is a defect; both are the honest state, and the manifest reports them."
+  }
 }

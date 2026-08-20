@@ -44,6 +44,20 @@ export const TIERS = Object.freeze(PLACES.tiers.map((t) => Object.freeze({ ...t 
 export const LOCATIONS = Object.freeze(PLACES.locations.map((l) => Object.freeze({ ...l })));
 export const locationIndex = () => new Map(LOCATIONS.map((l) => [l.id, l]));
 
+/**
+ * ★ THE PLAN'S OWN SLOT — declared, and empty. (EVS-5)
+ *
+ * The cutaway that would carry this place is not made. `VA-012` is drafted as a
+ * prompt in the planning folder and has not been generated, so `candidate_file`
+ * is null; `Q10` is open, so `inclusion_reviewed` is false. Neither is a defect.
+ *
+ * ⚠️ IT IS DECLARED ANYWAY, IN THE SAME SHAPE A SCENE'S SLOT TAKES. A slot that
+ * appears only once there is a file to put in it is a slot whose alt text and
+ * weight budget get decided by the file — and EVS-5 is the session that made
+ * both a precondition rather than a consequence.
+ */
+export const PLAN_SLOT = Object.freeze({ ...PLACES.plan_slot });
+
 /** The four the EVS gate names, by the ids the content uses. */
 export const REQUIRED_PLACES = Object.freeze([
   'loc.gate-of-names',
@@ -167,6 +181,16 @@ export function placeRefusals(scenes = []) {
     }
   }
 
+  // ★ The plan's slot is held to the same rules a scene's slot is. One shape —
+  // the defect EVS-5 exists to correct was two.
+  for (const [field, refusal] of [['id', 'plan-slot-has-no-id'], ['alt_key', 'plan-slot-has-no-alt-text']]) {
+    if (!PLAN_SLOT[field]) out.push({ refusal, detail: PLAN_SLOT.id ?? '(the plan)' });
+  }
+  if (!(PLAN_SLOT.max_bytes > 0)) out.push({ refusal: 'plan-slot-has-no-weight-budget', detail: PLAN_SLOT.id });
+  if (PLAN_SLOT.inclusion_reviewed && !PLAN_SLOT.reviewed_by) {
+    out.push({ refusal: 'plan-slot-claims-unattributed-review', detail: PLAN_SLOT.id });
+  }
+
   // A slot named by a location must be a slot some scene declares.
   const declared = new Set(scenes.flatMap((s) => (s.asset_slots ?? []).map((a) => a.id)));
   for (const l of LOCATIONS) {
@@ -194,7 +218,13 @@ export function assertPlaceHoldsTogether(scenes) {
  * seen every slot that names a candidate — which is `Q10`, still open.
  */
 export function visualBindingStatus(scenes) {
-  const slots = scenes.flatMap((s) => (s.asset_slots ?? []).map((a) => ({ ...a, scene: s.id })));
+  // The plan's slot counts. It is the asset EVS-5 section 3 asks for first, and
+  // leaving it out of the tally would report a binding status that looks closer
+  // to done than it is.
+  const slots = [
+    ...scenes.flatMap((s) => (s.asset_slots ?? []).map((a) => ({ ...a, scene: s.id }))),
+    { ...PLAN_SLOT, scene: '(the plan)' },
+  ];
   const withCandidate = slots.filter((s) => s.candidate_ref);
   const reviewed = slots.filter((s) => s.inclusion_reviewed);
   return {
@@ -202,6 +232,14 @@ export function visualBindingStatus(scenes) {
     candidates: withCandidate.length,
     reviewed: reviewed.length,
     boundLocations: LOCATIONS.filter((l) => l.asset_slot).length,
+    // ★ The plan itself: declared, unfilled, and the first thing the design
+    // package owes. Reported separately so it cannot be lost in a total.
+    plan: {
+      slot: PLAN_SLOT.id,
+      candidate: PLAN_SLOT.candidate_ref,
+      made: Boolean(PLAN_SLOT.candidate_file),
+      textEquivalent: PLAN_SLOT.alt_key,
+    },
     blocked: reviewed.length < slots.length,
     blockedBy: reviewed.length < slots.length ? 'Q10' : null,
     designPackage: 'absent',
