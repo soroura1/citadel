@@ -20,7 +20,21 @@ export const CHAPTER_1 = {
   // saved under v0.1 must not resume into a chapter that is staged differently
   // from the one it played -- `resume()` refuses the mismatch by design, and
   // that refusal is the whole reason the version is pinned into the save.
-  version: 'v0.5',
+  //
+  // ⚠️ v0.5 -> v0.6 AT SG1-2, AND THE RULE IS THE SAME ONE.
+  //
+  // The gold decision gained `commits`, `transfers_pressure_to` and a
+  // per-pathway `residue`, and the record now reads all three -- so a run saved
+  // under v0.5 would resume into a chapter whose RECORD OF WHAT IT DID is
+  // different from the one it played: a residue it never saw, a cost it was
+  // never shown. Scene 2's cast list also changed, from a paraphrase back to
+  // canon's own names.
+  //
+  // No production run has ever been saved (the application never calls
+  // `saveRun`), so nothing is stranded today. The bump is not for today: it is
+  // so the version keeps meaning what the pinning says it means, on the day
+  // `E14` wires the store up.
+  version: 'v0.6',
   scenes: [s1, s2, s3, s4],
   decisions: [d1, d2, d3, d4],
   order: ["sc-01-01", "sc-01-02", "sc-01-03", "sc-01-04"],
