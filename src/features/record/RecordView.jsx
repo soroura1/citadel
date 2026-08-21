@@ -80,7 +80,18 @@ export function RecordView({ record }) {
               </ul>
             )}
 
-            {scene.residue && <p className="record-residue">{scene.residue}</p>}
+            {/* ★ SG-1 — RESIDUE IS PER PATHWAY NOW, AND IT IS A LIST.
+                Three approaches leave three different worlds behind; one shared
+                sentence described all of them, so a debrief could not
+                reconstruct a cost. A scene whose options carry no residue still
+                renders its own string, which is why both shapes are handled. */}
+            {Array.isArray(scene.residue)
+              ? scene.residue.length > 0 && (
+                  <ul className="record-residue">
+                    {scene.residue.map((r) => <li key={r.what}>{r.what}</li>)}
+                  </ul>
+                )
+              : scene.residue && <p className="record-residue">{scene.residue}</p>}
           </li>
         ))}
       </ol>

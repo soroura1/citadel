@@ -1,50 +1,235 @@
 {
   "id": "dec-01-power-pressure",
   "scene": "sc-01-02",
-  "prompt": { "key": "decision.01.power_pressure.prompt" },
-  "requires_authority": ["role.medical-clinical-services", "role.nursing-patient-flow", "role.operations"],
+  "prompt": {
+    "key": "decision.01.power_pressure.prompt"
+  },
+  "requires_authority": [
+    "role.medical-clinical-services",
+    "role.nursing-patient-flow",
+    "role.operations"
+  ],
   "reflection_required": true,
   "realistic_window": "first minute",
   "options": [
     {
       "id": "dec-01-power-pressure.stabilize-locally",
-      "label": { "key": "decision.01.power_pressure.stabilize_locally" },
+      "label": {
+        "key": "decision.01.power_pressure.stabilize_locally"
+      },
       "protects": "Reduces movement risk while ICU and emergency teams use manual and battery fallback.",
       "risks": "Consumes respiratory, nursing, biomedical, and runner capacity.",
       "defensible_by": "ICU and emergency teams would defend this because moving a ventilated or highly unstable patient through uncertain power and a crowded route is hazardous.",
-      "prerequisites": ["Clinical teams retain care decisions; Rami retains electrical isolation and restoration authority."],
+      "prerequisites": [
+        "Clinical teams retain care decisions; Rami retains electrical isolation and restoration authority."
+      ],
       "effects": [
-        { "operation": "set_enum", "enum_variable": "C1_POWER_RESPONSE", "enum_value": "local stabilization", "delay": "immediate", "visible": true }
+        {
+          "operation": "set_enum",
+          "enum_variable": "C1_POWER_RESPONSE",
+          "enum_value": "local stabilization",
+          "delay": "immediate",
+          "visible": true
+        }
       ],
       "deferred_consequence": null,
-      "deliberately_asymmetric": "Canon assigns the response state and a workload cost, but the Chapter 1 season slice leaves workforce capacity unmoved."
+      "deliberately_asymmetric": "Canon assigns the response state and a workload cost, but the Chapter 1 season slice leaves workforce capacity unmoved.",
+      "commits": [
+        {
+          "capability": "cap.staff-attention",
+          "becomes": "committed",
+          "for": "holding the affected bay by hand for the duration",
+          "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: response approach A — \"Consumes respiratory, nursing, biomedical, and runner capacity.\""
+        },
+        {
+          "capability": "cap.engineering-access",
+          "becomes": "committed",
+          "for": "isolating the board and operating the approved manual alternate feed",
+          "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: 'Rami's team isolates the board, checks for a downstream fault, and operates the approved manual alternate feed.'"
+        }
+      ],
+      "transfers_pressure_to": "Emergency care and the ICU workforce.",
+      "residue": [
+        {
+          "what": "One emergency resuscitation table remains unavailable after power returns, because its staff are still supporting ICU recovery.",
+          "binds_to": {
+            "kind": "location",
+            "id": "loc.emergency-resuscitation"
+          },
+          "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: response approach A, verbatim."
+        },
+        {
+          "what": "One nurse and one respiratory-capable worker remain committed to recovery checks.",
+          "binds_to": {
+            "kind": "capability",
+            "id": "cap.staff-attention"
+          },
+          "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Scene 3's bedside position."
+        },
+        {
+          "what": "The failed automatic board remains locked out for repair and testing.",
+          "binds_to": {
+            "kind": "instrument",
+            "id": "inst.critical-power"
+          },
+          "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: the electrical sequence at four minutes twenty."
+        }
+      ]
     },
     {
       "id": "dec-01-power-pressure.mobile-bridge",
-      "label": { "key": "decision.01.power_pressure.mobile_bridge" },
+      "label": {
+        "key": "decision.01.power_pressure.mobile_bridge"
+      },
       "protects": "Reduces prolonged hand support in the affected ICU bay.",
       "risks": "Leaves emergency care without its mobile reserve if another patient deteriorates.",
       "defensible_by": "Ayyash and biomedical staff would defend this because the mobile set can arrive by the quickest service route and reduce prolonged hand support.",
-      "prerequisites": ["The mobile equipment set is found, verified, and delivered through the service route."],
+      "prerequisites": [
+        "The mobile equipment set is found, verified, and delivered through the service route."
+      ],
       "effects": [
-        { "operation": "set_enum", "enum_variable": "C1_POWER_RESPONSE", "enum_value": "mobile bridge", "delay": "immediate", "visible": true },
-        { "operation": "increment", "variable": "V9", "magnitude": "moderate", "delay": "immediate", "visible": true }
+        {
+          "operation": "set_enum",
+          "enum_variable": "C1_POWER_RESPONSE",
+          "enum_value": "mobile bridge",
+          "delay": "immediate",
+          "visible": true
+        },
+        {
+          "operation": "increment",
+          "variable": "V9",
+          "magnitude": "moderate",
+          "delay": "immediate",
+          "visible": true
+        }
       ],
       "deferred_consequence": null,
-      "deliberately_asymmetric": "The mobile route becomes operationally decisive; canon names no decreasing season-variable effect for documenting that route."
+      "deliberately_asymmetric": "The mobile route becomes operationally decisive; canon names no decreasing season-variable effect for documenting that route.",
+      "commits": [
+        {
+          "capability": "cap.mobile-reserve",
+          "becomes": "committed",
+          "for": "bridging the supply to the affected bay",
+          "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: response approach B — \"Ayyash and biomedical staff bring the mobile set through the quickest service route.\""
+        },
+        {
+          "capability": "cap.service-route",
+          "becomes": "committed",
+          "for": "carrying the set by the route that arrives fastest",
+          "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: response approach B — \"Makes the undocumented route operationally decisive.\""
+        },
+        {
+          "capability": "cap.engineering-access",
+          "becomes": "committed",
+          "for": "isolating the board and operating the approved manual alternate feed",
+          "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Rami retains isolation and restoration on every pathway."
+        }
+      ],
+      "transfers_pressure_to": "Emergency care's own fallback capability, and an unregistered route.",
+      "residue": [
+        {
+          "what": "Emergency care is without its mobile reserve if another patient deteriorates.",
+          "binds_to": {
+            "kind": "capability",
+            "id": "cap.mobile-reserve"
+          },
+          "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: response approach B, verbatim."
+        },
+        {
+          "what": "The undocumented lower route has become operationally decisive, and it is still not on the duty register.",
+          "binds_to": {
+            "kind": "route",
+            "id": "loc.service-passage"
+          },
+          "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: response approach B, and Ayyash carries a token that \"does not appear on the duty register.\""
+        },
+        {
+          "what": "The bay is supplied from a source the critical-power board does not show.",
+          "binds_to": {
+            "kind": "instrument",
+            "id": "inst.critical-power"
+          },
+          "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: 'The central display monitors the generator and the main critical bus.'"
+        },
+        {
+          "what": "The failed automatic board remains locked out for repair and testing.",
+          "binds_to": {
+            "kind": "instrument",
+            "id": "inst.critical-power"
+          },
+          "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: the electrical sequence at four minutes twenty."
+        }
+      ]
     },
     {
       "id": "dec-01-power-pressure.selective-relocation",
-      "label": { "key": "decision.01.power_pressure.selective_relocation" },
+      "label": {
+        "key": "decision.01.power_pressure.selective_relocation"
+      },
       "protects": "Clears the electrical area for safer work when movement risk is lower than continued fallback risk.",
       "risks": "Occupies recovery or emergency positions and exposes the absence of a truly empty staffed ICU bed.",
       "defensible_by": "Clinical and nursing leads would defend selected movement when its risk is lower than continued fallback risk.",
-      "prerequisites": ["Clinical and nursing leads select only patients whose movement risk is lower than continued fallback risk."],
+      "prerequisites": [
+        "Clinical and nursing leads select only patients whose movement risk is lower than continued fallback risk."
+      ],
       "effects": [
-        { "operation": "set_enum", "enum_variable": "C1_POWER_RESPONSE", "enum_value": "selective relocation", "delay": "immediate", "visible": true }
+        {
+          "operation": "set_enum",
+          "enum_variable": "C1_POWER_RESPONSE",
+          "enum_value": "selective relocation",
+          "delay": "immediate",
+          "visible": true
+        }
       ],
       "deferred_consequence": null,
-      "deliberately_asymmetric": "Canon assigns the response state and transferred service pressure but does not assign a directional Chapter 1 season-variable movement here."
+      "deliberately_asymmetric": "Canon assigns the response state and transferred service pressure but does not assign a directional Chapter 1 season-variable movement here.",
+      "commits": [
+        {
+          "capability": "cap.staff-attention",
+          "becomes": "committed",
+          "for": "escorting each selected patient and receiving them",
+          "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: 'Clinical and nursing leads choose only patients whose movement risk is lower than continued fallback risk.'"
+        },
+        {
+          "capability": "cap.service-route",
+          "becomes": "committed",
+          "for": "moving beds and their equipment by a route wide enough for them",
+          "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Ayyash 'knows which doorway is wide enough for the mobile unit.'"
+        },
+        {
+          "capability": "cap.engineering-access",
+          "becomes": "committed",
+          "for": "isolating the board in an area that is now clear",
+          "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: response approach C — \"Clears the electrical area for safer work.\""
+        }
+      ],
+      "transfers_pressure_to": "Recovery or emergency positions, and the ICU's own claim to have space.",
+      "residue": [
+        {
+          "what": "Recovery or emergency positions are occupied, and the absence of a truly empty staffed ICU bed has been demonstrated rather than argued.",
+          "binds_to": {
+            "kind": "location",
+            "id": "loc.icu-threshold"
+          },
+          "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: response approach C, verbatim."
+        },
+        {
+          "what": "The people who escorted the movements are the people who were covering elsewhere.",
+          "binds_to": {
+            "kind": "capability",
+            "id": "cap.staff-attention"
+          },
+          "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: the duty nursing leader's want."
+        },
+        {
+          "what": "The failed automatic board remains locked out for repair and testing.",
+          "binds_to": {
+            "kind": "instrument",
+            "id": "inst.critical-power"
+          },
+          "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: the electrical sequence at four minutes twenty."
+        }
+      ]
     }
   ]
 }

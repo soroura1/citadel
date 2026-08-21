@@ -71,7 +71,23 @@ export function buildRecord(run, bundle) {
       // What improved, and what was consumed or transferred. Both, in the same
       // list, unranked — the record does not sort a cost below a benefit.
       changes: entry.changes,
-      residue: scene?.residue ?? null,
+
+      // ★ SG-1 C8 — WHAT THIS COMMITMENT COST, AND WHERE IT WENT.
+      //
+      // ⚠️ THE SCENE'S RESIDUE WAS THE SAME SENTENCE WHATEVER THEY CHOSE.
+      // Three pathways leave three genuinely different worlds behind, and the
+      // record described all three identically — so the debrief could not
+      // reconstruct a cost, because the cost was not in it.
+      //
+      // Per-option residue is preferred and the scene's is the fallback, so a
+      // scene whose options carry none still reads as it did.
+      committed: (option?.commits ?? []).map((c) => ({
+        capability: c.capability, becomes: c.becomes, forWhat: c.for ?? null,
+      })),
+      transferredTo: option?.transfers_pressure_to ?? null,
+      residue: (option?.residue ?? []).length
+        ? option.residue.map((r) => ({ what: r.what, bindsTo: r.binds_to }))
+        : (scene?.residue ?? null),
     });
   });
 

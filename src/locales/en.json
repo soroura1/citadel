@@ -235,5 +235,14 @@
   "observation.delete_body": "Your run, your reflection, your observation and the local identifier that ties them together. Nothing was ever sent anywhere, so this is all of it.",
   "observation.delete": "Delete it all",
   "record.no_run": "No run on this device yet. The record fills in as you play.",
-  "place.plan_provisional": "A generated candidate, shown while it waits for inclusion review. It is not canon: incidental architectural, costume, equipment and emblem details do not become part of the world by appearing in an image."
+  "place.plan_provisional": "A generated candidate, shown while it waits for inclusion review. It is not canon: incidental architectural, costume, equipment and emblem details do not become part of the world by appearing in an image.",
+  "response.01.02.stabilize.environment": "Nothing arrives. The bay stays as it is — lamp light, hands on bags, a nurse counting aloud so somebody else can keep the rhythm. Beyond the doorway the ward is lit, and the difference across that doorway is the whole picture.",
+  "response.01.02.stabilize.instrument": "The staffing board does not change. It counts positions, and what changed is who is standing where.",
+  "response.01.02.stabilize.holder": "The hands holding the bay are in the bay, and they came from somewhere the duty nursing leader can name.",
+  "response.01.02.bridge.environment": "The set comes up the service passage on its frame, through a door that takes it. Equipment in the bay comes back on — not the room lights, the equipment — and the hands come off one at a time.",
+  "response.01.02.bridge.instrument": "The critical-power board does not change. It watches the generator and the main critical bus, and the bay is now supplied by neither.",
+  "response.01.02.bridge.holder": "The mobile reserve is in intensive care. Emergency care does not have it.",
+  "response.01.02.relocate.environment": "Beds go out through the doorway one at a time, each with somebody walking beside it. The bay empties around the work at the board.",
+  "response.01.02.relocate.instrument": "The staffing board changes, and gets worse at describing the ward: the far bay reads emptier, the receiving positions read fuller, and neither number says that the same people are covering both.",
+  "response.01.02.relocate.holder": "The people walking beside the beds are the people who were covering somewhere else."
 }
