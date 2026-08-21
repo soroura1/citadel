@@ -8,6 +8,19 @@ numbers, because no single file owned the sequence.
 |---|---|---|---|---|
 | **R0** | 🚧 in progress | — | — | Walking skeleton. Tasks: `citadel-planning/06-releases/R0-tasks.md` |
 
+## 2026-08-21 — reset to infrastructure
+
+The owner chose to start the product over. The engine, every surface, all Chapter 1 content, the
+locales, the stylesheet and all twenty-four test files were deleted in one commit. What remains is
+the build, the pipeline, the deployment, the assets and the governance files.
+
+**No release was cut and no release number was consumed.** A reset is not a release: nothing was
+delivered, and numbering it would put a version on an empty repository. The last commit before the
+reset is `b007a38`.
+
+⚠️ **The deployed site still serves `407d151`**, a build that no longer exists in this tree. Deploying
+this repository would replace a working page with a placeholder.
+
 ## Rules
 
 1. A release is **closed or reopened, never left ambiguous.**

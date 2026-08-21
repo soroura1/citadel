@@ -13,7 +13,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "check": "./check-repo.sh",
-    "test": "node --import ./test/jsx-hook.mjs --test test/*.test.js",
+    "test": "node --test test/*.test.js",
     "conformance": "node node_modules/@citadel/contracts/conformance/src/self.js"
   },
   "dependencies": {
