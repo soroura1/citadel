@@ -1,10 +1,111 @@
 # `citadel` — status
 
-**Last updated:** 2026-08-20 · ⚠️ **Merged but NOT DEPLOYED** — the owner raises deployments
+**Last updated:** 2026-08-21 · ⚠️ **Merged but NOT DEPLOYED** — the owner raises deployments
 **Topology:** [`../CLAUDE.md`](../CLAUDE.md) — `citadel.endura-assess.com` → `172.17.0.1:8087`,
 `TARGET=/opt/citadel/citadel`.
 
-## ★ EVS-7 — THE SLICE IS TEST-READY. THE NEXT GATE IS PEOPLE.
+## ★ CURRENT PRODUCT WORK — SG-1 STRATEGY GAME GOLD SLICE
+
+`DEC-031` supersedes the instruction to move directly into formal human validation. EVS-1–7 remain
+the technical foundation, but the owner found the experience still too document-like to fairly test
+as the intended game. SG1-1 designed it and SG1-2 made it representable and refusable;
+**the next bounded handoff is SG1-3** (`D1`–`D10`, the candidate visual package) or **SG1-4**
+(`E1`–`E7`, the game shell) in
+[`../../citadel-planning/06-releases/SG1-tasks.md`](../../citadel-planning/06-releases/SG1-tasks.md).
+**No production UI before SG1-4.** Formal human validation waits for the SG-1 gold-slice
+candidate. Do not deploy.
+
+### ✅ SG1-2 — the contracts half. An option can cost something now.
+
+`contracts` **`v0.7.0` → `v0.8.0`**, pinned and running. Additive: every prior scene and decision
+still validates.
+
+| Added | Where |
+|---|---|
+| Five **capabilities** — a named holder in a named state | `src/content/capabilities.json` · `src/engine/opportunity.js` |
+| Five **instruments**, each with what it must never imply | `src/content/instruments.json` · `src/engine/instrument.js` |
+| `commits`, `transfers_pressure_to` and per-pathway `residue` on the gold decision | `src/content/decisions/dec-01-power-pressure.json` |
+| Instrument **readings**, performed **character beats**, and a four-layer **world response** | `src/content/scenes/sc-01-02.json` |
+| Four new load-time refusals | `src/engine/bundle.js` |
+| The six named mutations | `test/strategy.test.js` |
+
+⛔ **THERE IS NO NUMBER IN THE OPPORTUNITY MODEL, AND A TEST ENUMERATES THE WORDS.** No `amount`,
+`remaining`, `count`, `total`, `max`, `units`, `level` or `points` on a capability or a commitment.
+Canon names time, trust, workload, service capacity and evidence as this world's currencies and sets
+no prices; EVS-4 already wrote the rule down — *a cost is a declared note in canon's own currency,
+never a quantity.* The constraint is **exclusivity**: a holder can be in one place doing one thing,
+which survives the removal of every clock and is why the non-timed accessibility path carries the
+same trade rather than a relaxed one.
+
+### ⚠️ The first mutation test failed, and the rule it exposed was better than the rule I wrote
+
+The intended invariant was *an option that commits nothing is refused*. Written that way it **could
+not fire on the mutation it existed for** — the check only looked at options that already had
+commits, so emptying one slipped straight past.
+
+The honest rule turned out to be narrower and stronger: **within one decision, either every pathway
+costs or none does.** Demanding commits everywhere would have forced this session to retro-fit three
+scenes it does not own; demanding them nowhere permits **one free pathway beside three costly ones**,
+and a free pathway beside costly alternatives is not an alternative — it is the answer. Both halves
+are now tested, including the case that must still load.
+
+### ⚠️ And the world-binding check found a content defect on its first run
+
+`beat-for-a-character-who-is-not-present`, four times. Scene 2's `present` list read *"Head Sister or
+duty critical-care nurse"* and *"biomedical support"* while canon's Scene 2 names **Nour** and
+**Yasin** outright. The content had paraphrased the cast and lost the names, and nothing could see it
+because no rule had ever compared a beat against the people in the room. Corrected to canon's own
+wording.
+
+### What SG1-2 does NOT do
+
+**Nothing renders yet.** Instruments, capabilities, comparison and character beats are
+*representable, validated and refusable* — no surface shows them. The record is the one exception:
+it now carries what was committed, where the pressure went and a per-pathway residue with its
+bindings, because it was already the place a cost should have been readable. `E6`, `E8`, `E9` and
+`E13` own the surfaces.
+
+⚠️ **The JS bundle grew 368 KB → 404 KB** (103 → 114 KB gzip) — the new content JSON. `Q24` covers
+the image budget; **nothing covers JavaScript**, and this audience is on slow connections. Still an
+owner gap rather than a number to invent, and now larger.
+
+### ✅ SG1-1 is done, and it found something the suite cannot
+
+Design only — **this repository was not modified.** The design lives in
+[`../../citadel-planning/01-game-mechanics/strategy-gold-slice-design.md`](../../citadel-planning/01-game-mechanics/strategy-gold-slice-design.md)
+and [`../../citadel-planning/07-visual-and-art/SG1-spatial-play-spec.md`](../../citadel-planning/07-visual-and-art/SG1-spatial-play-spec.md);
+the audited before-state is
+[`../../citadel-planning/06-releases/SG1-before-state-audit.md`](../../citadel-planning/06-releases/SG1-before-state-audit.md).
+
+⛔ **`saveRun` and `loadRun` are called by no source file.** `grep -rn "loadRun\|saveRun" src/`
+matches only their own definitions in `src/engine/local-store.js`. `main.jsx` holds the run in
+`useState(null)` and never persists or restores it — so a participant who reloads loses everything,
+and `/record` answers *"No run on this device yet"* after a full scene of play.
+
+> **`test/evs-walk.test.js` saves and loads the run itself at every beat**, which is why an accurate
+> suite reports a resume the deployed application does not have. This is the **seventh** appearance
+> of the shape this file has recorded six times: behaviour composed in `main.jsx`, where no test can
+> execute it. `E14` owns the fix; the walk should stop driving the store and assert that the
+> application did.
+
+⚠️ **Internal production language is inside the participant flow**, on every screen: the attestation
+notice, the burned-in `PROVISIONAL — PENDING INCLUSION REVIEW` band, `/place`'s
+`7/9 slots name a concept · 0/9 reviewed · blocked by Q10`, `Art slot, unfilled: slot.ch01.…`, raw
+`Connects to: loc.icu-threshold` identifiers, and `C1_POWER_RESPONSE local stabilization` in the
+record. Each was the right call for an internal build and none may reach a candidate participants
+meet — `G6`.
+
+★ **Role variation, measured rather than asserted.** Both playable roles walked the whole chapter
+taking every action: **17 actions each, one differing** (`consult.01.02.nursing-leader` against
+`consult.01.02.fadl`), **20 pieces of evidence each, one differing**, identical decisions, identical
+commit modes, and **byte-identical `/place` markup** after a full run.
+
+⚠️ **Run the checks under Node 26.** The default `node` here is v20.12.2, which has no
+`module.registerHooks`, so `test/jsx-hook.mjs` fails to load and **every** test file reports red for
+a reason that has nothing to do with the code:
+`export PATH="/opt/homebrew/opt/node@26/bin:$PATH"`.
+
+## ★ EVS-7 — TECHNICAL SEQUENCE COMPLETE; HUMAN GATE HELD FOR SG-1
 
 `test/evs-walk.test.js` runs the arc a participant runs — setup, four scenes with every action taken,
 response, residue, record, reflection, private observation, export, **a reload at every beat**, and

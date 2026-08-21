@@ -39,6 +39,24 @@ export function assertDecisionIsReal(decision) {
       // An option that changes nothing is not a cost, it is a formality.
       throw new DecisionRefusal('option-costs-nothing', `${decision.id} option ${o.id} has no effects`);
     }
+    // ★ SG-1 — AN OPTION THAT ENDANGERS NOTHING IS NOT AN OPTION.
+    //
+    // `protects` was required from the start and `risks` never was, so an
+    // option could legitimately protect something at no stated cost. Three of
+    // those side by side are not three pathways: they are three ways of being
+    // right, and the participant learns within one scene that the choice was
+    // decorative.
+    //
+    // EITHER form counts. EVS-4 made some risks findable rather than given, so
+    // an option whose cost depends on what a donating service would lose says
+    // how to find out instead of pretending the cost does not exist -- and
+    // `risk_requires_evidence` is that. What is refused is neither.
+    if (!o.risks && !(o.risk_requires_evidence ?? []).length) {
+      throw new DecisionRefusal(
+        'option-endangers-nothing',
+        `${decision.id} option ${o.id} has neither a stated risk nor a findable one`,
+      );
+    }
   }
   return true;
 }

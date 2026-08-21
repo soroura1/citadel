@@ -121,3 +121,67 @@ export function assertRoleIsPlayable(roleId) {
   if (!isSelectable(roleId)) throw new RoleRefusal('role-not-selectable-in-this-slice', roleId);
   return true;
 }
+
+/**
+ * ★ SG-1 C6 — THE AUTHORITY NEITHER PLAYABLE ROLE HOLDS.
+ *
+ * Canon assigns electrical isolation and restoration to Operations, care
+ * decisions to Medical and Clinical Services, and staffed-capacity limits to
+ * Nursing, Midwifery and Patient Flow. Neither the Resilience Lead nor Quality
+ * and Patient Safety is any of those, which is why the slice's commitment beat
+ * is SUPPORT under a named constraint rather than a decision.
+ *
+ * ⚠️ THAT IS CANON, NOT AN OVERSIGHT, AND IT IS ONE CONTENT EDIT FROM BEING
+ * LOST. Adding Operations to the selectable set would hand a participant
+ * electrical command and every automated check would still pass, because
+ * "playable" and "holds clinical authority" have never been compared. This
+ * compares them.
+ */
+export const CLINICAL_OR_ELECTRICAL_AUTHORITY = Object.freeze([
+  'role.medical-clinical-services',
+  'role.nursing-patient-flow',
+  'role.operations',
+]);
+
+export function authorityRefusals(scenes = []) {
+  const out = [];
+
+  for (const r of SELECTABLE_ROLES) {
+    if (CLINICAL_OR_ELECTRICAL_AUTHORITY.includes(r.id)) {
+      out.push({
+        refusal: 'selectable-role-holds-clinical-or-electrical-authority',
+        detail: `${r.id} — the slice's commitment beat is support under a named constraint precisely because no playable role holds this`,
+      });
+    }
+  }
+
+  // ★ A ROLE THAT OFFERS NOTHING THE OTHER DOES NOT IS A COSTUME.
+  //
+  // This is a FLOOR, not the target. The before-state audit measured the two
+  // roles at one differing action out of seventeen across the whole chapter;
+  // the design's role table (strategy-gold-slice-design.md section 7.3) is what
+  // E11 has to reach. What this refuses is the regression to zero, which no
+  // existing check could see.
+  const ids = SELECTABLE_ROLES.map((r) => r.id);
+  if (ids.length > 1) {
+    const byRole = new Map(ids.map((id) => [id, new Set()]));
+    for (const scene of scenes) {
+      for (const a of scene.actions ?? []) {
+        for (const id of ids) {
+          if (a.visible_to_roles == null || a.visible_to_roles.includes(id)) byRole.get(id).add(a.id);
+        }
+      }
+    }
+    for (const id of ids) {
+      const others = ids.filter((o) => o !== id).flatMap((o) => [...byRole.get(o)]);
+      const unique = [...byRole.get(id)].filter((a) => !others.includes(a));
+      if (!unique.length) {
+        out.push({
+          refusal: 'role-offers-nothing-another-role-does-not',
+          detail: `${id} — every act available to this role is available to another; the choice changes nothing a participant can take`,
+        });
+      }
+    }
+  }
+  return out;
+}

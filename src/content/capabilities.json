@@ -1,0 +1,109 @@
+{
+  "version": "v0.1",
+  "_why_this_file_exists": "SG-1 C3. Every action in the chapter was free: taking all of them cost nothing and foreclosed nothing, so a participant who inspected everything was strictly better off than one who chose, and there was no choosing. A capability is what an act can commit.",
+  "_why_there_are_no_numbers": "Canon names time, trust, workload, service capacity and evidence as this world's currencies and sets no prices for any of them. A quantity invites optimisation, which is the behaviour this product exists to make harder. A capability is a NAMED HOLDER IN A NAMED STATE, and its constraint is exclusivity: a holder can be in one place doing one thing. That survives the removal of every clock, which is why the non-timed accessibility path carries the same trade-off rather than a relaxed one.",
+  "capabilities": [
+    {
+      "id": "cap.staff-attention",
+      "name_key": "capability.staff_attention.name",
+      "held_by": { "kind": "person", "id": "Nour" },
+      "available_state": "The roster safely covers about 28 of the 30 occupied ICU beds, and the two physically empty beds have no complete bedside team. Hand ventilation is safe only while competent people can sustain it and monitor the patient. Nour can find enough competent hands to hold the affected bay, and no more.",
+      "how_known": "inst.staffing-board",
+      "consumed_by": [
+        "sustaining manual fallback in the far bay",
+        "escorting a patient movement",
+        "re-staffing an emergency resuscitation table",
+        "the recovery checks after restoration"
+      ],
+      "opens": [
+        "local stabilization for as long as it is needed",
+        "a movement that has competent escort"
+      ],
+      "closes": [
+        "covering the other thirty ICU beds and the emergency department to the same standard at the same time"
+      ],
+      "residue": "One emergency resuscitation table remains unavailable after power returns because its staff are still supporting ICU recovery; one nurse and one respiratory-capable worker remain committed to recovery checks.",
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: the duty nursing leader's want; the ICU fixed operating facts; response approach A; and the Scene 3 bedside position."
+    },
+    {
+      "id": "cap.mobile-reserve",
+      "name_key": "capability.mobile_reserve.name",
+      "held_by": { "kind": "equipment", "id": "the mobile equipment set" },
+      "available_state": "The set exists but must be physically found, verified and delivered. Its devices come from incompatible purchasing generations and carry unequal reserve, and one infusion device without a reliable charged reserve is replaced from it.",
+      "how_known": "inst.equipment-reserve",
+      "consumed_by": [
+        "bridging the affected ICU bay",
+        "replacing a device at the bedside"
+      ],
+      "opens": [
+        "an end to prolonged hand support in the affected bay"
+      ],
+      "closes": [
+        "emergency care's own fallback if another patient deteriorates"
+      ],
+      "residue": "The reserve is where it was sent, and emergency care does not have it.",
+      "derivedFrom": "Canon: response approach B — 'Leaves emergency care without its mobile reserve if another patient deteriorates'; the Storage and Distribution role evidence; and 'One infusion device without a reliable charged reserve is replaced from the mobile equipment set.'"
+    },
+    {
+      "id": "cap.engineering-access",
+      "name_key": "capability.engineering_access.name",
+      "held_by": { "kind": "person", "id": "Rami" },
+      "available_state": "He isolates the affected board, checks for a downstream fault and operates the approved manual alternate feed. He will not energize a circuit whose condition is unknown.",
+      "how_known": "inst.critical-power",
+      "consumed_by": [
+        "isolating and restoring the board",
+        "reaching the old transfer chamber",
+        "demonstrating the shared dependency"
+      ],
+      "opens": [
+        "safe local restoration",
+        "the service passage and the sealed arch, because the board is known"
+      ],
+      "closes": [
+        "any re-energising before he confirms safe restoration or isolation"
+      ],
+      "residue": "The failed automatic board remains locked out for repair and testing.",
+      "derivedFrom": "Canon: Rami's want; the electrical sequence at four minutes twenty; the fail-forward rule; 'Rami defines what may be safely energized'; and the 'what cannot be selected' list."
+    },
+    {
+      "id": "cap.service-route",
+      "name_key": "capability.service_route.name",
+      "held_by": { "kind": "route", "id": "loc.service-passage" },
+      "available_state": "Ayyash carries a registered route key and an older keyed transfer token that is not on the duty register. The approved route is often blocked by ordinary work, and porters already move around treatment areas because the direct corridor is occupied by waiting patients.",
+      "how_known": "inst.route-plan",
+      "consumed_by": [
+        "carrying the mobile set",
+        "moving a bed and its equipment"
+      ],
+      "opens": [
+        "the fastest delivery of the mobile set",
+        "a movement whose doorway takes what is being moved"
+      ],
+      "closes": [
+        "the same passage serving a delivery and a relocation at once"
+      ],
+      "residue": "If the mobile set came that way, the undocumented route has become operationally decisive — and it is still not on the register.",
+      "derivedFrom": "Canon: Ayyash's want; response approach B — 'Makes the undocumented route operationally decisive'; Scene 1's 'porters move around treatment areas because the direct corridor is occupied by waiting patients'; and Ayyash's supporting-cast profile."
+    },
+    {
+      "id": "cap.evidence-preservation",
+      "name_key": "capability.evidence_preservation.name",
+      "held_by": { "kind": "record", "id": "the source-marked timeline" },
+      "available_state": "Maha preserves the exact source and time of loss, generator start, partial restoration, local exception and manual restoration, because the central record collapses them into one successful transfer. A mark that needs the bedside sequence needs somebody at the bedside to give it.",
+      "how_known": "inst.chronology",
+      "consumed_by": [
+        "asking a person who is working to account for a time",
+        "collecting the bedside sequence during the fallback"
+      ],
+      "opens": [
+        "a near-miss entry with something to attach to",
+        "an account at the Third Bell that can be tested later"
+      ],
+      "closes": [
+        "recovering a mark after the central record has merged it"
+      ],
+      "residue": "The difference between main-bus restoration and local restoration is preserved, or it is not.",
+      "derivedFrom": "Canon: Maha's want; Fadl's want — 'without turning the quality function into a second command structure or interrupting bedside work'; and the scene closure, where Maha 'preserves the difference between main-bus restoration and local restoration'."
+    }
+  ]
+}

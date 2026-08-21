@@ -8,11 +8,11 @@
   ],
   "present": [
     "player",
-    "Alia or responsible critical-care physician",
-    "Head Sister or duty critical-care nurse",
+    "Alia or the responsible critical-care physician",
+    "Nour (duty critical-care nurse)",
     "Rami",
     "Ayyash",
-    "biomedical support",
+    "Yasin (biomedical engineer)",
     "local clinical teams",
     "Fadl",
     "Maha"
@@ -404,8 +404,39 @@
           {
             "field": "character_response",
             "why": "Canon Scene 2 assigns character action to the fail-forward rule and to the scene closure — Rami isolating the board, Fadl opening the near-miss entry, Maha attaching the timeline — and those happen on EVERY pathway, so none of them is a response to this one."
+          },
+          {
+            "field": "world_response.person",
+            "why": "Canon Scene 2 authors no per-pathway character reaction; the divergent character beats are in `character_beats` with `pathway` set, which is where a person acting because of a commitment belongs. A derived reaction would be an invented performance."
           }
-        ]
+        ],
+        "world_response": {
+          "environment": {
+            "key": "response.01.02.stabilize.environment",
+            "binds_to": {
+              "kind": "location",
+              "id": "loc.icu-far-bay"
+            },
+            "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: 'ICU and emergency teams use manual and battery fallback while Rami isolates and restores the board.'"
+          },
+          "instrument": {
+            "key": "response.01.02.stabilize.instrument",
+            "binds_to": {
+              "kind": "instrument",
+              "id": "inst.staffing-board"
+            },
+            "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: the staffing board counts positions; canon's Scene 3 bedside position is what actually changed."
+          },
+          "holder": {
+            "key": "response.01.02.stabilize.holder",
+            "binds_to": {
+              "kind": "capability",
+              "id": "cap.staff-attention"
+            },
+            "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: \"Consumes respiratory, nursing, biomedical, and runner capacity.\""
+          },
+          "person": null
+        }
       },
       {
         "option_id": "dec-01-power-pressure.mobile-bridge",
@@ -424,8 +455,39 @@
           {
             "field": "character_response",
             "why": "Canon Scene 2 assigns character action to the fail-forward rule and to the scene closure, which happen on every pathway. Ayyash and biomedical staff bringing the mobile set is what this pathway IS, not how anyone responds to it."
+          },
+          {
+            "field": "world_response.person",
+            "why": "Canon Scene 2 authors no per-pathway character reaction; the divergent character beats are in `character_beats` with `pathway` set, which is where a person acting because of a commitment belongs. A derived reaction would be an invented performance."
           }
-        ]
+        ],
+        "world_response": {
+          "environment": {
+            "key": "response.01.02.bridge.environment",
+            "binds_to": {
+              "kind": "location",
+              "id": "loc.icu-far-bay"
+            },
+            "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: 'Ayyash and biomedical staff bring the mobile set through the quickest service route… Reduces prolonged hand support.'"
+          },
+          "instrument": {
+            "key": "response.01.02.bridge.instrument",
+            "binds_to": {
+              "kind": "instrument",
+              "id": "inst.critical-power"
+            },
+            "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: the display 'monitors the generator and the main critical bus' — a mobile source is on neither, so the board does not change."
+          },
+          "holder": {
+            "key": "response.01.02.bridge.holder",
+            "binds_to": {
+              "kind": "capability",
+              "id": "cap.mobile-reserve"
+            },
+            "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: \"Leaves emergency care without its mobile reserve if another patient deteriorates.\""
+          },
+          "person": null
+        }
       },
       {
         "option_id": "dec-01-power-pressure.selective-relocation",
@@ -444,8 +506,39 @@
           {
             "field": "character_response",
             "why": "Canon Scene 2 assigns character action to the fail-forward rule and to the scene closure, which happen on every pathway."
+          },
+          {
+            "field": "world_response.person",
+            "why": "Canon Scene 2 authors no per-pathway character reaction; the divergent character beats are in `character_beats` with `pathway` set, which is where a person acting because of a commitment belongs. A derived reaction would be an invented performance."
           }
-        ]
+        ],
+        "world_response": {
+          "environment": {
+            "key": "response.01.02.relocate.environment",
+            "binds_to": {
+              "kind": "location",
+              "id": "loc.icu-far-bay"
+            },
+            "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: 'Clears the electrical area for safer work.'"
+          },
+          "instrument": {
+            "key": "response.01.02.relocate.instrument",
+            "binds_to": {
+              "kind": "instrument",
+              "id": "inst.staffing-board"
+            },
+            "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: \"Occupies recovery or emergency positions and exposes the absence of a truly empty staffed ICU bed.\""
+          },
+          "holder": {
+            "key": "response.01.02.relocate.holder",
+            "binds_to": {
+              "kind": "capability",
+              "id": "cap.service-route"
+            },
+            "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Ayyash 'knows which doorway is wide enough for the mobile unit'; a movement needs a route."
+          },
+          "person": null
+        }
       }
     ]
   },
@@ -458,7 +551,12 @@
         "id": "the Hall of Measure display"
       },
       "partial": true,
-      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: \"The Hall initially sees backup generation active, not the downstream exception.\""
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: \"The Hall initially sees backup generation active, not the downstream exception.\"",
+      "reading": {
+        "instrument": "inst.critical-power",
+        "state": "conflicting",
+        "mark": "main-bus-restored"
+      }
     },
     {
       "id": "ev.01.02.eight-beds-two-tables",
@@ -468,7 +566,12 @@
         "id": "older ICU far bay"
       },
       "partial": false,
-      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: The electrical-interruption sequence — \"an older downstream changeover board fails to connect an eight-bed ICU bay and two of six emergency resuscitation tables to the restored bus\"."
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: The electrical-interruption sequence — \"an older downstream changeover board fails to connect an eight-bed ICU bay and two of six emergency resuscitation tables to the restored bus\".",
+      "reading": {
+        "instrument": "inst.critical-power",
+        "state": "unavailable",
+        "mark": "exception-persisting"
+      }
     },
     {
       "id": "ev.01.02.timings",
@@ -478,7 +581,12 @@
         "id": "the electrical sequence"
       },
       "partial": false,
-      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: The elapsed-time table, and the written control \"place detailed timings in optional inspection or the later review rather than long crisis dialogue\"."
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: The elapsed-time table, and the written control \"place detailed timings in optional inspection or the later review rather than long crisis dialogue\".",
+      "reading": {
+        "instrument": "inst.chronology",
+        "state": "known",
+        "mark": "manual-feed-operating"
+      }
     },
     {
       "id": "ev.01.02.shared-board",
@@ -520,7 +628,12 @@
         "id": "Maha"
       },
       "partial": false,
-      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Scene 2 closure and Maha's want — she preserves the exact source and time of loss, generator start, partial restoration, local exception and manual restoration."
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Scene 2 closure and Maha's want — she preserves the exact source and time of loss, generator start, partial restoration, local exception and manual restoration.",
+      "reading": {
+        "instrument": "inst.chronology",
+        "state": "changed",
+        "mark": "manual-feed-operating"
+      }
     },
     {
       "id": "ev.01.02.no-single-owner",
@@ -677,5 +790,122 @@
     "loc.emergency-resuscitation",
     "loc.service-passage",
     "loc.sealed-arch"
+  ],
+  "character_beats": [
+    {
+      "id": "beat.01.02.teams-act-locally",
+      "character_id": "local clinical teams",
+      "at": "entrance",
+      "kind": "action",
+      "performs": "Bedside teams take hold of the patients in front of them before any central explanation arrives.",
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: 'bedside batteries, emergency lighting, hand ventilation, and direct observation bridge the interruption; clinical teams act locally before any central explanation arrives.'"
+    },
+    {
+      "id": "beat.01.02.alia-holds-the-boundary",
+      "character_id": "Alia",
+      "at": "pre_commit",
+      "kind": "refusal",
+      "performs": "She declines to move anyone until the affected boundary and the safe destinations are known, and says what she would need to know first.",
+      "dialogue_unresolved": "The line is owed. Canon authors the act and not the sentence; a candidate draft is in citadel-planning/10-content-candidates/SG1-character-beats-and-lines.md and has not been reviewed.",
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Alia's want — 'keep clinical decisions at the bedside until the affected boundary and safe destinations are known.'"
+    },
+    {
+      "id": "beat.01.02.nour-states-the-limit",
+      "character_id": "Nour",
+      "at": "interactive",
+      "kind": "refusal",
+      "performs": "She states what she can sustain and refuses beyond it: enough competent hands for the affected bay, and not enough to hold the bay and everything else.",
+      "dialogue_unresolved": "The line is owed. Canon authors the act and not the sentence; a candidate draft is in citadel-planning/10-content-candidates/SG1-character-beats-and-lines.md and has not been reviewed.",
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: the duty nursing leader's want — 'without abandoning the other 30 ICU beds or the emergency department.'"
+    },
+    {
+      "id": "beat.01.02.rami-will-not-energize",
+      "character_id": "Rami",
+      "at": "interactive",
+      "kind": "refusal",
+      "performs": "He will not energize a circuit whose condition is unknown, and states the condition on which he would act.",
+      "dialogue_unresolved": "The line is owed. Canon authors the act and not the sentence; a candidate draft is in citadel-planning/10-content-candidates/SG1-character-beats-and-lines.md and has not been reviewed.",
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Rami's want, and 'Rami defines what may be safely energized.'"
+    },
+    {
+      "id": "beat.01.02.rami-shows-the-board",
+      "character_id": "Rami",
+      "at": "interactive",
+      "kind": "action",
+      "performs": "Asked why both areas went at once, he demonstrates the shared board behind the sealed arch and that the map was never amended.",
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: 'Rami demonstrates that both pass through one older transfer board behind a sealed arch… The board has been repaired several times without the dependency map being amended.'"
+    },
+    {
+      "id": "beat.01.02.yasin-qualifies",
+      "character_id": "Yasin",
+      "at": "interactive",
+      "kind": "qualification",
+      "performs": "He will not call a device available until its last inspection, remaining reserve, accessories and responsible user are visible.",
+      "dialogue_unresolved": "The line is owed. Canon authors the act and not the sentence; a candidate draft is in citadel-planning/10-content-candidates/SG1-character-beats-and-lines.md and has not been reviewed.",
+      "derivedFrom": "Canon, 03-characters/chapter-01-supporting-cast-v0.1.md: Yasin's belief about resilience, and 'Yasin prevents “battery available” from becoming a false substitute for safe care capability.'"
+    },
+    {
+      "id": "beat.01.02.ayyash-goes",
+      "character_id": "Ayyash",
+      "at": "interactive",
+      "kind": "action",
+      "performs": "He goes for the mobile set by the route that will arrive fastest, and does not present the old route as a finding.",
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Ayyash's want, and his supporting-cast profile — 'accepts undocumented workarounds as normal because they have kept people safe before.'"
+    },
+    {
+      "id": "beat.01.02.fadl-enters",
+      "character_id": "Fadl",
+      "at": "entrance",
+      "kind": "speech",
+      "performs": "He asks for the event to be recognised now as a high-risk near miss, and asks nobody to stop working.",
+      "dialogue_unresolved": "The line is owed. Canon authors the act and not the sentence; a candidate draft is in citadel-planning/10-content-candidates/SG1-character-beats-and-lines.md and has not been reviewed.",
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: 'Fadl and Maha enter after the first stabilization and electrical-isolation actions are under way'; Fadl's want — 'without turning the quality function into a second command structure or interrupting bedside work.'"
+    },
+    {
+      "id": "beat.01.02.maha-enters",
+      "character_id": "Maha",
+      "at": "entrance",
+      "kind": "speech",
+      "performs": "She asks what time the lamps went, as distinct from when it was reported, because the central record collapses the sequence into one successful transfer.",
+      "dialogue_unresolved": "The line is owed. Canon authors the act and not the sentence; a candidate draft is in citadel-planning/10-content-candidates/SG1-character-beats-and-lines.md and has not been reviewed.",
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: Maha's want — 'preserve the exact source and time of loss, generator start, partial restoration, local exception, and manual restoration.'"
+    },
+    {
+      "id": "beat.01.02.fail-forward",
+      "character_id": "local clinical teams and Rami",
+      "at": "interactive",
+      "kind": "independent_action",
+      "performs": "Bedside teams begin manual support and Rami isolates the board under existing authority, without the participant. The patient survives; the cost is workload, trust, restoration speed or discarded evidence.",
+      "occurs_when": "The participant delays, or proposes a coordination approach the responsible professional refuses.",
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: the fail-forward rule, verbatim."
+    },
+    {
+      "id": "beat.01.02.nour-hands-held",
+      "character_id": "Nour",
+      "at": "post_commit",
+      "kind": "action",
+      "performs": "She names where the hands came from and what stopped as a result.",
+      "pathway": "dec-01-power-pressure.stabilize-locally",
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: response approach A — \"Consumes respiratory, nursing, biomedical, and runner capacity.\""
+    },
+    {
+      "id": "beat.01.02.nour-notices-unwatched",
+      "character_id": "Nour",
+      "at": "post_commit",
+      "kind": "speech",
+      "performs": "She is the first to notice that the bay is now running on a supply nothing is monitoring.",
+      "dialogue_unresolved": "The line is owed. Canon authors the act and not the sentence; a candidate draft is in citadel-planning/10-content-candidates/SG1-character-beats-and-lines.md and has not been reviewed.",
+      "pathway": "dec-01-power-pressure.mobile-bridge",
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: response approach B, read against 'The central display monitors the generator and the main critical bus.'"
+    },
+    {
+      "id": "beat.01.02.alia-selects",
+      "character_id": "Alia",
+      "at": "post_commit",
+      "kind": "action",
+      "performs": "With Nour she selects only the patients whose movement risk is lower than continued fallback risk, and says so.",
+      "pathway": "dec-01-power-pressure.selective-relocation",
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: response approach C — \"Clinical and nursing leads choose only patients whose movement risk is lower than continued fallback risk.\""
+    }
   ]
 }

@@ -11,6 +11,9 @@
 import { assertSceneShape, assertRevealsReachable } from './scene.js';
 import { assertDecisionIsReal } from './decision.js';
 import { evidenceRefusals, unreachableRevealsByRole } from './evidence.js';
+import { instrumentRefusals } from './instrument.js';
+import { opportunityRefusals, worldBindingRefusals } from './opportunity.js';
+import { authorityRefusals } from './roles.js';
 
 export class BundleRefusal extends Error {
   constructor(refusal, where, detail) {
@@ -76,6 +79,35 @@ export function loadBundle({ version, scenes = [], decisions = [] }) {
   if (unreachable.length) {
     throw new BundleRefusal('required-reveal-unreachable-for-role',
       unreachable[0].detail.split('/')[0], unreachable.map((u) => u.detail).join('; '));
+  }
+
+  // ★ SG-1 — FOUR MORE LOAD-TIME PROPERTIES, FOR THE SAME REASON AS THE FIRST.
+  //
+  // Each of these is a promise the content can break silently, and each was
+  // unbreakable-in-review and unenforced-in-code before SG-1:
+  //
+  //   an instrument nobody can compare with anything, or a reading of an
+  //   instrument that does not exist;
+  //   a capability the participant cannot read, which is a hidden variable
+  //   closing an option;
+  //   a residue or a response bound to something that is not in the world, so
+  //   the consequence can be described and never found;
+  //   a selectable role holding clinical or electrical authority, which is one
+  //   content edit away and would hand a participant command canon does not
+  //   give them.
+  //
+  // ⚠️ THEY THROW ON THE FIRST AND REPORT ALL. A loader that names one problem
+  // at a time turns a content pass into a bisect.
+  for (const [refusals, where] of [
+    [instrumentRefusals(scenes), 'instruments'],
+    [opportunityRefusals(decisions), 'capabilities'],
+    [worldBindingRefusals(scenes, decisions), 'world-binding'],
+    [authorityRefusals(scenes), 'roles'],
+  ]) {
+    if (refusals.length) {
+      throw new BundleRefusal(refusals[0].refusal, where,
+        refusals.map((r) => `${r.refusal}: ${r.detail}`).join('; '));
+    }
   }
 
   return {

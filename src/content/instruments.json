@@ -1,0 +1,76 @@
+{
+  "version": "v0.1",
+  "_why_this_file_exists": "SG-1 C2. The chapter turns on two people reading accurate information in different rooms and reaching different conclusions. Before this file the five operational instruments existed only as prose targets of a consult action: a participant could read them and could never PLACE TWO OF THEM SIDE BY SIDE, which is the act the whole incident is built around. An instrument declares what it physically is, what it may be compared with, and what a reading from it must never be taken to mean. The readings themselves are evidence, because evidence already carries a source and a participant already has to go and look.",
+  "_where_the_objects_came_from": "Transcribed, not designed. resilience-citadel-story/02-world/sensory-canon-v0.1.md builds every one of these: the copper message rail with its one/two/three taps and the amber shutter, the slate map pierced with wick-backed holes, the column room showing a ratio and not a count, the weight room with one weight per DECLARED dependency, and the chalk board line that everyone in the room can read at once. Inventing screens instead would have discarded canon that had already done the work.",
+  "instruments": [
+    {
+      "id": "inst.critical-power",
+      "name_key": "instrument.critical_power.name",
+      "object": "On the ward: the Spine colour lamps — white routine, blue clinical urgent, amber service degraded, red life safety — and the ward's own chalk board line. In the Crown: the Measure's slate map, pierced with small holes each backed by an oil wick and glazed green, amber or clear; and below it the weight room, one suspended weight to each declared dependency, whose cord goes slack when that dependency breaks.",
+      "comparable_with": ["inst.staffing-board", "inst.chronology", "inst.route-plan"],
+      "never_implies": [
+        "that restored means the dependency is corrected",
+        "that a green lamp is a statement about readiness rather than about a lit wick",
+        "that an unmonitored circuit is a working circuit"
+      ],
+      "text_equivalent_key": "instrument.critical_power.text",
+      "unresolved": "Canon does not say whether the ward's own board carries the downstream boards individually or only the critical bus. Recorded rather than assumed.",
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: 'The central display monitors the generator and the main critical bus; it does not initially see the failed downstream board.' Object from 02-world/sensory-canon-v0.1.md, 'The Measure' and 'How the rails work'."
+    },
+    {
+      "id": "inst.staffing-board",
+      "name_key": "instrument.staffing_board.name",
+      "object": "The ICU and emergency handover boards — chalk on dark waxed wood, public, revisable, and the only form of message in the Bimaristan that everyone in the room can read at once. Behind them, in the Measure, the column room: glass columns of coloured water rising against engraved plates, one column to a critical service, showing a ratio and not a count — staffed capability against declared capability.",
+      "comparable_with": ["inst.critical-power", "inst.equipment-reserve", "inst.chronology"],
+      "never_implies": [
+        "that a physically empty bed is available capability",
+        "that a count of positions is a judgement about safety",
+        "that the participant may assign a named person to a bedside"
+      ],
+      "text_equivalent_key": "instrument.staffing_board.text",
+      "unresolved": null,
+      "derivedFrom": "Canon: ICU has 32 physical beds, 30 occupied, a roster safely covering about 28; emergency has 50 physical positions of which about 38 can be staffed. Object from 02-world/sensory-canon-v0.1.md, 'The board line' and 'The column room'."
+    },
+    {
+      "id": "inst.equipment-reserve",
+      "name_key": "instrument.equipment_reserve.name",
+      "object": "The mobile equipment set itself, on its wheeled frame, and Yasin's inspection of it — last inspection, remaining reserve, accessories, responsible user. Nothing about it is legible at a distance, which is why it has to be walked to.",
+      "comparable_with": ["inst.staffing-board", "inst.route-plan"],
+      "never_implies": [
+        "that battery available is safe care capability",
+        "that a device listed in the set is a device that has been verified"
+      ],
+      "text_equivalent_key": "instrument.equipment_reserve.text",
+      "unresolved": "Canon says the set contains devices of different inspection generations and unequal reserve. How many devices, and which, is not written.",
+      "derivedFrom": "Canon: 'the mobile equipment set exists but must be physically found, verified, and delivered'; 'batteries, mobile units, transfer components, and connectors come from incompatible purchasing generations'. Yasin's profile, 03-characters/chapter-01-supporting-cast-v0.1.md."
+    },
+    {
+      "id": "inst.route-plan",
+      "name_key": "instrument.route_plan.name",
+      "object": "The official map — the same slate sheet, whose mapped electrical lines stop before the chamber while later conduits continue through the wall — set against the route people actually walk, and the duty register that does not carry the old transfer token.",
+      "comparable_with": ["inst.critical-power", "inst.equipment-reserve"],
+      "never_implies": [
+        "that a route drawn on the map is a route that is open",
+        "that the undocumented lower route is approved because it works",
+        "that a map which is silent about a place is a map reporting that nothing is wrong there"
+      ],
+      "text_equivalent_key": "instrument.route_plan.text",
+      "unresolved": "Canon narrates the service passage before the incident and says nothing about its condition afterwards.",
+      "derivedFrom": "Canon: 'The mapped lines stop before the chamber. Later conduits continue through the wall.' Ayyash 'carrying a registered route key and an older keyed transfer token that does not appear on the duty register'. Map object from 02-world/sensory-canon-v0.1.md."
+    },
+    {
+      "id": "inst.chronology",
+      "name_key": "instrument.chronology.name",
+      "object": "The copper message rail — a shell arriving as a flat clack, the station bell tapping once for routine, twice for priority, three times for requires-acknowledgement, and a small amber shutter standing open beside a station's name until the return chit comes back. Beside it the ward's tin box of downtime cards: stiff buff card, seven printed lines, one of them time and source. And Maha's own source-marked timeline.",
+      "comparable_with": ["inst.critical-power", "inst.staffing-board"],
+      "never_implies": [
+        "that an amber shutter means the message was not received",
+        "that a quiet rail means the traffic has stopped",
+        "that a preserved chronology is a finding, a classification or a closure"
+      ],
+      "text_equivalent_key": "instrument.chronology.text",
+      "unresolved": null,
+      "derivedFrom": "Canon: 'the message rail stops'; Maha preserves 'the exact source and time of loss, generator start, partial restoration, local exception, and manual restoration because the central record collapses them into one successful transfer'. Objects from 02-world/sensory-canon-v0.1.md, 'How the rails work' and 'What survives'."
+    }
+  ]
+}
