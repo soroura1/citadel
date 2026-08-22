@@ -1,6 +1,6 @@
 # `citadel` — status
 
-**Last updated:** 2026-08-22 · **XP0 MERGED AT `b599e53`; R0-V04 COMPLETE; C01 NEXT.**
+**Last updated:** 2026-08-22 · **R0-I1 LIVING MORNING MERGED; `R0-G02` AWAITS THE OWNER.**
 **Topology:** [`../CLAUDE.md`](../CLAUDE.md) — `citadel.endura-assess.com` → `172.17.0.1:8087`,
 `TARGET=/opt/citadel/citadel`.
 
@@ -27,6 +27,61 @@ or evidence of learning/readiness.
 
 ---
 
+## ★ R0-I1 — the morning is simulated now
+
+`R0-C01`–`C04` landed as one increment. The ordinary phase is no longer a fixed picture with a
+narration button: a deterministic world runs two bounded heartbeat cycles, and the map, the
+structured view, the status strip, the inspector and the announcements are all projections of it.
+
+```text
+src/sim/          world · commands · events · rules · reduce · clock · heartbeat · rng · engine
+src/projections/  anchors (place-local) · slots (candidate binding) · project (one pass)
+src/features/morning/  useRun + seven components
+public/layers/    five candidate operational layers + low-bandwidth derivatives
+```
+
+| Invariant the model refuses to break | Where |
+|---|---|
+| Physical ICU capacity never implies staffed capacity | `world.js` · separate fields, separately reported, `staffed > physical` refused |
+| A technical team is available **or** assigned, never both — nor assigned while still at its origin | `worldProblems` |
+| A moved reserve keeps its origin, custody and donating service | `reduce.js` deliberately does not spread them from the event |
+| A refused command returns the **same world object** | `dispatch` · asserted by identity, not deep equality |
+| No patient record and no score can exist in the world | checked on the **shape**, not on intent |
+
+★ **The three ordinary states are read, not stored.** `classifyOrdinary` derives
+`ordinary-steady`/`high-stable`/`rising` from demand, staffed coverage, custody and technical
+assignment. Nothing writes a state name into the world, and no fixture table from the V04 board was
+copied into the engine — § 19.4 forbids exactly that.
+
+★ **The non-timed path is the same path.** `running` and `act-advanced` reach the cycle through one
+command and emit byte-identical operational events; a test strips the mode change and compares.
+
+### ⚠️ Three defects a browser found and 64 green tests did not
+
+1. `.change` had no style, so the announcement read `"ED demandretained arrivals advanced…"` —
+   correct content, unreadable, and invisible to a markup assertion because both strings were
+   present and correctly ordered.
+2. `vectorEffect="non-scaling-stroke"` reinterpreted a 0.55 **map-unit** stroke as 0.55 **CSS
+   pixels**, so the whole route grammar drew as hairlines.
+3. A `0 0 100 100` viewBox with `preserveAspectRatio="none"` flattened every origin node into an
+   ellipse.
+
+All three are fixed. The lesson is the repository's own: *open the page.*
+
+### ⛔ What this increment does not claim
+
+Nothing is bound. `VA-013`–`VA-017` are candidates, every slot records `reviewed: false` and
+`reviewGate: Q10`, and the map says so on its face. There is no preparedness mechanic (`R0-C05`), no
+pressure director (`R0-C06`) and no save surface (`R0-C09`); incident, recovery and debrief are the
+untouched XP0 treatment. **`R0-G02` is Review, not Passed**, and no deployment was raised.
+
+⛔ **Known limitation:** at ~990 px map width the candidate cutouts compete focally with the
+populated base painting. That is the `R0-V03` review point already on record; the route grammar,
+origin nodes and structured world carry the state regardless, and the answer belongs to `Q10` and
+`R0-V10`, not to enlarging a master past its permitted range.
+
+---
+
 ## What is left, and why each piece survived
 
 | Kept | Why |
@@ -36,8 +91,10 @@ or evidence of learning/readiness.
 | `deploy.sh`, `citadel.Caddyfile`, `docker-compose.prod.yml`, `deploy.env.example`, `migrations/` | The deployment. ⚠️ The migrations are kept because `deploy.sh` runs them; the tables they create are for content that no longer exists |
 | `public/scenes/*.jpg` | **Assets.** Six candidate images, including ordinary/outage R0 map references; none reviewed, `Q10` still open |
 | `README.md`, `LICENSE`, `CONTRIBUTING.md`, `RELEASES.md`, `docs/` | Governance. `check-repo.sh` requires the scope statement in `README.md` verbatim |
-| `src/main.jsx`, `src/App.jsx`, `src/styles.css` | The deployable XP0 experience; state is intentionally prototype-local |
+| `src/main.jsx`, `src/App.jsx`, `src/styles.css` | The shell. ⚠️ `operate` is now simulation-driven; incident, recovery and debrief remain prototype-local until `R0-C06`–`C09` |
 | `test/xp0.test.js` | XP0 entry, complete walk, safety text, asset existence and image-budget checks |
+| `test/domain.test.js`, `test/projection.test.js`, `test/living-morning.test.js` | R0-I1: refusals, determinism, pause, chronology, capacity separation, custody, projection parity, the three states, raster removal and the boundary |
+| `test/jsx-hook.mjs` | ⚠️ Restored. Without it no test can import a `.jsx` module, so no test can render one — and this repository has already shipped a blank production page past a green suite |
 
 ---
 

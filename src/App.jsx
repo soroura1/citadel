@@ -1,4 +1,12 @@
 import { useState } from "react";
+import { useRun } from "./features/morning/useRun.js";
+import { LivingMap } from "./features/morning/LivingMap.jsx";
+import { MorningControls } from "./features/morning/MorningControls.jsx";
+import { MorningStatus } from "./features/morning/MorningStatus.jsx";
+import { MorningStructured } from "./features/morning/MorningStructured.jsx";
+import { MorningChanges } from "./features/morning/MorningChanges.jsx";
+import { MorningInspector } from "./features/morning/MorningInspector.jsx";
+import { PLACES } from "./sim/world.js";
 import {
   ActivityIcon as Activity, ArrowRight, CheckCircle, ClipboardText, Clock, Eye, FirstAidKit,
   Gauge, Gear, Lightning, ListBullets, MagnifyingGlass, MapTrifold, Play,
@@ -12,14 +20,17 @@ const preparations = [
   { id: "message", title: "Test the message route", owner: "Operations + ICT", effect: "Makes the first escalation faster and more reliable.", cost: "1 coordinator · routine handover shortened", icon: Gauge },
 ];
 
+// ⚠️ `id` IS THE DOMAIN PLACE ID, not a presentation key. The map pin, the
+// structured row and the simulation all address the same place; two vocabularies
+// for one thing is how a projection quietly stops describing the world.
 const hotspots = [
-  { id: "ed", label: "Emergency Department", meta: "Demand: high but stable", top: "34%", left: "17%", icon: Activity },
-  { id: "icu", label: "Intensive Care", meta: "8 physical beds · 6 staffed", top: "15%", left: "47%", icon: FirstAidKit },
-  { id: "power", label: "Critical Power", meta: "Primary route reporting", top: "18%", left: "82%", icon: Lightning },
-  { id: "stores", label: "Clinical Stores", meta: "Mobile reserve available", top: "43%", left: "69%", icon: Storefront },
-  { id: "workshop", label: "Technical Workshop", meta: "2 active work orders", top: "47%", left: "88%", icon: Wrench },
-  { id: "council", label: "Coordination Room", meta: "Morning handover open", top: "68%", left: "20%", icon: UsersThree },
-  { id: "underworks", label: "Underworks", meta: "Official map incomplete", top: "82%", left: "55%", icon: Gear },
+  { id: PLACES.ED, label: "Emergency Department", meta: "Arrivals and waiting", top: "34%", left: "17%", icon: Activity },
+  { id: PLACES.ICU, label: "Intensive Care", meta: "Physical and staffed positions differ", top: "15%", left: "47%", icon: FirstAidKit },
+  { id: PLACES.POWER, label: "Critical Power", meta: "Declared route", top: "18%", left: "82%", icon: Lightning },
+  { id: PLACES.STORES, label: "Clinical Stores", meta: "Reserve and ordinary supply origin", top: "43%", left: "69%", icon: Storefront },
+  { id: PLACES.WORKSHOP, label: "Technical Workshop", meta: "Technical capacity origin", top: "47%", left: "88%", icon: Wrench },
+  { id: PLACES.COORDINATION, label: "Coordination Room", meta: "Morning handover", top: "68%", left: "20%", icon: UsersThree },
+  { id: PLACES.UNDERWORKS, label: "Underworks", meta: "Official map incomplete", top: "82%", left: "55%", icon: Gear },
 ];
 
 const responses = [
@@ -30,6 +41,7 @@ const responses = [
 
 const phaseCopy = {
   operate: ["Hospital heartbeat", "An ordinary difficult day", "Second bell"],
+  prepare: ["Preparedness window", "Two pieces of work, no more", "Second bell"],
   incident: ["Localized interruption", "The bay that stayed dark", "Third bell"],
   recovery: ["Recover and improve", "Continuity is not restoration", "Fourth bell"],
   debrief: ["Causal reconstruction", "What changed—and why", "After the bell"],
@@ -67,6 +79,15 @@ function TopBar({ profile, structured, setStructured, onRestart }) {
   return <header className="topbar"><Brand /><div className="topbar-center"><Clock /><span>Day 18 · Morning shift</span><span className="separator" /><span>{profile.mode === "team" ? "Facilitated team table" : profile.role}</span></div><div className="topbar-actions"><button className={structured ? "icon-button active" : "icon-button"} onClick={() => setStructured(!structured)}><ListBullets /> {structured ? "Map view" : "Structured view"}</button><button className="quiet-button" onClick={onRestart}>Restart</button></div></header>;
 }
 
+/**
+ * ⚠️ XP0 PROTOTYPE STATE, FOR THE PHASES THE SIMULATION HAS NOT REACHED.
+ *
+ * `operate` no longer uses this: it renders `MorningStatus` from the projection.
+ * Incident, recovery and debrief still show facilitator-authored readings until
+ * `R0-C06`–`C09` simulate them. The duplication is temporary and deliberate —
+ * deleting the prototype before its replacement exists would remove a working
+ * walk to make room for nothing.
+ */
 function StatusStrip({ phase }) {
   const incident = phase === "incident", recovery = phase === "recovery" || phase === "debrief";
   const items = [
@@ -115,11 +136,91 @@ function DebriefPanel({ selected, response, onRestart }) {
   return <section className="action-panel"><div className="panel-heading"><div><p className="kicker">Causal reconstruction</p><h2>What the wall saved</h2></div><ClipboardText /></div><ol className="causal-chain">{chain.map(([title, body], index) => <li key={title}><span>{index + 1}</span><div><b>{title}</b><small>{body}</small></div></li>)}</ol><div className="private-question"><Eye weight="fill" /><span><b>Private observation</b><p>Which essential service in your own hospital may depend on an unofficial route, workaround or person?</p><small>Not scored · not shared · not an assessment</small></span></div><button className="secondary full" onClick={onRestart}>Replay with different preparations</button></section>;
 }
 
+/**
+ * ★ R0-I1 — THE LIVING MORNING.
+ *
+ * ============================================================================
+ * WHAT THIS REPLACED, AND WHY IT MATTERS
+ * ============================================================================
+ * XP0's ordinary phase was a fixed picture with a narration button under it:
+ * the map, the status strip and the structured view were literal arrays, and
+ * the participant's only act was to leave. `gameplay-and-state.md` § 2 requires
+ * the opposite — arrivals, assignment, service work, supply movement and
+ * technical inspection "continue when nothing dramatic is happening".
+ *
+ * Everything below reads one projection of one deterministic world. The
+ * preparation window opens after exactly two ordinary cycles, and until it does
+ * the participant is reading a working institution rather than waiting for a
+ * scene to end.
+ *
+ * ⛔ THE PREPARATION PANEL IS UNCHANGED. `R0-C05` owns preparedness mechanics;
+ * this increment only decides WHEN that existing interface becomes reachable.
+ */
+function LivingMorning({ structured, setStructured, onReachPreparation }) {
+  const [place, setPlace] = useState(PLACES.ICU);
+  const [labels, setLabels] = useState(true);
+  const { view, setMode, setSpeed, advanceCycle, inspect } = useRun(20260822, place);
+  const selectPlace = (id) => { setPlace(id); inspect(id); };
+  const label = hotspots.find((spot) => spot.id === place)?.label ?? place;
+  const ready = view.status === "preparation-window";
+
+  return (
+    <>
+      <MorningStatus strip={view.strip} />
+      <section className="world-heading">
+        <div>
+          <p className="kicker">Hospital heartbeat · {view.ordinaryState.replace("ordinary-", "").replace("-", " ")}</p>
+          <h1>An ordinary difficult day</h1>
+        </div>
+      </section>
+      <MorningControls view={view} onMode={setMode} onSpeed={setSpeed} onAdvance={advanceCycle}
+                       labels={labels} onLabels={() => setLabels((on) => !on)} />
+      <div className="game-grid">
+        <section className="world-column">
+          {/* ★ BOTH REPRESENTATIONS COME FROM ONE PROJECTION. The toggle changes
+              which is on screen; it cannot change what is true. */}
+          {structured
+            ? <MorningStructured view={view} onSelectPlace={selectPlace} places={hotspots} />
+            : <LivingMap view={view} labels={labels} onSelectPlace={selectPlace} hotspots={hotspots} />}
+          <MorningInspector inspector={view.inspector} label={label} />
+        </section>
+        <section className="action-panel">
+          <MorningChanges changes={view.changes} cycle={view.time.cycle} />
+          {/* The structured world is always available beside the map, not only
+              instead of it. */}
+          {!structured && <MorningStructured view={view} onSelectPlace={selectPlace} places={hotspots} />}
+          <button className="primary full" disabled={!ready} onClick={onReachPreparation}>
+            {ready ? "Open the preparation window" : `Run ${view.time.ordinaryCycles - view.time.cycle} more ordinary cycle${view.time.ordinaryCycles - view.time.cycle === 1 ? "" : "s"}`}
+            <ArrowRight weight="bold" />
+          </button>
+        </section>
+      </div>
+    </>
+  );
+}
+
 export function App() {
   const [profile, setProfile] = useState(null), [phase, setPhase] = useState("operate"), [structured, setStructured] = useState(false), [selectedPlace, setSelectedPlace] = useState("icu"), [selected, setSelected] = useState([]), [response, setResponse] = useState(null);
   const restart = () => { setProfile(null); setPhase("operate"); setStructured(false); setSelectedPlace("icu"); setSelected([]); setResponse(null); };
   const toggle = (id) => setSelected((current) => current.includes(id) ? current.filter((item) => item !== id) : current.length < 2 ? [...current, id] : current);
   if (!profile) return <Setup onStart={setProfile} />;
   const copy = phaseCopy[phase];
-  return <main className={`game-shell phase-${phase}`}><TopBar profile={profile} structured={structured} setStructured={setStructured} onRestart={restart} /><StatusStrip phase={phase} /><section className="world-heading"><div><p className="kicker">{copy[0]}</p><h1>{copy[1]}</h1></div><span className="bell"><Clock weight="duotone" />{copy[2]}</span></section><div className="game-grid"><section className="world-column">{structured ? <StructuredView phase={phase} selectedPlace={selectedPlace} setSelectedPlace={setSelectedPlace} /> : <MapView phase={phase} selectedPlace={selectedPlace} setSelectedPlace={setSelectedPlace} />}<PlaceInspector placeId={selectedPlace} phase={phase} /></section>{phase === "operate" && <PreparationPanel selected={selected} toggle={toggle} onAdvance={() => setPhase("incident")} />}{phase === "incident" && <IncidentPanel selected={selected} response={response} setResponse={setResponse} onAdvance={() => setPhase("recovery")} />}{phase === "recovery" && <RecoveryPanel response={response} onAdvance={() => setPhase("debrief")} />}{phase === "debrief" && <DebriefPanel selected={selected} response={response} onRestart={restart} />}</div><footer className="prototype-footer"><span>XP0 · visual and interaction evidence only</span><span>Same fictional state in solo and team formats</span></footer></main>;
+
+  /* ★ R0-I1 — THE MORNING IS NOW SIMULATED; THE REST OF THE WALK IS NOT YET.
+     `operate` runs the deterministic heartbeat and opens the preparation window
+     after two cycles. `prepare`, `incident`, `recovery` and `debrief` remain the
+     accepted XP0 treatment, unchanged, until C05–C09 reach them. Rewriting them
+     now would replace a working walk with an unfinished one — which § 0.4 of the
+     ledger forbids by name. */
+  if (phase === "operate") {
+    return (
+      <main className="game-shell phase-operate">
+        <TopBar profile={profile} structured={structured} setStructured={setStructured} onRestart={restart} />
+        <LivingMorning structured={structured} setStructured={setStructured} onReachPreparation={() => setPhase("prepare")} />
+        <footer className="prototype-footer"><span>R0-I1 · deterministic living morning · candidate visuals</span><span>Same fictional state in solo and team formats</span></footer>
+      </main>
+    );
+  }
+
+  return <main className={`game-shell phase-${phase}`}><TopBar profile={profile} structured={structured} setStructured={setStructured} onRestart={restart} /><StatusStrip phase={phase} /><section className="world-heading"><div><p className="kicker">{copy[0]}</p><h1>{copy[1]}</h1></div><span className="bell"><Clock weight="duotone" />{copy[2]}</span></section><div className="game-grid"><section className="world-column">{structured ? <StructuredView phase={phase} selectedPlace={selectedPlace} setSelectedPlace={setSelectedPlace} /> : <MapView phase={phase} selectedPlace={selectedPlace} setSelectedPlace={setSelectedPlace} />}<PlaceInspector placeId={selectedPlace} phase={phase} /></section>{phase === "prepare" && <PreparationPanel selected={selected} toggle={toggle} onAdvance={() => setPhase("incident")} />}{phase === "incident" && <IncidentPanel selected={selected} response={response} setResponse={setResponse} onAdvance={() => setPhase("recovery")} />}{phase === "recovery" && <RecoveryPanel response={response} onAdvance={() => setPhase("debrief")} />}{phase === "debrief" && <DebriefPanel selected={selected} response={response} onRestart={restart} />}</div><footer className="prototype-footer"><span>XP0 · visual and interaction evidence only</span><span>Same fictional state in solo and team formats</span></footer></main>;
 }
