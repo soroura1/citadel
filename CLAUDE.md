@@ -1,6 +1,6 @@
 # `citadel` — status
 
-**Last updated:** 2026-08-22 · **XP0 VISUAL/INTERACTION PILOT READY FOR OWNER DEPLOYMENT.**
+**Last updated:** 2026-08-22 · **XP0 MERGED AT `b599e53`; R0 INCREMENT PLAN READY BUT HELD.**
 **Topology:** [`../CLAUDE.md`](../CLAUDE.md) — `citadel.endura-assess.com` → `172.17.0.1:8087`,
 `TARGET=/opt/citadel/citadel`.
 
@@ -34,7 +34,7 @@ or evidence of learning/readiness.
 | `package.json`, `package-lock.json`, `vite.config.js`, `index.html` | The build |
 | `.woodpecker.yml`, `check-repo.sh`, `scripts/` | The pipeline and the three-condition deploy gate |
 | `deploy.sh`, `citadel.Caddyfile`, `docker-compose.prod.yml`, `deploy.env.example`, `migrations/` | The deployment. ⚠️ The migrations are kept because `deploy.sh` runs them; the tables they create are for content that no longer exists |
-| `public/scenes/*.jpg` | **Assets.** Kept by instruction — four generated candidate images, none reviewed, `Q10` still open |
+| `public/scenes/*.jpg` | **Assets.** Six candidate images, including ordinary/outage R0 map references; none reviewed, `Q10` still open |
 | `README.md`, `LICENSE`, `CONTRIBUTING.md`, `RELEASES.md`, `docs/` | Governance. `check-repo.sh` requires the scope statement in `README.md` verbatim |
 | `src/main.jsx`, `src/App.jsx`, `src/styles.css` | The deployable XP0 experience; state is intentionally prototype-local |
 | `test/xp0.test.js` | XP0 entry, complete walk, safety text, asset existence and image-budget checks |
@@ -88,5 +88,17 @@ They were not what went wrong.
 
 ## What comes next
 
-The owner may raise the XP0 deployment after this branch is green and merged. Production R0 code
-remains held by [`../../citadel-planning/06-releases/RELEASE-PROGRESSION.md`](../../citadel-planning/06-releases/RELEASE-PROGRESSION.md): XP0 deployment is review evidence, not automatic R0 authorisation.
+The owner may raise the XP0 deployment. Production R0 remains held by
+[`../../citadel-planning/06-releases/RELEASE-PROGRESSION.md`](../../citadel-planning/06-releases/RELEASE-PROGRESSION.md): XP0 deployment is review evidence, not automatic R0 authorisation.
+
+When R0 is authorised, work follows the ledger's R0-I0–I5 sequence:
+
+1. Select only the first unblocked visual/code task in the current increment and mark it in progress.
+2. Preserve the XP0 walk; replace facilitator state incrementally with deterministic projections.
+3. Do not merge an invisible kernel checkpoint. Every merge must add a participant-visible,
+   browser-verifiable capability while keeping the prior walk functional.
+4. Run focused tests plus `npm test`, `npm run build`, `npm run conformance` and `./check-repo.sh`
+   under Node 26; verify visual and structured paths in the production build.
+5. Record PR/commit, tests, visual evidence, limitations and next task in the release ledger and all
+   applicable CLAUDE files.
+6. Stop at the integration gate. Branch → PR → green → squash merge; never raise deployment.
