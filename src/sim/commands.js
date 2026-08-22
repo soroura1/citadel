@@ -25,6 +25,8 @@ export const COMMANDS = Object.freeze({
   ADVANCE_CYCLE: 'advance-cycle',
   INSPECT_PLACE: 'inspect-place',
   OPEN_PREPARATION_WINDOW: 'open-preparation-window',
+  SCHEDULE_PROJECT: 'schedule-project',
+  VERIFY_PROJECT: 'verify-project',
 });
 
 export const COMMAND_IDS = Object.freeze(Object.values(COMMANDS));
@@ -44,6 +46,12 @@ export const REFUSALS = Object.freeze({
   PREPARATION_WINDOW_NOT_EARNED: 'preparation-window-needs-two-ordinary-cycles',
   PREPARATION_WINDOW_ALREADY_OPEN: 'preparation-window-is-already-open',
   ORDINARY_CYCLES_COMPLETE: 'the-ordinary-morning-has-already-run-its-cycles',
+  UNKNOWN_PROJECT: 'unknown-project',
+  PREPARATION_WINDOW_NOT_OPEN: 'the-preparation-window-is-not-open',
+  PROJECT_CAPACITY_REACHED: 'only-two-projects-can-be-undertaken',
+  PROJECT_ALREADY_COMMITTED: 'that-project-is-already-under-way',
+  NOTHING_TO_VERIFY: 'a-project-must-be-complete-before-it-can-be-verified',
+  ALREADY_VERIFIED: 'that-project-has-already-been-verified',
 });
 
 /**

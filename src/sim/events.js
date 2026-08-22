@@ -35,6 +35,10 @@ export const EVENTS = Object.freeze({
   PLACE_INSPECTED: 'place-inspected',
   CYCLE_COMPLETED: 'cycle-completed',
   PREPARATION_WINDOW_OPENED: 'preparation-window-opened',
+  PROJECT_SCHEDULED: 'project-scheduled',
+  PROJECT_STATE_CHANGED: 'project-state-changed',
+  PROJECT_VERIFIED: 'project-verified',
+  WORK_DISPLACED: 'work-displaced',
   COMMAND_REFUSED: 'command-refused',
 });
 

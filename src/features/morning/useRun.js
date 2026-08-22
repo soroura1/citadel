@@ -24,6 +24,8 @@ export function useRun(seed, selectedPlace) {
     setSpeed: (speed) => send(command(COMMANDS.SET_SPEED, { speed })),
     advanceCycle: () => send(command(COMMANDS.ADVANCE_CYCLE)),
     inspect: (place) => send(command(COMMANDS.INSPECT_PLACE, { place })),
+    scheduleProject: (project) => send(command(COMMANDS.SCHEDULE_PROJECT, { project })),
+    verifyProject: (project) => send(command(COMMANDS.VERIFY_PROJECT, { project })),
     restart: () => setRun(startRun(seed)),
   };
 }

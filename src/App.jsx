@@ -6,6 +6,7 @@ import { MorningStatus } from "./features/morning/MorningStatus.jsx";
 import { MorningStructured } from "./features/morning/MorningStructured.jsx";
 import { MorningChanges } from "./features/morning/MorningChanges.jsx";
 import { MorningInspector } from "./features/morning/MorningInspector.jsx";
+import { PreparednessPanel } from "./features/preparedness/PreparednessPanel.jsx";
 import { PLACES } from "./sim/world.js";
 import {
   ActivityIcon as Activity, ArrowRight, CheckCircle, ClipboardText, Clock, Eye, FirstAidKit,
@@ -159,7 +160,7 @@ function DebriefPanel({ selected, response, onRestart }) {
 function LivingMorning({ structured, setStructured, onReachPreparation }) {
   const [place, setPlace] = useState(PLACES.ICU);
   const [labels, setLabels] = useState(true);
-  const { view, setMode, setSpeed, advanceCycle, inspect } = useRun(20260822, place);
+  const { view, setMode, setSpeed, advanceCycle, inspect, scheduleProject, verifyProject } = useRun(20260822, place);
   const selectPlace = (id) => { setPlace(id); inspect(id); };
   const label = hotspots.find((spot) => spot.id === place)?.label ?? place;
   const ready = view.status === "preparation-window";
@@ -184,16 +185,26 @@ function LivingMorning({ structured, setStructured, onReachPreparation }) {
             : <LivingMap view={view} labels={labels} onSelectPlace={selectPlace} hotspots={hotspots} />}
           <MorningInspector inspector={view.inspector} label={label} />
         </section>
-        <section className="action-panel">
-          <MorningChanges changes={view.changes} cycle={view.time.cycle} />
-          {/* The structured world is always available beside the map, not only
-              instead of it. */}
-          {!structured && <MorningStructured view={view} onSelectPlace={selectPlace} places={hotspots} />}
-          <button className="primary full" disabled={!ready} onClick={onReachPreparation}>
-            {ready ? "Open the preparation window" : `Run ${view.time.ordinaryCycles - view.time.cycle} more ordinary cycle${view.time.ordinaryCycles - view.time.cycle === 1 ? "" : "s"}`}
-            <ArrowRight weight="bold" />
-          </button>
-        </section>
+        {/* ★ R0-C05 — THE WINDOW IS PART OF THE SAME MORNING, NOT A NEW SCREEN.
+            The preparedness work happens inside the working institution: the
+            same run, the same clock, the same map. Moving it to its own phase
+            would hide the thing it costs. */}
+        {ready
+          ? <PreparednessPanel
+              preparedness={view.preparedness}
+              residue={view.residue}
+              onSchedule={scheduleProject}
+              onVerify={verifyProject}
+              onAdvance={advanceCycle}
+              canAdvance={view.preparedness.taken > 0} />
+          : <section className="action-panel">
+              <MorningChanges changes={view.changes} cycle={view.time.cycle} />
+              {!structured && <MorningStructured view={view} onSelectPlace={selectPlace} places={hotspots} />}
+              <button className="primary full" disabled onClick={onReachPreparation}>
+                {`Run ${view.time.ordinaryCycles - view.time.cycle} more ordinary cycle${view.time.ordinaryCycles - view.time.cycle === 1 ? "" : "s"}`}
+                <ArrowRight weight="bold" />
+              </button>
+            </section>}
       </div>
     </>
   );

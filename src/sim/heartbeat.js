@@ -35,6 +35,8 @@ import { EVENTS, domainEvent } from './events.js';
 import { CYCLE_MINUTES, ORDINARY_CYCLES } from './clock.js';
 import { jitter } from './rng.js';
 import { FUNCTIONS, PLACES } from './world.js';
+import { advanceState } from './projects.js';
+import { reduce } from './reduce.js';
 
 export { ORDINARY_CYCLES };
 
@@ -193,3 +195,53 @@ export function cycleEvents(world, generator, at) {
 }
 
 const round = (value) => Math.round(value * 1000) / 1000;
+
+/**
+ * ★ R0-C05 — ONE CYCLE OF PREPAREDNESS WORK.
+ *
+ * The ordinary heartbeat does not stop when the window opens; preparedness work
+ * happens *inside* the working morning, which is the point. Each cycle advances
+ * every project that is scheduled, working or disrupted, using the ladder in
+ * `projects.js`.
+ *
+ * ⛔ NOTHING HERE REACHES `verified`. Time performs work; only a responsible
+ * function can test it. That separation is the entire reason the ladder has six
+ * states rather than five, and putting verification on a timer would erase it
+ * while every test still passed.
+ *
+ * ⚠️ AND A DISRUPTED PROJECT STAYS DISRUPTED UNTIL ITS CONTENTION CLEARS. It
+ * does not fail, and it does not quietly resume: the unfinished site remains
+ * and the cost already paid is not refunded.
+ */
+export function preparationCycleEvents(world, generator, at) {
+  const events = [];
+  const minute = world.time.minute + CYCLE_MINUTES;
+  let sequence = at.sequence;
+  const stamp = () => ({ sequence: ++sequence, minute, cycle: world.time.cycle });
+
+  events.push(domainEvent(EVENTS.TIME_ADVANCED, stamp(), {
+    minutes: CYCLE_MINUTES,
+    changed: 'fictional time',
+    because: 'a cycle of preparedness work passed',
+  }));
+
+  // ⚠️ ADVANCE AGAINST A MOVING WORLD, not a snapshot. Each project's state is
+  // decided against the world as it stands after the previous project moved —
+  // otherwise two projects could both "win" the same resource in one cycle
+  // because each was compared with a world in which the other had not yet acted.
+  let current = world;
+  for (const id of Object.keys(world.projects)) {
+    const step = advanceState(current, id);
+    if (!step) continue;
+    const event = domainEvent(EVENTS.PROJECT_STATE_CHANGED, stamp(), {
+      project: id,
+      state: step.state,
+      changed: `${id.replace(/-/g, ' ')}`,
+      because: step.because,
+    });
+    events.push(event);
+    current = reduce(current, event);
+  }
+
+  return events;
+}

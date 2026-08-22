@@ -29,6 +29,7 @@ import { PLACES, FUNCTIONS } from '../sim/world.js';
 import { ORDINARY_CYCLES } from '../sim/clock.js';
 import { EVENTS } from '../sim/events.js';
 import { GROUND, ROUTE_PATHS, ROUTE_STYLE, occupiedPath, pointAlong, widthFor } from './anchors.js';
+import { PROJECTS, PROJECT_CAPACITY, STATE_LABELS, committed, contendedResources } from '../sim/projects.js';
 
 export const ORDINARY_STATES = Object.freeze(['ordinary-steady', 'ordinary-high-stable', 'ordinary-rising']);
 
@@ -301,6 +302,60 @@ export function projectInspector(world, placeId) {
   };
 }
 
+/**
+ * ★ R0-C05 — THE PREPAREDNESS WINDOW, INCLUDING WHAT IS BEING GIVEN UP.
+ *
+ * Every project is projected, always — including the two the participant did
+ * not take. A window that lists only your choices cannot show you the cost of
+ * making them, and the cost is the mechanic.
+ *
+ * ★ `contended` IS PROJECTED BEFORE COMMITMENT, deliberately. Two projects that
+ * want the service passage will collide, and `gameplay-and-state.md` § 7
+ * requires known effects to be previewed fairly. A collision discovered only
+ * after scheduling would be a trap, not a trade-off.
+ */
+export function projectPreparedness(world) {
+  const taken = committed(world);
+  const remaining = PROJECT_CAPACITY - taken.length;
+
+  return {
+    capacity: PROJECT_CAPACITY,
+    taken: taken.length,
+    remaining,
+    windowOpen: world.status === 'preparation-window',
+    projects: PROJECTS.map((project) => {
+      const entry = world.projects[project.id];
+      const contended = contendedResources(world, project.id);
+      return {
+        id: project.id,
+        nameKey: project.name_key,
+        name: project.name,
+        state: entry.state,
+        stateLabel: STATE_LABELS[entry.state] ?? entry.state,
+        // The states this project actually entered — not a range derived from
+        // where it is now. `disrupted` is a branch and must not be implied.
+        entered: entry.entered ?? ['available'],
+        responsibleFunctions: project.responsibleFunctions,
+        requires: project.requires,
+        accessNeed: project.accessNeed,
+        materials: project.materials,
+        displaces: project.displaces,
+        verification: project.verification,
+        // What this would collide with, in the world's terms — knowable in
+        // advance, and named rather than implied by a disabled control.
+        contended,
+        // Refusals a surface must be able to explain without guessing.
+        canSchedule: world.status === 'preparation-window' && entry.state === 'available' && remaining > 0,
+        canVerify: entry.state === 'complete',
+        // ⛔ Performed is not tested, and the projection keeps them apart.
+        performed: entry.state === 'complete' || entry.state === 'verified',
+        verified: entry.state === 'verified',
+        cyclesWorked: entry.cyclesWorked,
+      };
+    }),
+  };
+}
+
 /** Everything a surface needs, from one world, in one pass. */
 export function project(run, { selectedPlace = PLACES.ICU } = {}) {
   const { world, events } = run;
@@ -314,6 +369,10 @@ export function project(run, { selectedPlace = PLACES.ICU } = {}) {
     structured: projectStructured(world),
     changes: projectChanges(events),
     inspector: projectInspector(world, selectedPlace),
+    preparedness: projectPreparedness(world),
+    // Residue is what the world is still carrying — including work that
+    // stopped being done because something else was chosen.
+    residue: world.residue.map((item) => ({ ...item })),
     lastRefusal: run.lastRefusal,
   };
 }
