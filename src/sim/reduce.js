@@ -14,6 +14,14 @@ import { EVENTS } from './events.js';
 import { bellAt } from './clock.js';
 import { deepFreeze } from './world.js';
 
+/** Append a state to a project's history, without repeating the current one.
+ *  disrupted → working → disrupted is real and is recorded twice; a re-entry
+ *  into the state already held is not a transition. */
+function withEntered(project, state) {
+  const entered = project.entered ?? ['available'];
+  return entered[entered.length - 1] === state ? entered : [...entered, state];
+}
+
 export function reduce(world, event) {
   switch (event.type) {
     case EVENTS.CLOCK_MODE_CHANGED:
@@ -118,6 +126,64 @@ export function reduce(world, event) {
 
     case EVENTS.PREPARATION_WINDOW_OPENED:
       return next(world, { status: 'preparation-window' });
+
+    case EVENTS.PROJECT_SCHEDULED:
+      return next(world, {
+        projects: {
+          ...world.projects,
+          [event.project]: {
+            ...world.projects[event.project],
+            state: 'scheduled',
+            entered: withEntered(world.projects[event.project], 'scheduled'),
+            // ★ The ORDER matters and is the participant's own. When two
+            // projects want one resource, the earlier commitment keeps it —
+            // which is deterministic, replayable, and not a coin toss.
+            scheduledAt: event.order,
+          },
+        },
+      });
+
+    case EVENTS.PROJECT_STATE_CHANGED:
+      return next(world, {
+        projects: {
+          ...world.projects,
+          [event.project]: {
+            ...world.projects[event.project],
+            state: event.state,
+            entered: withEntered(world.projects[event.project], event.state),
+            cyclesWorked: world.projects[event.project].cyclesWorked + (event.state === 'working' ? 1 : 0),
+          },
+        },
+      });
+
+    case EVENTS.PROJECT_VERIFIED:
+      return next(world, {
+        projects: {
+          ...world.projects,
+          [event.project]: {
+            ...world.projects[event.project],
+            // ⛔ `verified` is reached ONLY here, never by time passing. The
+            // responsible function tested the result; nothing else can claim it.
+            state: 'verified',
+            entered: withEntered(world.projects[event.project], 'verified'),
+            verifiedAt: event.minute,
+          },
+        },
+        evidence: event.evidence
+          ? [...world.evidence, { ...event.evidence, atMinute: event.minute }]
+          : world.evidence,
+      });
+
+    case EVENTS.WORK_DISPLACED:
+      // Displaced work is residue: it is what is NOT being done, and it
+      // outlives the cycle that caused it.
+      return next(world, {
+        residue: [...world.residue, {
+          id: `displaced-${event.project}`,
+          what: event.what, where: event.where, because: event.because,
+          sinceMinute: event.minute,
+        }],
+      });
 
     case EVENTS.PLACE_INSPECTED:
       // Inspection changes what the participant knows, not what is true. It is

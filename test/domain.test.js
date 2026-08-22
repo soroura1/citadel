@@ -287,11 +287,35 @@ test('★ 11 — one cycle moves demand, supply and technical work with NO narra
   assert.notEqual(after.world.supply.ordinaryCart.place, before.world.supply.ordinaryCart.place);
 });
 
-test('★ 11 — and the morning is BOUNDED: a third cycle is refused', () => {
+test('★ 11 — the ORDINARY morning is bounded at two cycles, and stays bounded', () => {
+  /* ⚠️ THIS TEST CHANGED MEANING AT R0-C05, DELIBERATELY.
+   *
+   * It used to assert that a third `ADVANCE_CYCLE` was refused outright. Once
+   * the preparedness window exists, the same control advances preparedness work
+   * instead — one control for the whole morning, rather than a second clock the
+   * participant has to learn.
+   *
+   * What must still hold is the bound that matters: no THIRD ORDINARY CYCLE
+   * runs. The demand, coverage and supply heartbeat stops at two. */
   const run = wholeMorning();
+  assert.equal(run.world.time.cycle, ORDINARY_CYCLES);
+  assert.equal(run.world.status, 'preparation-window');
+
   const third = dispatch(run, command(COMMANDS.ADVANCE_CYCLE));
+  assert.equal(third.world.time.cycle, ORDINARY_CYCLES, 'a third ordinary cycle ran');
+  assert.equal(third.world.demand.band, run.world.demand.band, 'the ordinary heartbeat kept beating');
+  assert.equal(third.world.services.icu.staffedPositions, run.world.services.icu.staffedPositions);
+  assert.equal(third.lastRefusal, null, 'the control should now advance preparedness, not refuse');
+});
+
+test('★ 11 — and outside the window, a third ordinary cycle IS refused', () => {
+  // The refusal still exists; it fires when there is no preparedness window to
+  // advance into, which is the only situation it was ever protecting.
+  const run = wholeMorning();
+  const noWindow = { ...run, world: { ...run.world, status: 'ordinary' } };
+  const third = dispatch(noWindow, command(COMMANDS.ADVANCE_CYCLE));
   assert.equal(third.lastRefusal.reason, REFUSALS.ORDINARY_CYCLES_COMPLETE);
-  assert.equal(third.world, run.world);
+  assert.equal(third.world, noWindow.world);
 });
 
 test('11 — every intermediate world is valid, not only the last one', () => {

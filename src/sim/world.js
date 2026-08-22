@@ -32,11 +32,14 @@
  * cannot express it, however carefully the interface words the label.
  */
 
+import PROJECT_CONTENT from '../content/projects.json' with { type: 'json' };
+
 /** @typedef {'steady'|'high-stable'|'rising'|'backlogged'} DemandBand */
 /** @typedef {'available'|'assigned'|'recovering'} TeamStatus */
 /** @typedef {'stored'|'staged'|'in-transit'|'committed'|'replenishing'} ReserveStatus */
 /** @typedef {'clear'|'obstructed'|'restricted'|'rerouted'|'restored'} RouteCondition */
 /** @typedef {'paused'|'running'|'act-advanced'} ClockMode */
+/** @typedef {'available'|'scheduled'|'working'|'disrupted'|'complete'|'verified'} ProjectState */
 
 /**
  * The places of the compact sector. Stable identifiers — a projection maps them
@@ -84,6 +87,16 @@ export const FUNCTIONS = Object.freeze({
  * sector". Writing canon's whole-ICU numbers into a sector that shows eight
  * positions would be a contradiction a participant can see.
  */
+/**
+ * Project ids, read from the content rather than restated.
+ *
+ * ⚠️ IMPORTED, NOT LISTED. A second list of project ids beside the content is
+ * the shape this project keeps correcting: the two drift, both look right, and
+ * the disagreement surfaces as a project that exists in one place and not the
+ * other.
+ */
+const PROJECT_IDS = PROJECT_CONTENT.projects.map((p) => p.id);
+
 export function initialWorld(seed) {
   if (!Number.isInteger(seed) || seed < 0) {
     throw new WorldRefusal('seed-must-be-a-non-negative-integer', String(seed));
@@ -195,6 +208,18 @@ export function initialWorld(seed) {
     // §6 of the mechanics authority: source, time, confidence and accessibility
     // travel with a claim, and `unknown` is not `not investigated`.
     evidence: [],
+    // --- preparedness projects (R0-C05) --------------------------------------
+    // ★ EVERY project is present from the start, at `available`. A window that
+    // only lists what you picked cannot show you what you gave up, and the
+    // opportunity cost is the mechanic.
+    projects: Object.fromEntries(PROJECT_IDS.map((id) => [id, {
+      state: 'available', scheduledAt: null, cyclesWorked: 0, verifiedAt: null,
+      // ★ THE STATES THIS PROJECT ACTUALLY ENTERED, in order. The ladder used
+      // to fill by index, so a project that reached `complete` also lit the
+      // `disrupted` marker and claimed a stoppage that never happened.
+      // `disrupted` is a branch, not a rung, and only history can say so.
+      entered: ['available'],
+    }])),
     // --- operational residue -------------------------------------------------
     residue: [],
   });
@@ -294,6 +319,31 @@ export function worldProblems(world) {
       say('unknown-workload', `${id}: ${group.workload}`);
     }
   }
+
+  // --- preparedness projects ----------------------------------------------
+  const LADDER = ['available', 'scheduled', 'working', 'disrupted', 'complete', 'verified'];
+  const scheduledStates = ['scheduled', 'working', 'disrupted', 'complete', 'verified'];
+  let taken = 0;
+  for (const [id, entry] of Object.entries(world.projects ?? {})) {
+    if (!LADDER.includes(entry.state)) say('unknown-project-state', `${id}: ${entry.state}`);
+    if (scheduledStates.includes(entry.state)) {
+      taken++;
+      if (entry.scheduledAt == null) say('a-committed-project-has-no-scheduled-order', id);
+    }
+    if (entry.state === 'available' && entry.scheduledAt != null) {
+      say('an-available-project-carries-a-schedule', id);
+    }
+    // ★ `verified` is a SEPARATE fact from `complete`, and it cannot precede it.
+    if (entry.state === 'verified' && entry.verifiedAt == null) {
+      say('a-verified-project-records-no-verification', id);
+    }
+    if (entry.state !== 'verified' && entry.verifiedAt != null) {
+      say('an-unverified-project-carries-a-verification', id);
+    }
+  }
+  // ★ CAPACITY IS AN INVARIANT OF THE WORLD, not only a rule at the door. A
+  // reducer bug that committed a third project must fail here, not render.
+  if (taken > 2) say('more-projects-committed-than-capacity-allows', String(taken));
 
   // --- ⛔ no patient-level record may enter the world ---------------------
   // The boundary is checked on the SHAPE, not on intent. A field called

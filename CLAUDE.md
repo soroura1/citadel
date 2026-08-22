@@ -1,6 +1,6 @@
 # `citadel` — status
 
-**Last updated:** 2026-08-22 · **R0-I1 LIVING MORNING MERGED; `R0-G02` AWAITS THE OWNER.**
+**Last updated:** 2026-08-22 · **R0-I2 PREPAREDNESS WINDOW MERGED; `R0-G02` AND `R0-G03` BOTH AWAIT THE OWNER.**
 **Topology:** [`../CLAUDE.md`](../CLAUDE.md) — `citadel.endura-assess.com` → `172.17.0.1:8087`,
 `TARGET=/opt/citadel/citadel`.
 
@@ -90,14 +90,63 @@ speed selection.
 ### ⛔ What this increment does not claim
 
 Nothing is bound. `VA-013`–`VA-017` are candidates, every slot records `reviewed: false` and
-`reviewGate: Q10`, and the map says so on its face. There is no preparedness mechanic (`R0-C05`), no
-pressure director (`R0-C06`) and no save surface (`R0-C09`); incident, recovery and debrief are the
-untouched XP0 treatment. **`R0-G02` is Review, not Passed**, and no deployment was raised.
+`reviewGate: Q10`, and the map says so on its face. There is no pressure director (`R0-C06`) and no
+save surface (`R0-C09`); incident, recovery and debrief are the untouched XP0 treatment.
+**`R0-G02` is Review, not Passed**, and no deployment was raised.
 
 ⛔ **Known limitation:** at ~990 px map width the candidate cutouts compete focally with the
 populated base painting. That is the `R0-V03` review point already on record; the route grammar,
 origin nodes and structured world carry the state regardless, and the answer belongs to `Q10` and
 `R0-V10`, not to enlarging a master past its permitted range.
+
+---
+
+## ★ R0-I2 — the preparedness window is a real choice now
+
+`R0-C05` landed against `R0-V05`. Four projects are **always shown**, including the two you cannot
+take, because a window that lists only your choices cannot show you what they cost. Capacity is two,
+and the rule lives in the engine — a third project is refused by name, and a world holding three is
+refused, so a surface that forgot to disable a button cannot break it.
+
+**Contention is derived, not declared.** Each project names the world resources it needs; two that
+name the same one collide, the earlier commitment keeps it, and the later one is `disrupted` and
+resumes when the resource frees. So the opportunity cost is measurable: the conflicting pair takes
+**three** cycles to finish, the compatible pair **two**. And the collision is on the card *before*
+you commit, not discovered afterwards.
+
+**`complete` is not `verified`.** Time performs work; only the responsible function tests it.
+`verified` is reachable only through `PROJECT_VERIFIED`, never by a cycle passing. The card reads
+*"Performed. Not yet tested."* until it reads *"Tested, and recorded with its source."* There is no
+progress ring, because a ring at 100% cannot say which of those two things happened.
+
+### ⚠️ Four rendering faults, none of which 96 green tests could have caught
+
+Every one of them had a correct DOM and wrong pixels.
+
+1. **`.prep-card` was already taken.** XP0's icon/copy/mark card — a three-column grid — still
+   renders, and reusing the class auto-placed the new head/facts/note into those columns. The R0
+   panel now owns `work-*`.
+2. **`.visually-hidden` was used and never defined**, so the ladder's six state names were painted
+   across the ladder. ⚠️ This dates to **`R0-I1`**: `MorningControls`' *"Fictional time:"* prefix has
+   been visible on the page since that merge and reads plausibly enough that nobody caught it.
+3. **The ladder filled by index**, so every completed project lit the amber `disrupted` rung and
+   claimed a stoppage that never happened. `disrupted` is a branch, not a rung — the world now
+   carries the states each project actually entered.
+4. **The advance control had two branches for three situations**, and told a participant who had
+   completed both projects to *"take on two pieces of work first"*.
+
+Faults 2–4 now have tests, and 3 and 4 were confirmed to fail against the old behaviour. ⛔ Fault 1
+is **not** guarded: a class collision is two valid rules, indistinguishable from intent. It is a
+naming rule instead — a feature under `src/features/` owns its own class prefix and never reuses one
+from the XP0 bundle.
+
+### ⛔ What this increment does not claim
+
+Reduced motion **passes vacuously** — the panel declares no transition and no animation, so there is
+nothing to suppress. Strings are **English literals**: the reset removed the locale layer and I1 did
+not restore one, so every project keeps `name_key` beside its name and the RTL frame proves the
+layout mirrors, not that the content is translated. **`R0-G03` is Review, not Passed**, and no
+deployment was raised.
 
 ---
 
@@ -112,7 +161,9 @@ origin nodes and structured world carry the state regardless, and the answer bel
 | `README.md`, `LICENSE`, `CONTRIBUTING.md`, `RELEASES.md`, `docs/` | Governance. `check-repo.sh` requires the scope statement in `README.md` verbatim |
 | `src/main.jsx`, `src/App.jsx`, `src/styles.css` | The shell. ⚠️ `operate` is now simulation-driven; incident, recovery and debrief remain prototype-local until `R0-C06`–`C09` |
 | `test/xp0.test.js` | XP0 entry, complete walk, safety text, asset existence and image-budget checks |
-| `test/domain.test.js`, `test/projection.test.js`, `test/living-morning.test.js` | R0-I1: **67 tests** — refusals, determinism (world *and* projection), pause, chronology, capacity separation, custody, projection parity, the three states, raster removal, the 16:9 map invariant and the safety boundary |
+| `test/domain.test.js`, `test/projection.test.js`, `test/living-morning.test.js` | R0-I1 — refusals, determinism (world *and* projection), pause, chronology, capacity separation, custody, projection parity, the three states, raster removal, the 16:9 map invariant and the safety boundary |
+| `test/preparedness.test.js` | R0-I2 — capacity refusals, derived contention, disruption and resumption, the measured cost of a conflicting pair, `complete` vs `verified`, residue persistence, replay, and the ladder/label faults above. **99 tests in total** |
+| `src/content/projects.json`, `src/sim/projects.js`, `src/features/preparedness/` | R0-C05. The content names world resources, so a content edit changes the game rather than desynchronising a hard-coded pair |
 | `test/jsx-hook.mjs` | ⚠️ Restored. Without it no test can import a `.jsx` module, so no test can render one — and this repository has already shipped a blank production page past a green suite |
 
 ---
@@ -167,11 +218,11 @@ They were not what went wrong.
 The owner may raise the XP0 deployment. Production R0 remains held by
 [`../../citadel-planning/06-releases/RELEASE-PROGRESSION.md`](../../citadel-planning/06-releases/RELEASE-PROGRESSION.md): XP0 deployment is review evidence, not automatic R0 authorisation.
 
-R0-V04 is complete in the planning visual bible and story visual evidence. Its reversible comparison
-board proves ordinary-steady, ordinary-high-stable and ordinary-rising state treatments over the
-accepted XP0 map, including labels-off, reduced-motion and structured equivalents. None of that work
-entered this repository or bound a candidate as canonical. R0-C01 is now the next task; C01–C04 must
-land as one participant-visible living-morning increment before G02.
+⚠️ **Two consecutive gates are uninspected.** The owner directed continuation past `R0-G02` without
+recording an inspection, so `R0-I2` was built on an uninspected living morning; if that inspection
+later finds a fault there, the preparedness work may need rework. `R0-G03` is now `Review` as well.
+The next task is `R0-I3` (`R0-V06`/`R0-C06` — the pressure director and the electrical event), and
+`Q10` (inclusion reviewer) and `Q11` (accessibility reviewer) are both on its path.
 
 When R0 is authorised, work follows the ledger's R0-I0–I5 sequence:
 

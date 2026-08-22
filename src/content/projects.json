@@ -1,0 +1,132 @@
+{
+  "version": "v0.1",
+  "_why_this_file_exists": "R0-C05. Four preparedness projects, capacity for two. XP0 offered the same four as a two-of-four picker with no mechanics behind it: nothing was scheduled, nothing progressed, nothing was displaced and nothing could be verified. This is the state the visual proof (R0-V05, visual bible section 20) describes.",
+  "_capacity": "Two may be scheduled. That is the whole opportunity cost, and it is enforced in the rules rather than by disabling a button.",
+  "_why_conflicts_are_declared_not_scripted": "Each project declares the world resources it needs -- a technical team, the mobile reserve cart, the service passage, the clinical bedside group. These are the things R0's world actually holds (src/sim/world.js), not an invented currency. Two scheduled projects that need the SAME resource cannot both have it, so the second to reach it is disrupted. Nothing rolls a die and no pair is special-cased; the collision is a consequence of what the projects require, and `requires` is projected before the participant commits.",
+  "projects": [
+    {
+      "id": "power-trace",
+      "name_key": "project.power_trace.name",
+      "name": "Trace the critical-power path",
+      "responsibleFunctions": [
+        "facilities-and-technical",
+        "clinical-services"
+      ],
+      "requires": [
+        "technical-team",
+        "service-passage"
+      ],
+      "accessNeed": "A service access window into the Underworks.",
+      "materials": "Tools and chalk drawn from the workshop.",
+      "displaces": {
+        "what": "The routine store inspection",
+        "where": "stores",
+        "because": "the team that would have done it is in the Underworks"
+      },
+      "verification": "Facilities compares the declared power route against the observed one at the ICU boundary.",
+      "produces": {
+        "evidenceId": "ev-power-path-observed",
+        "claim": "The observed critical-power route does not match the declared one; two circuits meet at one older board.",
+        "source": "facilities walkdown",
+        "confidence": "confirmed",
+        "accessibility": "recorded with the round sheet"
+      },
+      "derivedFrom": "Canon, chapter-01-the-shadow-at-first-light-v0.2.md: 'The mapped lines stop before the chamber. Later conduits continue through the wall.' Visual bible section 13.2, r0.project.power-trace."
+    },
+    {
+      "id": "mobile-reserve",
+      "name_key": "project.mobile_reserve.name",
+      "name": "Stage the mobile reserve",
+      "responsibleFunctions": [
+        "biomedical",
+        "nursing-and-patient-flow"
+      ],
+      "requires": [
+        "mobile-reserve-cart",
+        "service-passage"
+      ],
+      "accessNeed": "A route wide enough for the cart, to a selected ICU threshold.",
+      "materials": "The mobile reserve cart, its accessories and a verified charge.",
+      "displaces": {
+        "what": "The emergency department's own fallback reserve",
+        "where": "ed",
+        "because": "there is one cart, and staging it in the ICU takes it from the ED"
+      },
+      "verification": "Biomedical confirms reserve, accessories and responsible user at the destination.",
+      "produces": {
+        "evidenceId": "ev-reserve-staged",
+        "claim": "The critical-care reserve is staged at the ICU threshold with a named responsible user.",
+        "source": "biomedical check",
+        "confidence": "confirmed",
+        "accessibility": "recorded with the equipment record"
+      },
+      "derivedFrom": "Canon: 'One infusion device without a reliable charged reserve is replaced from the mobile equipment set'; Yasin will not call a device available until its reserve, accessories and user are visible. Visual bible section 13.2, r0.project.mobile-reserve."
+    },
+    {
+      "id": "restoration-ownership",
+      "name_key": "project.restoration_ownership.name",
+      "name": "Clarify restoration ownership",
+      "responsibleFunctions": [
+        "quality-and-patient-safety",
+        "facilities-and-technical"
+      ],
+      "requires": [
+        "clinical-bedside-group"
+      ],
+      "accessNeed": "The coordination point, for as long as it takes.",
+      "materials": "Leadership time. Nothing physical is consumed.",
+      "displaces": {
+        "what": "The ward round the clinical lead would otherwise be on",
+        "where": "icu",
+        "because": "the people who must agree are the people who are needed elsewhere"
+      },
+      "verification": "The named owner gives the first update at the agreed interval.",
+      "produces": {
+        "evidenceId": "ev-restoration-owner",
+        "claim": "One function owns restoration decisions, with an agreed update interval.",
+        "source": "coordination point",
+        "confidence": "confirmed",
+        "accessibility": "recorded in the day's objectives"
+      },
+      "derivedFrom": "Canon: the Chapter 1 player task 'who owns electrical isolation and restoration' and 'when the next status update is required'. Visual bible section 13.2, r0.project.restoration-ownership."
+    },
+    {
+      "id": "message-route",
+      "name_key": "project.message_route.name",
+      "name": "Test the message route",
+      "responsibleFunctions": [
+        "operations",
+        "information"
+      ],
+      "requires": [
+        "technical-team"
+      ],
+      "accessNeed": "A test window on the message rail.",
+      "materials": "One coordinator's attention and a return chit.",
+      "displaces": {
+        "what": "Part of the routine handover",
+        "where": "coordination",
+        "because": "the coordinator running the test is the one who would have run the handover"
+      },
+      "verification": "Operations confirms sender, recipient, elapsed time and the acknowledging station.",
+      "produces": {
+        "evidenceId": "ev-message-route-tested",
+        "claim": "The escalation route reached the ICU and returned an acknowledgement once, under no pressure.",
+        "source": "message rail test",
+        "confidence": "partial",
+        "accessibility": "recorded with the station log"
+      },
+      "derivedFrom": "Canon, 02-world/sensory-canon-v0.1.md: the station bell's three taps, the return chit and the amber shutter that means 'sent, not answered'. Visual bible section 13.2, r0.project.message-route."
+    }
+  ],
+  "_deliberately_deferred": "Contention is between SCHEDULED PROJECTS only. The ordinary morning has already committed a technical team to the Underworks and the reserve to the ICU by the time this window opens, and coupling project availability to that live world state would be truer still -- and could make a project unschedulable for reasons the participant cannot yet act on. R0-C06 owns that coupling; the live world state is shown here as context rather than used as a block.",
+  "_localisation_owed": "Display strings are English literals here because this repository has no locale layer: the reset removed it and R0-I1 did not restore one. `name_key` is kept beside each name as the stable identifier a locale layer will use, so the content does not have to be rewritten when it returns. Arabic and RTL parity are owed and are recorded in the release ledger, not quietly skipped.",
+  "stateLabels": {
+    "available": "available",
+    "scheduled": "scheduled",
+    "working": "working",
+    "disrupted": "disrupted",
+    "complete": "performed, not tested",
+    "verified": "verified"
+  }
+}
