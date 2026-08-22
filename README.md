@@ -1,6 +1,6 @@
 # `citadel`
 
-**The game platform. Story, play, evidence, scoring, transfer artifacts.**
+**The game platform. The current deployable application is the XP0 visual and interaction pilot.**
 
 **Depends on:** `contracts`, `checklist-api`, `identity-enrolment`
 **Part of:** Citadel — see the plan in `citadel-planning/`
@@ -24,7 +24,7 @@
 safety property of the product, not a scoping preference, and it is not negotiable by a feature
 request, a pilot, a customer, or a deadline.
 
-Enforcement mechanisms: `citadel-planning/00-foundation/scope-boundary-and-safety.md` § 3.
+Enforcement mechanisms: `citadel-planning/00-foundation/safety-privacy-and-claims.md` § 3.
 
 ---
 
@@ -36,6 +36,10 @@ npm run dev
 npm test
 npm run check          # repo invariants — must pass before every commit
 ```
+
+XP0 is an internal, facilitator-controlled prototype. It demonstrates one ordinary-to-pressure
+walk and its structured equivalent; it is not the R0 deterministic simulation and makes no claim
+about participant learning, hospital capability, safety or readiness.
 
 ## Release
 

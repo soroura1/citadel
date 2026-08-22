@@ -1,6 +1,6 @@
 # `citadel` — status
 
-**Last updated:** 2026-08-21 · ⛔ **RESET TO INFRASTRUCTURE. THERE IS NO APPLICATION HERE.**
+**Last updated:** 2026-08-22 · **XP0 VISUAL/INTERACTION PILOT READY FOR OWNER DEPLOYMENT.**
 **Topology:** [`../CLAUDE.md`](../CLAUDE.md) — `citadel.endura-assess.com` → `172.17.0.1:8087`,
 `TARGET=/opt/citadel/citadel`.
 
@@ -19,6 +19,12 @@ and reworking it would have cost more than rebuilding it against the planning th
 ⚠️ **Nothing was tagged or branched to preserve it, by instruction.** The work is reachable in
 `git log` and nowhere else. `b007a38` is the last commit before the reset.
 
+On 2026-08-22 the owner asked to merge the reviewed XP0 visual pilot so it could be deployed. XP0
+is now a participant-visible application: portfolio/format setup, an ordinary operational map,
+two-of-four preparedness work, the local ICU electrical interruption, bounded response, recovery,
+improvement, causal debrief and a structured equivalent. It is explicitly **not** the R0 simulation
+or evidence of learning/readiness.
+
 ---
 
 ## What is left, and why each piece survived
@@ -30,13 +36,8 @@ and reworking it would have cost more than rebuilding it against the planning th
 | `deploy.sh`, `citadel.Caddyfile`, `docker-compose.prod.yml`, `deploy.env.example`, `migrations/` | The deployment. ⚠️ The migrations are kept because `deploy.sh` runs them; the tables they create are for content that no longer exists |
 | `public/scenes/*.jpg` | **Assets.** Kept by instruction — four generated candidate images, none reviewed, `Q10` still open |
 | `README.md`, `LICENSE`, `CONTRIBUTING.md`, `RELEASES.md`, `docs/` | Governance. `check-repo.sh` requires the scope statement in `README.md` verbatim |
-| `src/main.jsx` | ⛔ **Scaffolding.** Vite needs an entry or the build fails |
-| `test/smoke.test.js` | ⛔ **Scaffolding.** The pipeline runs `npm test` and a missing glob is a red pipeline |
-
-**Both scaffolding files say what they are, in their own first lines, and both are meant to be
-deleted by whoever writes the first real module.** `smoke.test.js` asserts that `src/` still contains
-nothing but the entry — so it **fails the day real code lands**, which is the only honest way to
-stop a trivial green test from sitting under real code pretending to cover it.
+| `src/main.jsx`, `src/App.jsx`, `src/styles.css` | The deployable XP0 experience; state is intentionally prototype-local |
+| `test/xp0.test.js` | XP0 entry, complete walk, safety text, asset existence and image-budget checks |
 
 ---
 
@@ -47,7 +48,8 @@ export PATH="/opt/homebrew/opt/node@26/bin:$PATH"
 npm test && npm run build && npm run conformance && ./check-repo.sh
 ```
 
-All four pass. The bundle is **190 KB / 60 KB gzip** — React and nothing else, down from 423 KB.
+All four must pass before merge. XP0 adds its real UI, fonts, icon library and candidate visual
+assets; inspect the emitted build rather than comparing it with the former empty bundle.
 
 ⚠️ **`npm run conformance` still passes because the contracts pin is a TAG.** This repository pins
 `@citadel/contracts#v0.8.0`, and a tag is immutable, so resetting `contracts` on `main` cannot reach
@@ -59,7 +61,7 @@ it. The same is true of the live `checklist-api`, which pins `v0.2.2`.
 
 | | |
 |---|---|
-| **The deployed site** | Still serving `407d151` from 20 August — a build that no longer exists in this tree. ⛔ **Do not deploy this repository**: it would replace a working page with a placeholder |
+| **The deployed site** | Still serving `407d151` from 20 August until the owner raises the next deployment. The merged XP0 replaces the placeholder risk with an intentionally deployable visual pilot |
 | **The two owner actions** | `VPS_HOST` → `172.17.0.1`, and `chown -R deploy:deploy /opt/citadel/citadel`. Still outstanding, still blocking any pipeline deploy |
 | **The planning and the story** | Untouched. `citadel-planning/` and `resilience-citadel-story/` are the authority the rebuild works from |
 | **`checklist-api`** | Live, untouched, unaffected |
@@ -86,5 +88,5 @@ They were not what went wrong.
 
 ## What comes next
 
-Nothing, until the owner names it. The rebuild is step-by-step and reviewed, and the first step has
-not been chosen.
+The owner may raise the XP0 deployment after this branch is green and merged. Production R0 code
+remains held by [`../../citadel-planning/06-releases/RELEASE-PROGRESSION.md`](../../citadel-planning/06-releases/RELEASE-PROGRESSION.md): XP0 deployment is review evidence, not automatic R0 authorisation.

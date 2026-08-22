@@ -6,7 +6,8 @@ numbers, because no single file owned the sequence.
 
 | Release | Status | Tag | Closed | Notes |
 |---|---|---|---|---|
-| **R0** | 🚧 in progress | — | — | Walking skeleton. Tasks: `citadel-planning/06-releases/R0-tasks.md` |
+| **XP0 preview** | ✅ ready for owner deployment | — | — | Visual/interaction evidence only; not R0 and not a simulation or learning claim |
+| **Former R0** | ⛔ superseded before release | — | — | Walking-skeleton sequence retired by `DEC-032`; the proposed rebuild is in `citadel-planning/06-releases/RELEASE-PROGRESSION.md` |
 
 ## 2026-08-21 — reset to infrastructure
 
@@ -18,8 +19,8 @@ the build, the pipeline, the deployment, the assets and the governance files.
 delivered, and numbering it would put a version on an empty repository. The last commit before the
 reset is `b007a38`.
 
-⚠️ **The deployed site still serves `407d151`**, a build that no longer exists in this tree. Deploying
-this repository would replace a working page with a placeholder.
+The deployed site still serves `407d151`. After this XP0 preview is merged, an owner-raised
+deployment may replace that historical build with the reviewed visual pilot.
 
 ## Rules
 
