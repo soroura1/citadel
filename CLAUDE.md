@@ -29,6 +29,8 @@ or evidence of learning/readiness.
 
 ## ★ R0-I1 — the morning is simulated now
 
+**Merged at `6456c29`** (PR #50, both Woodpecker checks green). **Not deployed.**
+
 `R0-C01`–`C04` landed as one increment. The ordinary phase is no longer a fixed picture with a
 narration button: a deterministic world runs two bounded heartbeat cycles, and the map, the
 structured view, the status strip, the inspector and the announcements are all projections of it.
