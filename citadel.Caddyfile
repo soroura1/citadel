@@ -47,6 +47,44 @@
 		file_server
 	}
 
+	# -------------------------------------------------------------------------
+	# ⛔ STATIC ASSET DIRECTORIES ANSWER FOR THEMSELVES, AND 404 WHEN EMPTY.
+	#
+	# THIS EXISTS BECAUSE THE FALLBACK BELOW POISONED A CDN CACHE.
+	#
+	# On 22 August, `/layers/…png` was requested BEFORE that release shipped it.
+	# The SPA fallback did exactly what it is written to do and answered 200 with
+	# index.html — and Cloudflare, correctly, cached that HTML for the four hours
+	# its `max-age` allowed. The asset then deployed, the origin served it
+	# perfectly, and the edge kept returning 761 bytes of HTML in place of a PNG
+	# until the entry expired.
+	#
+	# The failure is structural, not a mistake anyone made: `try_files … /index.html`
+	# turns EVERY not-yet-shipped asset path into a CACHEABLE 200. One probe, one
+	# crawler or one stale link is enough to poison a URL for the cache lifetime,
+	# and nothing downstream can tell that 200 from a real one.
+	#
+	# A directory of static files has no client-side routes to preserve, so it has
+	# nothing to gain from the fallback and everything to lose. `handle` is
+	# exclusive: a miss inside these paths ends here as a genuine 404, which is
+	# both true and — because it is an error — not cached as a success.
+	#
+	# ⚠️ Add a new public asset directory and it MUST be added here too, or it
+	# inherits the same trap. `test/deployment.test.js` fails if `public/` grows a
+	# directory this block does not name.
+	# -------------------------------------------------------------------------
+	handle /assets/* {
+		file_server
+	}
+
+	handle /layers/* {
+		file_server
+	}
+
+	handle /scenes/* {
+		file_server
+	}
+
 	# The SPA. try_files sends unknown paths to index.html so client-side routes
 	# survive a reload.
 	#
