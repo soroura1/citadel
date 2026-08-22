@@ -1,6 +1,6 @@
 # `citadel` — status
 
-**Last updated:** 2026-08-22 · **R0-I2 PREPAREDNESS WINDOW MERGED; `R0-G02` AND `R0-G03` BOTH AWAIT THE OWNER.**
+**Last updated:** 2026-08-22 · **R0-I2 MERGED; OWNER NARRATIVE–PLAY FINDING RECORDED; `R0-I2A` CORRECTIVE WORK NEXT.**
 **Topology:** [`../CLAUDE.md`](../CLAUDE.md) — `citadel.endura-assess.com` → `172.17.0.1:8087`,
 `TARGET=/opt/citadel/citadel`.
 
@@ -218,11 +218,15 @@ They were not what went wrong.
 The owner may raise the XP0 deployment. Production R0 remains held by
 [`../../citadel-planning/06-releases/RELEASE-PROGRESSION.md`](../../citadel-planning/06-releases/RELEASE-PROGRESSION.md): XP0 deployment is review evidence, not automatic R0 authorisation.
 
-⚠️ **Two consecutive gates are uninspected.** The owner directed continuation past `R0-G02` without
-recording an inspection, so `R0-I2` was built on an uninspected living morning; if that inspection
-later finds a fault there, the preparedness work may need rework. `R0-G03` is now `Review` as well.
-The next task is `R0-I3` (`R0-V06`/`R0-C06` — the pressure director and the electrical event), and
-`Q10` (inclusion reviewer) and `Q11` (accessibility reviewer) are both on its path.
+The owner has now played the deployed I1/I2 experience. The environment and opportunity-cost
+mechanics are accepted in principle, but the first ten minutes do not yet connect a concrete
+mission, canonical situated requests, actor-and-purpose controls, performed world response, human
+reaction and residue. `R0-G02` and `R0-G03` remain Review while corrective `R0-I2A` addresses that
+finding.
+
+`R0-N01` is complete in planning. The next task is visual/interaction proof `R0-V05A`, followed by
+engineering `R0-C05A` and owner comprehension gate `R0-G03A`. Do not start `R0-V06`, `R0-C06` or
+`R0-C07`. `Q10` and `Q11` remain open; no deployment was raised.
 
 When R0 is authorised, work follows the ledger's R0-I0–I5 sequence:
 
