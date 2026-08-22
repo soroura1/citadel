@@ -25,3 +25,138 @@ h1,h2,p { margin-block-start:0; } h1,h2,.brand b { font-family:"Alegreya Sans",s
 .structured-world{aspect-ratio:16/9;background:#151d19;border:1px solid var(--line);padding:24px;overflow:auto}.structured-heading{display:flex;gap:12px;align-items:center}.structured-heading>svg{color:var(--bright)}.structured-heading h2{font-size:26px;margin:0}.structured-intro{color:#9da59e;font-size:11px;margin:12px 0 18px}.structured-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.place-row{min-height:58px;display:grid;grid-template-columns:24px 1fr 18px;gap:10px;align-items:center;text-align:left;border:1px solid var(--line);background:#111713;padding:10px;cursor:pointer}.place-row.active{border-color:var(--copper)}.place-row>svg:first-child{color:var(--bright)}.place-row span{display:grid;gap:3px}.place-row b{font-size:11px}.place-row small{color:#899289;font-size:9px}.route-summary{margin-top:12px;padding:12px;display:grid;gap:6px;background:#101512;color:#aeb5ae;font-size:9px}.route-summary b{color:var(--stone);text-transform:uppercase;letter-spacing:.08em}.route-summary .changed-route{color:var(--amber)}.prototype-footer{min-height:40px;display:flex;justify-content:space-between;align-items:center;padding:0 24px;border-top:1px solid var(--line);color:#727c73;font-size:9px;text-transform:uppercase;letter-spacing:.07em}
 @media(max-width:1050px){.topbar{grid-template-columns:1fr auto}.topbar-center{display:none}.game-grid{grid-template-columns:1fr}.action-panel{min-height:auto}.inspector-card{grid-template-columns:1fr 1.5fr}.inspector-card dl{display:none}}
 @media(max-width:700px){.arrival{padding:14px}.arrival-card{padding:24px}.arrival-kicker{margin-top:34px}.setup-grid{grid-template-columns:1fr}.topbar{height:auto;min-height:68px;padding:12px}.topbar .brand small,.topbar-actions .quiet-button{display:none}.icon-button{font-size:0}.status-strip{grid-template-columns:1fr 1fr;padding:0 12px}.status-item{min-height:54px;padding:8px}.world-heading{min-height:74px;padding:12px 16px}.world-heading h1{font-size:25px}.game-grid{padding:0 8px 8px}.map-stage,.structured-world{aspect-ratio:4/3}.hotspot span{display:none}.inspector-card{grid-template-columns:1fr}.inspector-card p,.inspector-card dl{display:none}.structured-grid{grid-template-columns:1fr}.prototype-footer{display:none}}
+
+/* ==========================================================================
+ * R0-I1 — THE LIVING MORNING
+ * ==========================================================================
+ * Positions, sizes and route geometry come from the projection as inline
+ * values, because they are STATE. Everything here is presentation only: if a
+ * rule in this file decided where a unit stood, the stylesheet would be a
+ * second simulation.
+ */
+.living-map { position: relative; }
+
+.route-layer { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+
+/* ★ Class before colour. Pattern is set on the element by the route grammar;
+ * these only soften the changed state so it reads as emphasis, not alarm. */
+.route-changed { filter: drop-shadow(0 0 2px rgba(240, 182, 110, 0.5)); }
+.route-node-empty { stroke-dasharray: 1 1; }
+
+/* Units anchor at their feet: `translate(-50%, -100%)` puts the ground contact
+ * on the projected coordinate, which is what makes depth ordering honest. */
+.op-unit {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 7px 6px rgba(0, 0, 0, 0.46));
+  transition: left 500ms ease, top 500ms ease, width 500ms ease, opacity 250ms ease;
+  pointer-events: none;
+}
+.op-unit.changed { filter: drop-shadow(0 7px 6px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 2px rgba(240, 182, 110, 0.9)); }
+
+.op-unit-label {
+  position: absolute;
+  transform: translateX(-50%);
+  max-width: 150px;
+  padding: 4px 7px;
+  background: rgba(10, 15, 12, 0.9);
+  border: 1px solid rgba(233, 223, 202, 0.28);
+  font-size: 9px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: left 500ms ease, top 500ms ease;
+  pointer-events: none;
+}
+.labels-off .op-unit-label { display: none; }
+
+.map-candidate-note {
+  position: absolute; inset-inline-end: 10px; inset-block-end: 10px; margin: 0;
+  padding: 6px 9px; background: rgba(11, 17, 13, 0.9);
+  border: 1px solid rgba(233, 223, 202, 0.16);
+  font-size: 9px; color: #aeb6ae;
+}
+
+/* ---- time controls ------------------------------------------------------- */
+.morning-controls {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  margin: 0 0 14px; padding: 10px 14px;
+  background: #151d19; border: 1px solid rgba(233, 223, 202, 0.16);
+}
+.morning-controls .control {
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 44px; padding: 0 14px;
+  border: 1px solid rgba(233, 223, 202, 0.16); background: #131a16;
+  color: inherit; cursor: pointer;
+}
+.morning-controls .control:hover:not(:disabled),
+.morning-controls .control.active { border-color: rgba(240, 182, 110, 0.66); color: #f0b66e; background: rgba(207, 143, 75, 0.1); }
+.morning-controls .control:disabled { opacity: 0.45; cursor: not-allowed; }
+.morning-controls .speed-group { display: inline-flex; gap: 4px; }
+.morning-controls .control.speed { min-width: 46px; justify-content: center; padding: 0 8px; }
+.clock-reading { margin: 0; margin-inline-start: auto; font-size: 12px; color: #adb5ae; }
+.paused-flag { color: #deb060; }
+.refusal { flex-basis: 100%; margin: 0; font-size: 11px; color: #deb060; }
+
+/* ---- structured world ---------------------------------------------------- */
+.structured-state { display: grid; gap: 8px; margin: 0 0 18px; }
+.structured-state > div { display: grid; grid-template-columns: 104px 1fr; gap: 10px; padding-block-end: 8px; border-block-end: 1px solid rgba(233, 223, 202, 0.08); }
+.structured-state dt { font-size: 9px; letter-spacing: 0.07em; text-transform: uppercase; color: #889188; }
+.structured-state dd { margin: 0; font-size: 12px; line-height: 1.45; color: #d4dad4; }
+.structured-subhead { margin: 16px 0 8px; font-size: 15px; }
+.structured-routes { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.structured-routes li { display: grid; gap: 2px; padding: 8px 10px; background: #111713; border: 1px solid rgba(233, 223, 202, 0.12); }
+.structured-routes b { font-size: 11px; }
+.structured-routes small { font-size: 9px; color: #919a92; }
+
+/* ---- change announcements ------------------------------------------------ */
+/* ⚠️ `.change` HAD NO STYLE AND THE MARKUP ASSUMED ONE. The label and its
+ * reason ran together as "ED demandretained arrivals advanced past…" — correct
+ * content, unreadable presentation, and invisible to every markup assertion
+ * because both strings were present and in the right order. A browser found it
+ * in one screenshot. */
+.change { display: grid; grid-template-columns: 10px 1fr; gap: 9px; padding: 10px; margin-block-end: 8px; background: #111713; border: 1px solid rgba(233, 223, 202, 0.16); }
+.change::before { content: ''; width: 7px; height: 7px; margin-block-start: 4px; background: #5fa39b; border-radius: 50%; }
+.change.warn::before { background: #deb060; }
+.change b { display: block; margin-block-end: 3px; font-size: 11px; }
+.change span { display: block; font-size: 10px; line-height: 1.45; color: #919a92; }
+.change-list .kicker { margin-block-end: 8px; }
+.change-empty { font-size: 12px; color: #919a92; }
+
+/* The structured world is 16:9 when it REPLACES the map, and free-flowing when
+ * it sits beside it in the action column. One rule cannot serve both. */
+.action-panel .structured-world { aspect-ratio: auto; padding: 16px; margin-block-start: 18px; }
+
+/* ---- inspector ----------------------------------------------------------- */
+.inspector-units, .inspector-work, .inspector-evidence { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 8px; }
+.inspector-units li, .inspector-work li, .inspector-evidence li { display: grid; gap: 2px; padding: 9px 10px; background: #111713; border: 1px solid rgba(233, 223, 202, 0.12); }
+.inspector-units b, .inspector-work b { font-size: 11px; }
+.inspector-units span, .inspector-work span, .inspector-evidence span { font-size: 11px; color: #d4dad4; }
+.inspector-units small, .inspector-work small, .inspector-evidence small { font-size: 9px; color: #889188; }
+.inspector-routes { margin: 0; display: grid; gap: 6px; }
+.inspector-routes > div { display: grid; grid-template-columns: 92px 1fr; gap: 8px; }
+.inspector-routes dt { font-size: 9px; text-transform: uppercase; letter-spacing: 0.06em; color: #889188; }
+.inspector-routes dd { margin: 0; font-size: 10px; color: #c6ccc6; }
+
+/* ==========================================================================
+ * ⛔ REDUCED MOTION — the world still changes; it stops sliding.
+ * ==========================================================================
+ * § 18.5: "origin fades down as destination fades up over ≤180 ms; the route
+ * and changed origin remain visible; no path-follow animation." The state
+ * change is never removed, only the travel.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .op-unit, .op-unit-label { transition: opacity 160ms linear; }
+}
+
+/* ==========================================================================
+ * NARROW AND ZOOMED — the map yields to the structured world.
+ * ==========================================================================
+ * § 18.7: "At 200% zoom the map may reflow into the structured representation;
+ * no strategic object disappears." The structured column is already rendered
+ * beside the map, so nothing needs to be recreated when the map goes.
+ */
+@media (max-width: 620px) {
+  .living-map { display: none; }
+  .morning-controls .clock-reading { margin-inline-start: 0; flex-basis: 100%; }
+}
