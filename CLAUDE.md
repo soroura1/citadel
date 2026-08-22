@@ -1,6 +1,6 @@
 # `citadel` — status
 
-**Last updated:** 2026-08-22 · **R0-I2 MERGED; OWNER NARRATIVE–PLAY FINDING RECORDED; `R0-I2A` CORRECTIVE WORK NEXT.**
+**Last updated:** 2026-08-22 · **R0-I2 MERGED; `R0-V05A` PROOF IN OWNER REVIEW; `R0-C05A` HELD.**
 **Topology:** [`../CLAUDE.md`](../CLAUDE.md) — `citadel.endura-assess.com` → `172.17.0.1:8087`,
 `TARGET=/opt/citadel/citadel`.
 
@@ -215,7 +215,9 @@ They were not what went wrong.
 
 ## What comes next
 
-The owner may raise the XP0 deployment. Production R0 remains held by
+The owner may raise the XP0 deployment. The reversible V05A narrative-action proof exists outside
+this production repository and awaits owner inspection; no application code or asset changed for
+it. C05A may start only after that acceptance. Production R0 remains held by
 [`../../citadel-planning/06-releases/RELEASE-PROGRESSION.md`](../../citadel-planning/06-releases/RELEASE-PROGRESSION.md): XP0 deployment is review evidence, not automatic R0 authorisation.
 
 The owner has now played the deployed I1/I2 experience. The environment and opportunity-cost
@@ -224,8 +226,8 @@ mission, canonical situated requests, actor-and-purpose controls, performed worl
 reaction and residue. `R0-G02` and `R0-G03` remain Review while corrective `R0-I2A` addresses that
 finding.
 
-`R0-N01` is complete in planning. The next task is visual/interaction proof `R0-V05A`, followed by
-engineering `R0-C05A` and owner comprehension gate `R0-G03A`. Do not start `R0-V06`, `R0-C06` or
+`R0-N01` is complete and `R0-V05A` is in owner Review. After the owner accepts the proof, the next
+task is engineering `R0-C05A`, followed by owner comprehension gate `R0-G03A`. Do not start `R0-V06`, `R0-C06` or
 `R0-C07`. `Q10` and `Q11` remain open; no deployment was raised.
 
 When R0 is authorised, work follows the ledger's R0-I0–I5 sequence:
