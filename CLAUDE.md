@@ -70,6 +70,23 @@ command and emit byte-identical operational events; a test strips the mode chang
 
 All three are fixed. The lesson is the repository's own: *open the page.*
 
+### ⚠️ A fourth defect, found in a second pass, and two proof gaps
+
+**Between 620 px and 700 px the map was cropped and the whole operational layer drifted off it.**
+XP0's own breakpoint sets `.map-stage` to 4:3; the sector source is 16:9 with `object-fit: cover`,
+so the painting was cropped horizontally while every unit and route stayed a fraction of the *box*.
+Found by measuring the rendered aspect at 660 px — not by any assertion. `.map-stage.living-map` is
+now pinned to 16:9, and a test covers it.
+
+**And two required proofs compared the wrong thing.** Determinism and the non-timed path were
+asserted on events and world, not on **projections** — which is what a participant actually sees.
+Both now assert on the projection.
+
+⛔ **Speed selection has no observable effect.** It is bounded, validated and refused while paused,
+and it changes nothing: the morning advances per committed act and there is no ticker for a
+multiplier to act on. Recorded rather than removed, because `R0-C02`'s stated result names bounded
+speed selection.
+
 ### ⛔ What this increment does not claim
 
 Nothing is bound. `VA-013`–`VA-017` are candidates, every slot records `reviewed: false` and
@@ -95,7 +112,7 @@ origin nodes and structured world carry the state regardless, and the answer bel
 | `README.md`, `LICENSE`, `CONTRIBUTING.md`, `RELEASES.md`, `docs/` | Governance. `check-repo.sh` requires the scope statement in `README.md` verbatim |
 | `src/main.jsx`, `src/App.jsx`, `src/styles.css` | The shell. ⚠️ `operate` is now simulation-driven; incident, recovery and debrief remain prototype-local until `R0-C06`–`C09` |
 | `test/xp0.test.js` | XP0 entry, complete walk, safety text, asset existence and image-budget checks |
-| `test/domain.test.js`, `test/projection.test.js`, `test/living-morning.test.js` | R0-I1: refusals, determinism, pause, chronology, capacity separation, custody, projection parity, the three states, raster removal and the boundary |
+| `test/domain.test.js`, `test/projection.test.js`, `test/living-morning.test.js` | R0-I1: **67 tests** — refusals, determinism (world *and* projection), pause, chronology, capacity separation, custody, projection parity, the three states, raster removal, the 16:9 map invariant and the safety boundary |
 | `test/jsx-hook.mjs` | ⚠️ Restored. Without it no test can import a `.jsx` module, so no test can render one — and this repository has already shipped a blank production page past a green suite |
 
 ---

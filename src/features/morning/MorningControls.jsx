@@ -35,7 +35,11 @@ export function MorningControls({ view, onMode, onSpeed, onAdvance, labels, onLa
         <SkipForward weight="fill" /> Advance one cycle
       </button>
 
-      <span className="speed-group" role="group" aria-label="Speed">
+      {/* ⛔ Bounded, validated — and currently without observable effect, because
+          the morning advances per act rather than on a ticker. Recorded as a
+          limitation in the release ledger rather than removed, since C02's
+          required result names bounded speed selection. */}
+      <span className="speed-group" role="group" aria-label="Speed (no effect until continuous time)">
         {SPEEDS.map((speed) => (
           <button key={speed} type="button"
                   className={view.time.speed === speed ? 'control speed active' : 'control speed'}
