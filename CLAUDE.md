@@ -1,6 +1,6 @@
 # `citadel` — status
 
-**Last updated:** 2026-08-22 · **XP0 MERGED AT `b599e53`; R0-V03 COMPLETE; V04 NEXT; CODE HELD.**
+**Last updated:** 2026-08-22 · **XP0 MERGED AT `b599e53`; R0-V04 COMPLETE; C01 NEXT.**
 **Topology:** [`../CLAUDE.md`](../CLAUDE.md) — `citadel.endura-assess.com` → `172.17.0.1:8087`,
 `TARGET=/opt/citadel/citadel`.
 
@@ -91,11 +91,11 @@ They were not what went wrong.
 The owner may raise the XP0 deployment. Production R0 remains held by
 [`../../citadel-planning/06-releases/RELEASE-PROGRESSION.md`](../../citadel-planning/06-releases/RELEASE-PROGRESSION.md): XP0 deployment is review evidence, not automatic R0 authorisation.
 
-R0-V03 is complete in the planning visual bible and story asset inventory. It produced five
-transparent candidate operational layers plus runtime/low-bandwidth derivatives and the associated
-placement, density, route and motion rules. None has entered this repository, been bound as
-canonical or changed a component, state projection or runtime rule. R0-V04 must compose and compare
-three ordinary heartbeat states before R0-C01–C04 can start.
+R0-V04 is complete in the planning visual bible and story visual evidence. Its reversible comparison
+board proves ordinary-steady, ordinary-high-stable and ordinary-rising state treatments over the
+accepted XP0 map, including labels-off, reduced-motion and structured equivalents. None of that work
+entered this repository or bound a candidate as canonical. R0-C01 is now the next task; C01–C04 must
+land as one participant-visible living-morning increment before G02.
 
 When R0 is authorised, work follows the ledger's R0-I0–I5 sequence:
 
