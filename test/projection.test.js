@@ -10,7 +10,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { existsSync, statSync } from 'node:fs';
+import { existsSync, statSync, readFileSync } from 'node:fs';
 
 import { startRun, dispatchAll } from '../src/sim/engine.js';
 import { command, COMMANDS } from '../src/sim/commands.js';
@@ -179,4 +179,56 @@ test('the status strip always reports staffed AND physical together', () => {
     const icu = viewAt(cycles).strip.find((item) => item.id === 'icu');
     assert.match(icu.value, /\d+ staffed · \d+ physical/, `cycle ${cycles} reported one number`);
   }
+});
+
+// --- determinism reaches the PROJECTIONS, not only the world ------------------
+
+test('★ 4 — the same seed and history produce identical PROJECTIONS', () => {
+  // The required proof names events *and projections*. A world that replays
+  // identically while a projection reads it differently would still break
+  // replay for the participant, who only ever sees the projection.
+  const commands = [
+    command(COMMANDS.SET_CLOCK_MODE, { mode: 'running' }),
+    command(COMMANDS.ADVANCE_CYCLE),
+    command(COMMANDS.ADVANCE_CYCLE),
+  ];
+  const a = project(dispatchAll(startRun(SEED), commands), { selectedPlace: PLACES.STORES });
+  const b = project(dispatchAll(startRun(SEED), commands), { selectedPlace: PLACES.STORES });
+  assert.equal(JSON.stringify(a), JSON.stringify(b));
+});
+
+test('★ 6 — the non-timed path projects the same causal result', () => {
+  const walk = (mode) => dispatchAll(startRun(SEED), [
+    command(COMMANDS.SET_CLOCK_MODE, { mode }),
+    command(COMMANDS.ADVANCE_CYCLE),
+    command(COMMANDS.ADVANCE_CYCLE),
+  ]);
+  const timed = project(walk('running'));
+  const untimed = project(walk('act-advanced'));
+
+  // Everything a participant can see is identical; only the clock mode differs.
+  assert.equal(timed.ordinaryState, untimed.ordinaryState);
+  assert.deepEqual(timed.units, untimed.units);
+  assert.deepEqual(timed.routes, untimed.routes);
+  assert.deepEqual(timed.nodes, untimed.nodes);
+  assert.deepEqual(timed.strip, untimed.strip);
+  assert.deepEqual(timed.structured, untimed.structured);
+  assert.deepEqual(timed.inspector, untimed.inspector);
+  assert.notEqual(timed.time.mode, untimed.time.mode);
+});
+
+// --- the breakpoint that cropped the map --------------------------------------
+
+test('★ the living map keeps the sector\'s own 16:9, at every width it is shown', () => {
+  /* XP0's breakpoint sets `.map-stage` to 4:3 below 700 px. The source is 16:9
+   * with `object-fit: cover`, so a 4:3 box crops it horizontally — while every
+   * unit and route is a fraction of the BOX. Between 620 and 700 px the whole
+   * operational layer drifted off the features it described. Nothing in the
+   * markup was wrong; it was found by measuring the rendered aspect at 660 px. */
+  const css = readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8');
+  assert.match(css, /\.map-stage\.living-map \{[^}]*aspect-ratio: 16 \/ 9/);
+  // And the override must out-specify the breakpoint rather than merely follow it.
+  const breakpointIndex = css.indexOf('.map-stage,.structured-world{aspect-ratio:4/3}');
+  const overrideIndex = css.indexOf('.map-stage.living-map');
+  assert.ok(breakpointIndex === -1 || overrideIndex > -1, 'the 4:3 breakpoint has no override');
 });

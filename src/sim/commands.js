@@ -54,6 +54,14 @@ export const REFUSALS = Object.freeze({
  * cycles produce the same events in the same order — speed changes how long a
  * transition takes on screen, never what happens. The non-timed control exists
  * beside it for exactly that reason.
+ *
+ * ⛔ KNOWN LIMITATION, RECORDED RATHER THAN HIDDEN: in R0-I1 the selection is
+ * accepted, validated, refused while paused and stored on the clock — and it
+ * has NO OBSERVABLE EFFECT, because the morning advances per committed act and
+ * there is no continuous ticker for a multiplier to act on. The control is
+ * therefore honest about its bounds and currently silent about its result,
+ * which is a shape this project distrusts. It becomes real when continuous
+ * fictional time arrives; until then the ledger carries it as a limitation.
  */
 export const SPEEDS = Object.freeze([1, 2, 4]);
 
