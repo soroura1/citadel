@@ -1,6 +1,6 @@
 # `citadel` — status
 
-**Last updated:** 2026-08-22 · **R0-I2 MERGED; `R0-V05A` PROOF IN OWNER REVIEW; `R0-C05A` HELD.**
+**Last updated:** 2026-08-23 · **R0-I2 MERGED; REVISED MAP-FIRST `R0-V05A` PROOF IN OWNER REVIEW; `R0-C05A` HELD.**
 **Topology:** [`../CLAUDE.md`](../CLAUDE.md) — `citadel.endura-assess.com` → `172.17.0.1:8087`,
 `TARGET=/opt/citadel/citadel`.
 
@@ -215,9 +215,11 @@ They were not what went wrong.
 
 ## What comes next
 
-The owner may raise the XP0 deployment. The reversible V05A narrative-action proof exists outside
-this production repository and awaits owner inspection; no application code or asset changed for
-it. C05A may start only after that acceptance. Production R0 remains held by
+The owner may raise the XP0 deployment. The revised map-first V05A narrative-action proof exists
+outside this production repository and awaits owner inspection; no application code or asset
+changed for it. It replaces the proof's permanent side panel with place-anchored character beats,
+a temporary decision tray and a secondary evidence/work-order overlay. C05A may start only after
+that acceptance. Production R0 remains held by
 [`../../citadel-planning/06-releases/RELEASE-PROGRESSION.md`](../../citadel-planning/06-releases/RELEASE-PROGRESSION.md): XP0 deployment is review evidence, not automatic R0 authorisation.
 
 The owner has now played the deployed I1/I2 experience. The environment and opportunity-cost
