@@ -1,6 +1,6 @@
 # `citadel` — status
 
-**Last updated:** 2026-08-23 · **R0-C05A MERGED; `R0-G03A` AWAITS THE OWNER'S UNBRIEFED WALK.**
+**Last updated:** 2026-08-23 · **C05A DEPLOYED; OWNER AUDIT OPENED I2B; `R0-V05C` NEXT.**
 **Topology:** [`../CLAUDE.md`](../CLAUDE.md) — `citadel.endura-assess.com` → `172.17.0.1:8087`,
 `TARGET=/opt/citadel/citadel`.
 
@@ -266,8 +266,8 @@ it. The same is true of the live `checklist-api`, which pins `v0.2.2`.
 
 | | |
 |---|---|
-| **The deployed site** | Still serving `407d151` from 20 August until the owner raises the next deployment. The merged XP0 replaces the placeholder risk with an intentionally deployable visual pilot |
-| **The two owner actions** | `VPS_HOST` → `172.17.0.1`, and `chown -R deploy:deploy /opt/citadel/citadel`. Still outstanding, still blocking any pipeline deploy |
+| **The deployed site** | Serving `4b0909f` from 23 August; `/version` and the site root were verified externally. This is the current owner-review build, not a passed human gate |
+| **Deployment authority** | The owner raised this deployment. Agents still do not raise another deployment without owner direction |
 | **The planning and the story** | Untouched. `citadel-planning/` and `resilience-citadel-story/` are the authority the rebuild works from |
 | **`checklist-api`** | Live, untouched, unaffected |
 
@@ -293,26 +293,19 @@ They were not what went wrong.
 
 ## What comes next
 
-The owner may raise the XP0 deployment. The revised map-first V05A narrative-action proof and its
-owner-requested V05B character-identity increment exist outside this production repository and are
-accepted for bounded R0 integration; no application code or production asset changed for them. Six
-candidate portrait masters appear inside the existing place-anchored request/response cards while the
-temporary decision tray and secondary evidence/work-order overlay remain unchanged. C05A is now
-the first unblocked task. Production R0 remains held by
-[`../../citadel-planning/06-releases/RELEASE-PROGRESSION.md`](../../citadel-planning/06-releases/RELEASE-PROGRESSION.md): XP0 deployment is review evidence, not automatic R0 authorisation.
+The current owner-review build serves `4b0909f`. C05A's narrative projection and candidate
+identities are present, but deployment is evidence rather than gate acceptance. The owner audit
+accepted the environment and strategy mechanics in principle and found four flow faults: the first
+act may fall below the viewport, the same command may appear in multiple regions, four expanded
+project cards overwhelm the choice, and the human response may return above the player's scroll
+position.
 
-The owner has now played the deployed I1/I2 experience. The environment and opportunity-cost
-mechanics are accepted in principle, but the first ten minutes do not yet connect a concrete
-mission, canonical situated requests, actor-and-purpose controls, performed world response, human
-reaction and residue. `R0-G02` and `R0-G03` remain Review while corrective `R0-I2A` addresses that
-finding.
-
-`R0-N01` is complete, `R0-V05A` established the map-first hierarchy and owner-requested `R0-V05B`
-adds six candidate identities inside its place cards. The owner accepted both for bounded R0
-integration on 2026-08-23; `Q10` remains open. The next task is engineering `R0-C05A` under the
-task-level release-ledger plan, followed by owner comprehension gate `R0-G03A`.
-Do not start `R0-V06`, `R0-C06` or
-`R0-C07`. `Q10` and `Q11` remain open; no deployment was raised.
+The single release ledger therefore opens `R0-I2B`: `R0-N02` is complete, `R0-V05C` is the first
+unblocked task, and `R0-C05B` remains held until the owner accepts that reversible proof. C05B will
+derive one action owner, preserve four real strategic alternatives, progressively disclose
+technical detail and return the response into view; it may not change simulation rules or canon.
+`R0-H05B` then supplies the unbriefed owner walk. Do not start `R0-V06`, `R0-C06` or `R0-C07`.
+`R0-G02`, `R0-G03` and `R0-G03A` remain Review; `Q10` and `Q11` remain open.
 
 When R0 is authorised, work follows the ledger's R0-I0–I5 sequence:
 
