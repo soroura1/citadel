@@ -152,7 +152,7 @@ deployment was raised.
 
 ## ★ R0-C05A — the morning says who is asking, and what it cost
 
-**Merged at ``PLACEHOLDER_SHA``** (PR `PLACEHOLDER_PR`, both Woodpecker checks green). **Not deployed.**
+**Merged at `762c482`** (PR #60, both Woodpecker checks green). **Not deployed.**
 
 The owner played I1/I2 and accepted the environment and the opportunity-cost mechanic in principle,
 then reported that the first ten minutes read as an engine report. Every rule was right. A
