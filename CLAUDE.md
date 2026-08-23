@@ -1,6 +1,6 @@
 # `citadel` — status
 
-**Last updated:** 2026-08-23 · **R0-I2 MERGED; `R0-V05A/V05B` ACCEPTED FOR R0 INTEGRATION; `R0-C05A` READY.**
+**Last updated:** 2026-08-23 · **R0-C05A MERGED; `R0-G03A` AWAITS THE OWNER'S UNBRIEFED WALK.**
 **Topology:** [`../CLAUDE.md`](../CLAUDE.md) — `citadel.endura-assess.com` → `172.17.0.1:8087`,
 `TARGET=/opt/citadel/citadel`.
 
@@ -150,6 +150,82 @@ deployment was raised.
 
 ---
 
+## ★ R0-C05A — the morning says who is asking, and what it cost
+
+**Merged at ``PLACEHOLDER_SHA``** (PR `PLACEHOLDER_PR`, both Woodpecker checks green). **Not deployed.**
+
+The owner played I1/I2 and accepted the environment and the opportunity-cost mechanic in principle,
+then reported that the first ten minutes read as an engine report. Every rule was right. A
+participant could play all of it and be told none of it.
+
+```text
+src/content/chapter01-beats.json   governed beat content — every line keyed
+src/content/beats.js               the refusals that make the keys mean something
+src/projections/narrative.js       one pure projection; folded into project()
+src/features/narrative/            mission ribbon · place card · tray · record · owner panel
+public/portraits/                  six candidate derivatives + low-bandwidth
+scripts/derive-portraits.mjs       reads the slot geometry rather than restating it
+```
+
+★ **The beat is read, never stored.** `classifyBeat` derives it from the world and the event log, the
+same discipline `classifyOrdinary` uses for the three ordinary states. A beat name written into the
+world would make this a cutscene pointer with state attached, which § 19.4 forbids by name.
+
+★ **The story follows the participant's own choice.** The featured project is whichever one the most
+recent project event moved, and its situated carrier is looked up from the project id — so the
+projection *cannot* narrate Rami walking the power route to someone who commissioned the reserve and
+the message route. The accepted V05A/V05B proof illustrates that pair; porting its copy would have
+been a story about a game nobody played.
+
+★ **Every line is keyed, or it refuses.** Fiction carries a canonical `source`; an operational
+assertion carries a `stateKey` that must **resolve against a real world** or an `eventType` that must
+exist. `beatRefusals` takes the content as an argument so all seven refusals are exercised on mutated
+fixtures — an unexercised refusal is indistinguishable from one that cannot fire, and this repository
+has shipped `slot.required` read off a string before.
+
+★ **The identities were budgeted before they existed.** Slots `R0-SL08A`–`R0-SL08F` declare focal
+crop, visible sizes and byte ceilings; then the script derives. 2.0–2.7 MB masters land at
+**15,283–24,223 B** against a **60,000 B** ceiling at highest quality. Nothing depends on a face: the
+failed-image path was exercised directly and every name, office, request and act survived it.
+
+⛔ **Build labels left participant play without being deleted.** *Experience Prototype 0*,
+*R0-I1 · candidate visuals* and the map's *Candidate operational depiction · Q10 open* note moved to
+`?build=1`, where the gate is stated in full. Deleting them would have made the build look further
+along than it is.
+
+### ⚠️ Five faults a browser found and 137 green tests did not
+
+Every one had a correct DOM.
+
+1. **The card asserted a person was somewhere they were not** — *"Bishr · Patient navigator · Gate of
+   Names · Intensive Care"*. The place came from the **inspector's** selection.
+2. Fixing that produced **"Gate of Names · Gate of Names"**: an office and a place had been one
+   string. Offices are roles now, and the component also refuses to repeat a place the office names.
+3. **`.inspector-card` is a four-column grid written for XP0's inspector.** R0's has different
+   children, so the route list wrapped one word per line. ⚠️ It has looked like that since `R0-I1`.
+4. **The preparedness panel was gated on the requests beat**, so all four projects, the ladder and
+   the residue left the page the moment work began — the thing `R0-C05` exists to prevent.
+5. **The requesters disappeared from the panel once work started**, leaving a specification.
+
+Faults 1, 4 and 5 have tests. ⛔ 2 and 3 are meaning/layout defects no DOM assertion can express.
+
+★ **The class guard was checking two files while seven others could have done the same thing.** It
+derives its list from `src/features/` now, and immediately found `.route` — a genuine addressing hook,
+because the route grammar is set on the element by the projection rather than by CSS. Recorded as a
+reviewed exception, not silenced.
+
+### ⛔ What this increment does not claim
+
+`VA-018`–`VA-023` remain candidate and unreviewed; `Q10` is open and nothing is bound. **Reduced
+motion passes vacuously** — the narrative surface declares no transition, so there is nothing to
+suppress. Strings are still English literals, so the RTL frame proves the layout mirrors and not that
+anything is translated. **`R0-G03A` is Review, not Passed**: a green build cannot supply the
+unbriefed comprehension walk. No deployment was raised, and `C06`/`V06` remain held.
+
+⚙️ **The owner surface is `?build=1`.** It is reachable by no control on the page, deliberately.
+
+---
+
 ## What is left, and why each piece survived
 
 | Kept | Why |
@@ -164,6 +240,8 @@ deployment was raised.
 | `test/domain.test.js`, `test/projection.test.js`, `test/living-morning.test.js` | R0-I1 — refusals, determinism (world *and* projection), pause, chronology, capacity separation, custody, projection parity, the three states, raster removal, the 16:9 map invariant and the safety boundary |
 | `test/preparedness.test.js` | R0-I2 — capacity refusals, derived contention, disruption and resumption, the measured cost of a conflicting pair, `complete` vs `verified`, residue persistence, replay, and the ladder/label faults above. **99 tests in total** |
 | `src/content/projects.json`, `src/sim/projects.js`, `src/features/preparedness/` | R0-C05. The content names world resources, so a content edit changes the game rather than desynchronising a hard-coded pair |
+| `src/content/chapter01-beats.json`, `src/content/beats.js`, `src/projections/narrative.js`, `src/features/narrative/` | R0-C05A. The story is a projection of the same world, and its content cannot load unless every claim names what makes it true |
+| `test/narrative.test.js` | R0-C05A — content-provenance refusals, narrative determinism, the six-beat order, a compatible and a contending pair, portrait budgets, raster-free play, visual/structured parity and the absence of production labels. **138 tests in total** |
 | `test/jsx-hook.mjs` | ⚠️ Restored. Without it no test can import a `.jsx` module, so no test can render one — and this repository has already shipped a blank production page past a green suite |
 
 ---

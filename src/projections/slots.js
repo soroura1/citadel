@@ -27,6 +27,7 @@
  */
 
 const LAYER = '/layers';
+const PORTRAIT = '/portraits';
 
 export const SLOTS = Object.freeze({
   'R0-SL07A': {
@@ -84,6 +85,133 @@ export const SLOTS = Object.freeze({
     reviewed: false,
     reviewGate: 'Q10',
   },
+  /* ========================================================================
+   * ★ R0-C05A — THE SIX CHAPTER 1 IDENTITIES.
+   *
+   * ⚠️ DECLARED BEFORE THE FILES EXIST, and that ordering is the whole point.
+   * `VA-012` earned this discipline in August: the slot named its 400,000-byte
+   * budget before the Bimaristan cutaway was generated, so landing at 354,077
+   * meant something. A budget written after measuring the file is not a budget,
+   * it is a description.
+   *
+   * The masters are review artefacts of 2.0–2.7 MB each (visual bible § 22.1).
+   * Their size is recorded there as a fact about the masters, NOT as a runtime
+   * allowance — shipping one directly would be a 2 MB image inside a 58×66
+   * card. `scripts/derive-portraits.mjs` reads the geometry below and produces
+   * the runtime copies, so the crop the interface uses and the crop the file
+   * was cut to cannot be two different numbers.
+   *
+   * ★ `focal` IS TOP-BIASED, not centred. A bust crop taken from the middle of
+   * a standing figure returns a torso. `vertical: 0.2` places the crop window a
+   * fifth of the way down the remaining height, which is the `object-position:
+   * 50% 20%` the accepted V05B proof uses.
+   *
+   * ⛔ AND NONE OF THEM IS BOUND. `Q10` has reviewed no face, no crop and no
+   * question of representation here. § 22.1 is explicit that the owner's
+   * bounded acceptance permits derivation, not canonisation.
+   * ===================================================================== */
+  'R0-SL08A': {
+    id: 'R0-SL08A',
+    kind: 'portrait',
+    meaning: 'a patient navigator who moves between wards, service areas, patients and families',
+    candidateRef: 'VA-018',
+    master: '08-visual-assets/03-characters/v05b/v05b-bishr-portrait-v0.1.png',
+    file: `${PORTRAIT}/bishr-v0.1.jpg`,
+    lowBandwidth: `${PORTRAIT}/low-bandwidth/bishr-v0.1.jpg`,
+    focal: { aspect: [58, 66], vertical: 0.2 },
+    render: { single: [58, 66], stack: [34, 38] },
+    pixels: { standard: [232, 264], lowBandwidth: [116, 132] },
+    maxBytes: 60_000,
+    lowBandwidthMaxBytes: 20_000,
+    alt: 'Bishr, patient navigator',
+    reviewed: false,
+    reviewGate: 'Q10',
+  },
+  'R0-SL08B': {
+    id: 'R0-SL08B',
+    kind: 'portrait',
+    meaning: 'a senior porter and internal movement-route steward',
+    candidateRef: 'VA-019',
+    master: '08-visual-assets/03-characters/v05b/v05b-ayyash-portrait-v0.1.png',
+    file: `${PORTRAIT}/ayyash-v0.1.jpg`,
+    lowBandwidth: `${PORTRAIT}/low-bandwidth/ayyash-v0.1.jpg`,
+    focal: { aspect: [58, 66], vertical: 0.2 },
+    render: { single: [58, 66], stack: [34, 38] },
+    pixels: { standard: [232, 264], lowBandwidth: [116, 132] },
+    maxBytes: 60_000,
+    lowBandwidthMaxBytes: 20_000,
+    alt: 'Ayyash, movement steward',
+    reviewed: false,
+    reviewGate: 'Q10',
+  },
+  'R0-SL08C': {
+    id: 'R0-SL08C',
+    kind: 'portrait',
+    meaning: 'the quality and patient-safety leader who owns event judgment',
+    candidateRef: 'VA-020',
+    master: '08-visual-assets/03-characters/v05b/v05b-fadl-portrait-v0.1.png',
+    file: `${PORTRAIT}/fadl-v0.1.jpg`,
+    lowBandwidth: `${PORTRAIT}/low-bandwidth/fadl-v0.1.jpg`,
+    focal: { aspect: [58, 66], vertical: 0.2 },
+    render: { single: [58, 66], stack: [34, 38] },
+    pixels: { standard: [232, 264], lowBandwidth: [116, 132] },
+    maxBytes: 60_000,
+    lowBandwidthMaxBytes: 20_000,
+    alt: 'Fadl, quality and patient safety',
+    reviewed: false,
+    reviewGate: 'Q10',
+  },
+  'R0-SL08D': {
+    id: 'R0-SL08D',
+    kind: 'portrait',
+    meaning: 'the facilities leader responsible for the hidden building systems',
+    candidateRef: 'VA-021',
+    master: '08-visual-assets/03-characters/v05b/v05b-rami-portrait-v0.1.png',
+    file: `${PORTRAIT}/rami-v0.1.jpg`,
+    lowBandwidth: `${PORTRAIT}/low-bandwidth/rami-v0.1.jpg`,
+    focal: { aspect: [58, 66], vertical: 0.2 },
+    render: { single: [58, 66], stack: [34, 38] },
+    pixels: { standard: [232, 264], lowBandwidth: [116, 132] },
+    maxBytes: 60_000,
+    lowBandwidthMaxBytes: 20_000,
+    alt: 'Rami, facilities and technical systems',
+    reviewed: false,
+    reviewGate: 'Q10',
+  },
+  'R0-SL08E': {
+    id: 'R0-SL08E',
+    kind: 'portrait',
+    meaning: 'the copyist who preserves source and chronology without classifying events',
+    candidateRef: 'VA-022',
+    master: '08-visual-assets/03-characters/v05b/v05b-maha-portrait-v0.1.png',
+    file: `${PORTRAIT}/maha-v0.1.jpg`,
+    lowBandwidth: `${PORTRAIT}/low-bandwidth/maha-v0.1.jpg`,
+    focal: { aspect: [58, 66], vertical: 0.2 },
+    render: { single: [58, 66], stack: [34, 38] },
+    pixels: { standard: [232, 264], lowBandwidth: [116, 132] },
+    maxBytes: 60_000,
+    lowBandwidthMaxBytes: 20_000,
+    alt: 'Maha, copyist and chronology custodian',
+    reviewed: false,
+    reviewGate: 'Q10',
+  },
+  'R0-SL08F': {
+    id: 'R0-SL08F',
+    kind: 'portrait',
+    meaning: 'the biomedical engineer who will not call equipment available unverified',
+    candidateRef: 'VA-023',
+    master: '08-visual-assets/03-characters/v05b/v05b-yasin-portrait-v0.1.png',
+    file: `${PORTRAIT}/yasin-v0.1.jpg`,
+    lowBandwidth: `${PORTRAIT}/low-bandwidth/yasin-v0.1.jpg`,
+    focal: { aspect: [58, 66], vertical: 0.2 },
+    render: { single: [58, 66], stack: [34, 38] },
+    pixels: { standard: [232, 264], lowBandwidth: [116, 132] },
+    maxBytes: 60_000,
+    lowBandwidthMaxBytes: 20_000,
+    alt: 'Yasin, biomedical engineer',
+    reviewed: false,
+    reviewGate: 'Q10',
+  },
   'R0-SL02': {
     id: 'R0-SL02',
     meaning: 'the ordinary operational sector base',
@@ -101,3 +229,14 @@ export const slot = (id) => SLOTS[id] ?? null;
 
 /** Everything the increment renders is candidate until `Q10` says otherwise. */
 export const anyUnreviewed = () => Object.values(SLOTS).some((entry) => !entry.reviewed);
+
+/** The six Chapter 1 identity slots, in declaration order. */
+export const PORTRAIT_SLOTS = Object.freeze(
+  Object.values(SLOTS).filter((entry) => entry.kind === 'portrait'));
+
+/** The slot a character key occupies, or null. Content names the slot; this
+ *  resolves it — a component never names a portrait file. */
+export const portraitSlot = (id) => {
+  const entry = SLOTS[id];
+  return entry?.kind === 'portrait' ? entry : null;
+};

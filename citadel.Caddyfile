@@ -85,6 +85,15 @@
 		file_server
 	}
 
+	# R0-C05A's six candidate character portraits and their low-bandwidth
+	# derivatives. Named here for the same reason as the two directories above:
+	# without it, a portrait requested before it ships answers 200 with
+	# index.html and can be cached as a success. `test/deployment.test.js`
+	# derives its list from `public/`, so this block is not optional.
+	handle /portraits/* {
+		file_server
+	}
+
 	# The SPA. try_files sends unknown paths to index.html so client-side routes
 	# survive a reload.
 	#

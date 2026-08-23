@@ -7,6 +7,12 @@ import { MorningStructured } from "./features/morning/MorningStructured.jsx";
 import { MorningChanges } from "./features/morning/MorningChanges.jsx";
 import { MorningInspector } from "./features/morning/MorningInspector.jsx";
 import { PreparednessPanel } from "./features/preparedness/PreparednessPanel.jsx";
+import { MissionRibbon } from "./features/narrative/MissionRibbon.jsx";
+import { PlaceCard } from "./features/narrative/PlaceCard.jsx";
+import { CommitmentTray, OutcomeBar } from "./features/narrative/CommitmentTray.jsx";
+import { RecordOverlay } from "./features/narrative/RecordOverlay.jsx";
+import { NarrativeStructured } from "./features/narrative/NarrativeStructured.jsx";
+import { BuildPanel, buildSurfaceRequested } from "./features/narrative/BuildPanel.jsx";
 import { PLACES } from "./sim/world.js";
 import {
   ActivityIcon as Activity, ArrowRight, CheckCircle, ClipboardText, Clock, Eye, FirstAidKit,
@@ -33,6 +39,28 @@ const hotspots = [
   { id: PLACES.COORDINATION, label: "Coordination Room", meta: "Morning handover", top: "68%", left: "20%", icon: UsersThree },
   { id: PLACES.UNDERWORKS, label: "Underworks", meta: "Official map incomplete", top: "82%", left: "55%", icon: Gear },
 ];
+
+/**
+ * ⚠️ EVERY PLACE HAS A NAME, INCLUDING THE ONES WITHOUT A MAP PIN.
+ *
+ * The hotspots above are the seven places a participant can click. The Gate of
+ * Names is not one of them — and Bishr stands there in the first beat. Reading
+ * a label out of `hotspots` alone returned nothing for the Gate and, worse,
+ * silently fell back to whichever place the INSPECTOR happened to have
+ * selected: the card said "Bishr · Patient navigator · Gate of Names ·
+ * Intensive Care", asserting that a man at the Gate was in the ICU. Correct
+ * markup, wrong meaning, and no assertion over the DOM could have seen it.
+ */
+const PLACE_LABELS = Object.freeze({
+  [PLACES.GATE]: "Gate of Names",
+  [PLACES.ED]: "Emergency Department",
+  [PLACES.ICU]: "Intensive Care",
+  [PLACES.STORES]: "Clinical Stores",
+  [PLACES.WORKSHOP]: "Technical Workshop",
+  [PLACES.UNDERWORKS]: "Underworks",
+  [PLACES.COORDINATION]: "Coordination Room",
+  [PLACES.POWER]: "Critical Power",
+});
 
 const responses = [
   { id: "hold", title: "Hold and stabilise locally", protects: "Continuity in the affected ICU bay", risks: "Increased workload and slower restoration access" },
@@ -61,7 +89,11 @@ function Setup({ onStart }) {
       <div className="arrival-shade" />
       <section className="arrival-card">
         <Brand />
-        <p className="kicker arrival-kicker">Experience Prototype 0</p>
+        {/* ⛔ R0-C05A — "Experience Prototype 0" was a BUILD label on the first
+            thing a participant read. § 0.4A puts build labels, review gates and
+            candidate status in an owner surface; it is not deleted, it moved to
+            `?build=1`. */}
+        <p className="kicker arrival-kicker">The Bimaristan · morning shift</p>
         <h1>The institution is already awake.</h1>
         <p className="lede">Read its work. Strengthen what you can. Discover what the official map forgot.</p>
         <div className="safety-note"><ShieldCheck size={21} weight="fill" /><p><b>Preparedness exercise only.</b> Not live incident command, clinical decision support or hospital assessment.</p></div>
@@ -70,7 +102,7 @@ function Setup({ onStart }) {
           <fieldset><legend>Play format</legend><button className={mode === "solo" ? "mode-choice active" : "mode-choice"} onClick={() => setMode("solo")}><Eye /> Solo</button><button className={mode === "team" ? "mode-choice active" : "mode-choice"} onClick={() => setMode("team")}><UsersThree /> Team table</button></fieldset>
         </div>
         <button className="primary large" onClick={() => onStart({ role, mode })}>Enter the morning shift <ArrowRight weight="bold" /></button>
-        <p className="prototype-label">Visual and interaction prototype · facilitator-controlled state</p>
+        <p className="prototype-label">A fictional hospital. Nothing you do here reaches a real one.</p>
       </section>
     </main>
   );
@@ -138,74 +170,132 @@ function DebriefPanel({ selected, response, onRestart }) {
 }
 
 /**
- * ★ R0-I1 — THE LIVING MORNING.
+ * ★ R0-I1 / R0-C05A — THE LIVING MORNING, AND THE STORY IT IS TELLING.
  *
  * ============================================================================
- * WHAT THIS REPLACED, AND WHY IT MATTERS
+ * WHAT R0-I1 REPLACED, AND WHAT R0-C05A REPLACED AFTER IT
  * ============================================================================
- * XP0's ordinary phase was a fixed picture with a narration button under it:
- * the map, the status strip and the structured view were literal arrays, and
- * the participant's only act was to leave. `gameplay-and-state.md` § 2 requires
- * the opposite — arrivals, assignment, service work, supply movement and
- * technical inspection "continue when nothing dramatic is happening".
+ * XP0's ordinary phase was a fixed picture with a narration button under it.
+ * `R0-I1` made it a deterministic world that the map, the structured view, the
+ * status strip and the inspector all project.
  *
- * Everything below reads one projection of one deterministic world. The
- * preparation window opens after exactly two ordinary cycles, and until it does
- * the participant is reading a working institution rather than waiting for a
- * scene to end.
+ * Then the owner played it and reported the remaining problem: the state was
+ * right and the trade-off was real, and the first ten minutes still read as an
+ * engine report. *An ordinary difficult day.* *Advance one cycle.* Nothing
+ * naming what was being protected, who was asking, or what answered.
  *
- * ⛔ THE PREPARATION PANEL IS UNCHANGED. `R0-C05` owns preparedness mechanics;
- * this increment only decides WHEN that existing interface becomes reachable.
+ * ============================================================================
+ * ★ THE COMPOSITION IS THE OWNER'S OWN REVISION (visual bible § 21.5)
+ * ============================================================================
+ * A permanent dramatic side panel was rejected. So the hospital stays the
+ * largest thing on the screen and the story is distributed through four
+ * temporal layers:
+ *
+ *   1. a compact mission ribbon, always, above the world;
+ *   2. a request anchored to the PLACE the person is standing in;
+ *   3. a commitment tray that appears for a decision and retracts after it; and
+ *   4. an evidence/work-order drawer opened over the same, unmoved, world.
+ *
+ * ⛔ AND THE CARD IS A SIBLING OF THE MAP, NOT A CHILD OF IT. Below 620px the
+ * stylesheet hides `.living-map` and the structured world carries the morning;
+ * a request card nested inside the map would have gone with it, and the
+ * participant would have lost the person asking at exactly the width where the
+ * words matter most.
  */
-function LivingMorning({ structured, setStructured, onReachPreparation }) {
+function LivingMorning({ structured, onReachPreparation }) {
   const [place, setPlace] = useState(PLACES.ICU);
   const [labels, setLabels] = useState(true);
-  const { view, setMode, setSpeed, advanceCycle, inspect, scheduleProject, verifyProject } = useRun(20260822, place);
+  const [record, setRecord] = useState(false);
+  const { view, setMode, setSpeed, advanceCycle, inspect, scheduleProject, verifyProject, perform } =
+    useRun(20260822, place);
   const selectPlace = (id) => { setPlace(id); inspect(id); };
-  const label = hotspots.find((spot) => spot.id === place)?.label ?? place;
+  const label = PLACE_LABELS[place] ?? place;
   const ready = view.status === "preparation-window";
+  const narrative = view.narrative;
+  /* ★ The card names where the SPEAKER is, not what the inspector is showing.
+     Two different questions; one of them used to answer the other. */
+  const speakerPlace = PLACE_LABELS[narrative.place] ?? narrative.place;
+
+  /* ★ ONE ENTRY POINT FOR EVERY NARRATIVE ACT. An inspection also moves the
+     inspector's selection, because the participant asked to look at a place and
+     would not expect the panel beside it to still be showing another one. */
+  const act = (offered) => {
+    if (offered.command === "inspect-place") selectPlace(offered.place);
+    else perform(offered);
+  };
 
   return (
     <>
       <MorningStatus strip={view.strip} />
-      <section className="world-heading">
-        <div>
-          <p className="kicker">Hospital heartbeat · {view.ordinaryState.replace("ordinary-", "").replace("-", " ")}</p>
-          <h1>An ordinary difficult day</h1>
-        </div>
-      </section>
+      <MissionRibbon mission={narrative.mission} />
       <MorningControls view={view} onMode={setMode} onSpeed={setSpeed} onAdvance={advanceCycle}
-                       labels={labels} onLabels={() => setLabels((on) => !on)} />
+                       labels={labels} onLabels={() => setLabels((on) => !on)}
+                       advanceLabel={narrative.next?.command === "advance-cycle" ? narrative.next.label : null} />
+
+      {/* ★ THE WORLD FIRST, AND THE PERSON IN IT. Exactly one of the map and
+          the structured world is on screen, and exactly one rendering of the
+          beat goes with it — § 21.3 forbids repeating one event in three
+          panels. Both read the SAME `view.narrative`. */}
+      <div className="nar-stage">
+        {structured
+          ? <MorningStructured view={view} onSelectPlace={selectPlace} places={hotspots} />
+          : <LivingMap view={view} labels={labels} onSelectPlace={selectPlace} hotspots={hotspots} />}
+        {structured
+          ? <NarrativeStructured narrative={narrative} placeLabel={speakerPlace} />
+          : <PlaceCard narrative={narrative} placeLabel={speakerPlace} />}
+      </div>
+
+      {/* ★ THE TRAY IS TEMPORARY. Before the act it carries purpose, the
+          actor-and-purpose verb and a fair preview; after it, what the world
+          did and what is still open. Never both, because they describe two
+          different moments. */}
+      {narrative.act
+        ? <CommitmentTray narrative={narrative} onAct={act} onOpenRecord={() => setRecord(true)} />
+        : <OutcomeBar narrative={narrative} onAct={act} onOpenRecord={() => setRecord(true)} />}
+
+      {/* ★ R0-C05 — THE WINDOW IS PART OF THE SAME MORNING, NOT A NEW SCREEN.
+          It appears once the requests have been heard, so the four projects
+          arrive as four people asking rather than as a specification. The
+          engine still refuses a third commitment and still refuses one outside
+          the window; nothing here enforces a rule. */}
+      {/* ⛔ AND IT STAYS FOR AS LONG AS THE WINDOW IS OPEN. It was briefly gated
+          on the requests beat, which read correctly and removed the four cards
+          the moment work began — taking the ladder, the residue and the two
+          projects NOT taken off the page with them. That is precisely the thing
+          R0-C05 exists to prevent: a window listing only your choices cannot
+          show you what they cost. Found by walking the page, not by a test. */}
+      {ready && (
+        <PreparednessPanel
+          preparedness={view.preparedness}
+          requests={narrative.requests}
+          residue={view.residue}
+          onSchedule={scheduleProject}
+          onVerify={verifyProject}
+          onAdvance={advanceCycle}
+          canAdvance={view.preparedness.taken > 0} />
+      )}
+
       <div className="game-grid">
         <section className="world-column">
-          {/* ★ BOTH REPRESENTATIONS COME FROM ONE PROJECTION. The toggle changes
-              which is on screen; it cannot change what is true. */}
-          {structured
-            ? <MorningStructured view={view} onSelectPlace={selectPlace} places={hotspots} />
-            : <LivingMap view={view} labels={labels} onSelectPlace={selectPlace} hotspots={hotspots} />}
           <MorningInspector inspector={view.inspector} label={label} />
         </section>
-        {/* ★ R0-C05 — THE WINDOW IS PART OF THE SAME MORNING, NOT A NEW SCREEN.
-            The preparedness work happens inside the working institution: the
-            same run, the same clock, the same map. Moving it to its own phase
-            would hide the thing it costs. */}
-        {ready
-          ? <PreparednessPanel
-              preparedness={view.preparedness}
-              residue={view.residue}
-              onSchedule={scheduleProject}
-              onVerify={verifyProject}
-              onAdvance={advanceCycle}
-              canAdvance={view.preparedness.taken > 0} />
-          : <section className="action-panel">
-              <MorningChanges changes={view.changes} cycle={view.time.cycle} />
-              {!structured && <MorningStructured view={view} onSelectPlace={selectPlace} places={hotspots} />}
-              <button className="primary full" disabled onClick={onReachPreparation}>
-                {`Run ${view.time.ordinaryCycles - view.time.cycle} more ordinary cycle${view.time.ordinaryCycles - view.time.cycle === 1 ? "" : "s"}`}
-                <ArrowRight weight="bold" />
-              </button>
-            </section>}
+        <section className="action-panel">
+          {/* ⚠️ THE CHRONOLOGY IS SECONDARY NOW. § 21.1: the event log "may not
+              occupy the same visual priority as the current purpose or the
+              immediate response". It used to be the first thing under the map. */}
+          <MorningChanges changes={view.changes} cycle={view.time.cycle} />
+          {!structured && <MorningStructured view={view} onSelectPlace={selectPlace} places={hotspots} />}
+          {!ready && (
+            <button className="primary full" disabled onClick={onReachPreparation}>
+              {`Run ${view.time.ordinaryCycles - view.time.cycle} more ordinary cycle${view.time.ordinaryCycles - view.time.cycle === 1 ? "" : "s"}`}
+              <ArrowRight weight="bold" />
+            </button>
+          )}
+        </section>
       </div>
+
+      {record && <RecordOverlay view={view} onClose={() => setRecord(false)} />}
+      {buildSurfaceRequested() && <BuildPanel increment="R0-I2A · R0-C05A" narrative={narrative} />}
     </>
   );
 }
@@ -227,8 +317,8 @@ export function App() {
     return (
       <main className="game-shell phase-operate">
         <TopBar profile={profile} structured={structured} setStructured={setStructured} onRestart={restart} />
-        <LivingMorning structured={structured} setStructured={setStructured} onReachPreparation={() => setPhase("prepare")} />
-        <footer className="prototype-footer"><span>R0-I1 · deterministic living morning · candidate visuals</span><span>Same fictional state in solo and team formats</span></footer>
+        <LivingMorning structured={structured} onReachPreparation={() => setPhase("prepare")} />
+        <footer className="prototype-footer"><span>Fictional preparedness exercise · no patient record, live command or clinical advice</span><span>Same fictional state in solo and team formats</span></footer>
       </main>
     );
   }

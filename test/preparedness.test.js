@@ -8,7 +8,7 @@
  */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
@@ -244,7 +244,13 @@ test('★ the surface states the collision, the displaced work and the untested 
   assert.match(html, /Performed\. Not yet tested\./, 'complete was presented as finished');
   assert.match(html, /What stopped/);
   assert.match(html, /store inspection/i);
-  assert.match(html, /Verify the result/);
+  // ⚠️ R0-C05A REPLACED "Verify the result" WITH AN ACTOR AND A PURPOSE.
+  // The distinction the assertion protects — that testing is a separate act by
+  // a named responsible function, not a nicer word for "done" — is unchanged
+  // and is asserted here directly rather than through one fixed string.
+  assert.ok(!/Verify the result/.test(html), 'the generic verify verb came back');
+  assert.match(html, /Have the responsible function test it|Ask \w+ to/,
+    'the surface offers no act that would move complete to verified');
 });
 
 test('⛔ the ladder is positions, never a percentage', () => {
@@ -326,11 +332,27 @@ test('★ the advance control has a case for FINISHED WORK, not only for none an
 
 // Structural hooks: named by tests and aria queries, carrying no styling of
 // their own. Listed so the exception is reviewed rather than silent.
-const HOOKS = new Set(['preparedness']);
+// ⚠️ `.route` earns its place here rather than a decorative rule. Every route's
+// colour, width and dash pattern is set ON THE ELEMENT by the projection — the
+// route grammar is state, not styling (§ 18.4, and the reason `.route-service`
+// has no rule either). A `.route {}` block added to satisfy this guard would be
+// dead CSS that looked like the grammar and controlled none of it. Adding a
+// name here is a reviewed exception; it is not a way to make the guard quiet.
+const HOOKS = new Set(['preparedness', 'route']);
 
 test('every class the R0 feature components use has a rule in the stylesheet', () => {
   const css = readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8');
-  const files = ['features/preparedness/PreparednessPanel.jsx', 'features/morning/MorningControls.jsx'];
+  // ⚠️ R0-C05A WIDENED THIS FROM TWO FILES TO EVERY FEATURE COMPONENT. The
+  // guard was written after `.visually-hidden` painted six state names across
+  // the ladder — and it was checking two files while five others could have
+  // done the same thing. A guard with a hand-maintained list of what to guard
+  // is a guard with a hand-maintained list of what to miss.
+  const files = readdirSync(new URL('../src/features', import.meta.url), { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .flatMap((dir) => readdirSync(new URL(`../src/features/${dir.name}`, import.meta.url))
+      .filter((name) => name.endsWith('.jsx'))
+      .map((name) => `features/${dir.name}/${name}`));
+  assert.ok(files.length >= 9, `only ${files.length} components found`);
   const missing = [];
   for (const rel of files) {
     const src = readFileSync(new URL('../src/' + rel, import.meta.url), 'utf8');

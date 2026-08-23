@@ -1,0 +1,364 @@
+{
+  "version": "v0.1",
+  "_why_this_file_exists": "R0-C05A. The owner played the merged I1/I2 result and found that the first ten minutes read as an engine report: correct state and a real trade-off, presented without a concrete purpose, a canonical person asking for something, an actor-and-purpose verb, a performed response or a residue. This file is the bounded content that closes that gap for Chapter 1's ordinary morning, and NOTHING MORE. It is not a scene schema, a dialogue tree, a quest system or an authoring format; adding a second chapter to it would be the general builder that RELEASE-PROGRESSION.md defers through R5.",
+  "_why_every_line_carries_a_key": "Two different failures are being prevented, and they need two different keys. A FICTIONAL line (what a person wants, says or concedes) can be attractive and wrong, so it carries `source` -- a citation into story canon, which is the authority on people and events. An OPERATIONAL assertion (what is true of the hospital right now) can be attractive and unfounded, so it carries `stateKey` (a path that must resolve in the world) or `eventType` (a member of EVENTS). `beatRefusals` checks both against the real world and the real event vocabulary, so a sentence that sounds right but is keyed to nothing refuses at load instead of rendering.",
+  "_why_carriers_are_keyed_by_project_id": "The accepted V05A/V05B proof illustrates its commitment beat with the power trace and the message route. If that pair were written into the projection it would narrate Rami walking the power route to a participant who commissioned the reserve and restoration ownership -- a story about a game they did not play. Carriers are therefore keyed by the ids in projects.json, `beatRefusals` requires the two sets to match exactly in both directions, and the projection reads whichever project the participant actually chose.",
+
+  "characters": {
+    "bishr": {
+      "name": "Bishr",
+      "office": "Patient navigator",
+      "portraitSlot": "R0-SL08A",
+      "source": "canon:03-characters/cast-directions-v0.1.md#9-guide-of-the-ways-bishr -- 'senior patient navigator and former porter who moves naturally between wards, service areas, city partners, patients, and families'; Chapter 1 Scene 1 lists Bishr among the active characters at the Gate."
+    },
+    "ayyash": {
+      "name": "Ayyash",
+      "office": "Movement steward",
+      "portraitSlot": "R0-SL08B",
+      "source": "canon:03-characters/chapter-01-supporting-cast-v0.1.md#ayyash-movement-steward -- 'senior porter and internal movement-route steward'; his want is to 'finish the night handover and keep the mobile fallback equipment moving'."
+    },
+    "fadl": {
+      "name": "Fadl",
+      "office": "Quality and patient safety · Dar al-Itqan",
+      "portraitSlot": "R0-SL08C",
+      "source": "canon:03-characters/cast-directions-v0.1.md#16-inspector-of-measures-fadl -- 'responsible for service quality and patient safety'; Chapter 1: Fadl wants a serious near miss recognised without interrupting care."
+    },
+    "rami": {
+      "name": "Rami",
+      "office": "Facilities and technical systems",
+      "portraitSlot": "R0-SL08D",
+      "source": "canon:03-characters/cast-directions-v0.1.md#3-water-master-rami -- 'leader of the workers maintaining water, heat, structures, waste, ventilation, and hidden transport systems'; Chapter 1: 'Rami defines what may be safely energized.'"
+    },
+    "maha": {
+      "name": "Maha",
+      "office": "Copyist · Dar al-Itqan",
+      "portraitSlot": "R0-SL08E",
+      "source": "canon:03-characters/cast-directions-v0.1.md#4-copyist-maha -- 'administrative Copyist attached to Dar al-Itqan... responsible for incident-record administration, source preservation, chronology'. Quality boundary: 'Maha protects and organizes evidence. She does not classify patient-safety events.'"
+    },
+    "yasin": {
+      "name": "Yasin",
+      "office": "Biomedical engineering · equipment bench",
+      "portraitSlot": "R0-SL08F",
+      "source": "canon:03-characters/chapter-01-supporting-cast-v0.1.md#yasin-biomedical-engineer -- 'unwilling to call equipment available until its accessories, reserve, route, and responsible user are known'."
+    }
+  },
+
+  "mission": {
+    "text": "Keep the route from Emergency to intensive care working, and find out why physical ICU places are not all safely usable.",
+    "until": "Until Second Bell",
+    "stateKey": "services.icu.physicalPositions",
+    "source": "canon:04-story/chapters/chapter-01-the-shadow-at-first-light-v0.2.md#scene-1 -- the player 'identifies the difference between physical positions, staffed positions, occupied positions, and patients waiting for another service'; Scene 4 shows 'available beds that cannot be used safely'."
+  },
+
+  "beats": [
+    {
+      "beat": "entry",
+      "carrier": "bishr",
+      "place": "gate",
+      "now": {
+        "text": "First light. The handover board carries 43 patients; nine cannot leave their current place.",
+        "eventType": "run-started",
+        "source": "canon:04-story/chapters/chapter-01-the-shadow-at-first-light-v0.2.md#scene-1-resistance -- 'The handover board carries 43 patients, 9 of whom cannot leave their current place.'"
+      },
+      "title": "Begin with the route that cannot quietly fail.",
+      "purpose": {
+        "text": "Understand how people actually move from the Gate into Emergency before the morning narrows what you can do about it.",
+        "stateKey": "demand.route"
+      },
+      "request": {
+        "line": "Walk the route once before you trust the board. The public sees a queue; we see a different clock on every person in it.",
+        "source": "canon:04-story/chapters/chapter-01-the-shadow-at-first-light-v0.2.md#scene-1 -- Bishr's want is to 'show the player one complete journey from the city threshold to definitive care'; the resistance names 'The public sees a queue; staff see many different clinical and operational clocks.'"
+      },
+      "act": { "label": "Walk with Bishr from the Gate to Emergency", "command": "inspect-place", "place": "gate" },
+      "preview": {
+        "protects": "A truthful reading of the Gate-to-Emergency route.",
+        "costs": "Your first look follows the route rather than the central summary.",
+        "unknown": "Why staffed intensive care sits below the places that physically exist."
+      },
+      "worldChange": {
+        "text": "The Gate–Emergency route is already occupied when you arrive; nothing is waiting for you to begin.",
+        "stateKey": "demand.reach"
+      },
+      "response": {
+        "by": "bishr",
+        "place": "gate",
+        "line": "The doors opened on time. The queue did not leave with the night shift.",
+        "source": "canon:04-story/chapters/chapter-01-the-shadow-at-first-light-v0.2.md#scene-1 -- 'the day team receives more people than the night team can physically present during handover'."
+      },
+      "return": "Next question: where does this route begin to retain people instead of moving them?",
+      "continue": { "label": "Let the morning work through First Bell", "command": "advance-cycle" }
+    },
+
+    {
+      "beat": "cycle-one",
+      "carrier": "ayyash",
+      "place": "ed",
+      "now": {
+        "text": "First Bell. Arrivals continued while the threshold cleared more slowly than they came.",
+        "eventType": "demand-changed",
+        "source": "canon:04-story/chapters/chapter-01-the-shadow-at-first-light-v0.2.md#scene-1 -- 'porters move around treatment areas because the direct corridor is occupied by waiting patients'."
+      },
+      "title": "Ordinary work is holding, and it is spending its slack to do it.",
+      "purpose": {
+        "text": "Keep movement through Emergency while finding out which ordinary work is quietly giving way to it.",
+        "stateKey": "demand.retained"
+      },
+      "request": {
+        "line": "The inner route is carrying more than the register admits. Ask me what is on it before you ask the board.",
+        "source": "canon:03-characters/chapter-01-supporting-cast-v0.1.md#ayyash-movement-steward -- 'a route is resilient only when someone has walked it under pressure and knows what it costs'; 'the lower service route and its old transfer token still open a passage missing from the current register'."
+      },
+      "act": { "label": "Ask Ayyash what the inner route is carrying", "command": "inspect-place", "place": "ed" },
+      "preview": {
+        "protects": "Movement between sorting and treatment, and the ordinary delivery behind it.",
+        "costs": "Ayyash stays past a night shift that has officially ended.",
+        "unknown": "Whether intensive care can receive the next transfer with the staff it has."
+      },
+      "worldChange": {
+        "text": "Supply moved inward from Clinical Stores and a technical team left the workshop; retained arrivals now occupy more of the Gate–Emergency route.",
+        "eventType": "supply-moved"
+      },
+      "response": {
+        "by": "ayyash",
+        "place": "ed",
+        "line": "We held the inner threshold. Discharge movement is a porter short, and that is where it will show.",
+        "source": "canon:03-characters/chapter-01-supporting-cast-v0.1.md#ayyash-movement-steward -- his want is to 'finish the night handover' while 'the morning team receives the patients, equipment, and unresolved movements he is still carrying'."
+      },
+      "return": "Residue: discharge movement is slower. Read the intensive-care board before the next cycle.",
+      "continue": { "label": "Let the morning work on toward Second Bell", "command": "advance-cycle" }
+    },
+
+    {
+      "beat": "cycle-two",
+      "carrier": "fadl",
+      "place": "icu",
+      "now": {
+        "text": "After First Bell. The physical intensive-care places have not changed; the staffed coverage has thinned.",
+        "eventType": "coverage-changed",
+        "source": "canon:04-story/chapters/chapter-01-the-shadow-at-first-light-v0.2.md#scene-1-state-effects -- treating every physical place as capacity is corrected by the nursing leader; canon:03-characters/chapter-01-supporting-cast-v0.1.md#nour-head-sister-of-critical-care -- 'a bed is usable only when a competent person can remain responsible for the patient in it'."
+      },
+      "title": "The places are still there. Fewer of them are safely usable.",
+      "purpose": {
+        "text": "Keep the difference between a place that exists and a place that can be staffed, before it is rounded into one number.",
+        "stateKey": "services.icu.staffedPositions"
+      },
+      "request": {
+        "line": "Compare the live board with the staffing handover, and keep the difference. Do not correct one number into the other.",
+        "source": "canon:03-characters/cast-directions-v0.1.md#16-inspector-of-measures-fadl -- Fadl's private need is 'to prove that standards can protect real care rather than only produce excellent files'; Chapter 1 Scene 4 turns on 'available beds that cannot be used safely'."
+      },
+      "act": { "label": "Compare the intensive-care places with the staffed handover", "command": "inspect-place", "place": "icu" },
+      "preview": {
+        "protects": "Honest capacity information, and the transfer decision that will rest on it.",
+        "costs": "One quality review waits while Fadl witnesses the comparison.",
+        "unknown": "Whether the shortfall is staffing alone, or shares something not on the map."
+      },
+      "worldChange": {
+        "text": "The physical places are unchanged and the staffed coverage has fallen; borrowed support is in transit between services.",
+        "stateKey": "services.icu.borrowedSupport"
+      },
+      "response": {
+        "by": "fadl",
+        "place": "icu",
+        "line": "That difference is the finding. Record it as it stands, and do not let it become a rounding error.",
+        "source": "canon:04-story/chapters/chapter-01-the-shadow-at-first-light-v0.2.md#scene-4 -- Fadl retains the finding 'despite pressure to use softer closure language'."
+      },
+      "return": "The mission is now specific: find out why physical places are not all safely usable. Four requests have reached the resilience function.",
+      "continue": { "label": "Hear the four requests", "command": "none" }
+    },
+
+    {
+      "beat": "requests",
+      "carrier": "maha",
+      "place": "coordination",
+      "now": {
+        "text": "Before Second Bell. Four requests have reached the resilience function, and two of them can be staffed.",
+        "eventType": "preparation-window-opened",
+        "source": "canon:04-story/chapters/chapter-01-the-shadow-at-first-light-v0.2.md#scene-1 -- 'the service is functioning but has no slack'."
+      },
+      "title": "Choose which preparation the hospital can actually perform.",
+      "purpose": {
+        "text": "Commission two pieces of work without hiding the ordinary work they stop.",
+        "stateKey": "status"
+      },
+      "request": {
+        "line": "All four requests stay on the record, including the two you cannot staff. Silence is not completion.",
+        "source": "canon:03-characters/cast-directions-v0.1.md#4-copyist-maha -- 'responsible for incident-record administration, source preservation, chronology'; her visible objective is 'to prove that minor incidents across the Bimaristan form a coherent pattern'."
+      },
+      "act": { "label": "Compare the four requests and what each one stops", "command": "open-record" },
+      "preview": {
+        "protects": "A deliberate choice rather than an invisible queue.",
+        "costs": "Every request that is commissioned occupies staff, access or an ordinary task.",
+        "unknown": "Which dependency will matter if pressure reaches intensive care."
+      },
+      "worldChange": {
+        "text": "Four colleagues are waiting at their own work sites. None of them has moved yet.",
+        "stateKey": "projects"
+      },
+      "response": {
+        "by": "maha",
+        "place": "coordination",
+        "line": "I will keep the two you do not commission visible. An unanswered request is not a closed one.",
+        "source": "canon:03-characters/cast-directions-v0.1.md#4-copyist-maha -- she is 'too willing to ask why two official documents disagree' and preserves 'the difference between main-bus restoration and local restoration'."
+      },
+      "return": "Next act: commission two requests through the people responsible for them.",
+      "continue": { "label": "Commission through the people responsible", "command": "none" }
+    }
+  ],
+
+  "projectCarriers": {
+    "power-trace": {
+      "carrier": "rami",
+      "supporting": "clinical services at the intensive-care boundary",
+      "workPlace": "underworks",
+      "request": {
+        "line": "The mapped lines stop before the chamber and later conduits continue through the wall. Let me walk the declared route and see what it actually does.",
+        "source": "canon:04-story/chapters/chapter-01-the-shadow-at-first-light-v0.2.md -- 'The mapped lines stop before the chamber. Later conduits continue through the wall.'"
+      },
+      "commissionAct": "Send Rami to walk the declared power route",
+      "verifyAct": "Ask Rami to compare the observed route at the boundary, with Fadl witnessing",
+      "protects": "Knowledge of how critical power actually reaches intensive care.",
+      "unknown": "Whether the declared route and the observed route are the same route.",
+      "working": {
+        "by": "rami",
+        "place": "underworks",
+        "line": "The chalk turns before the register says it should. I am not at the boundary yet.",
+        "source": "canon:04-story/chapters/chapter-01-the-shadow-at-first-light-v0.2.md#scene-2 -- Rami demonstrates a dependency the official map does not show; canon:src -- chalk corrections in the Underworks."
+      },
+      "disrupted": {
+        "by": "rami",
+        "place": "workshop",
+        "line": "I cannot start this while the other work holds what I need. The site stays as it is until it comes free.",
+        "source": "canon:03-characters/cast-directions-v0.1.md#3-water-master-rami -- his visible objective is 'to gain permission to close and rebuild a failing junction'; work waits on access rather than being abandoned."
+      },
+      "complete": {
+        "by": "rami",
+        "place": "underworks",
+        "line": "The walk is done. Nobody has tested what I wrote down, and I would not act on it yet.",
+        "source": "canon:03-characters/cast-directions-v0.1.md#3-water-master-rami -- 'unimpressed by ceremonial authority'; Chapter 1: 'Rami defines what may be safely energized.'"
+      },
+      "verified": {
+        "by": "fadl",
+        "place": "icu",
+        "line": "This is evidence of a mismatch, not evidence of safety. Keep the dependency open.",
+        "source": "canon:04-story/chapters/chapter-01-the-shadow-at-first-light-v0.2.md#scene-4 -- 'Rami: prevent \"restored\" from being interpreted as \"the dependency is corrected.\"'"
+      },
+      "residue": "What else runs through the same downstream section is still unanswered."
+    },
+
+    "mobile-reserve": {
+      "carrier": "yasin",
+      "supporting": "nursing and patient flow",
+      "workPlace": "icu",
+      "request": {
+        "line": "I will not call that set available until its reserve, accessories and responsible user are visible. Let me stage it properly.",
+        "source": "canon:03-characters/chapter-01-supporting-cast-v0.1.md#yasin-biomedical-engineer -- 'unwilling to call equipment available until its accessories, reserve, route, and responsible user are known'."
+      },
+      "commissionAct": "Ask Yasin to stage the reserve at the intensive-care threshold",
+      "verifyAct": "Ask Yasin to confirm reserve, accessories and responsible user at the destination",
+      "protects": "A critical-care fallback that is where it is claimed to be.",
+      "unknown": "What the Emergency Department will do without the cart it gave up.",
+      "working": {
+        "by": "yasin",
+        "place": "icu",
+        "line": "The set is moving. The inspection generations in it are not equal, and I want that on the record.",
+        "source": "canon:03-characters/chapter-01-supporting-cast-v0.1.md#yasin-biomedical-engineer -- 'the mobile equipment set contains devices with different inspection generations and unequal reserve'."
+      },
+      "disrupted": {
+        "by": "yasin",
+        "place": "stores",
+        "line": "The cart cannot pass while the other work holds the passage. It waits here rather than half-arriving.",
+        "source": "canon:03-characters/chapter-01-supporting-cast-v0.1.md#ayyash-movement-steward -- 'the safest route may be slower, longer, or unavailable to a bed and equipment trolley'."
+      },
+      "complete": {
+        "by": "yasin",
+        "place": "icu",
+        "line": "It is staged. Staged is not checked, and I have not checked it.",
+        "source": "canon:03-characters/chapter-01-supporting-cast-v0.1.md#yasin-biomedical-engineer -- 'a technical reserve is real only when its last inspection, remaining runtime, accessories, and user are visible'."
+      },
+      "verified": {
+        "by": "yasin",
+        "place": "icu",
+        "line": "Reserve, accessories and a named responsible user, all present. Now it is available.",
+        "source": "canon:03-characters/chapter-01-supporting-cast-v0.1.md#yasin-biomedical-engineer -- Chapter 1 use: 'Yasin prevents \"battery available\" from becoming a false substitute for safe care capability.'"
+      },
+      "residue": "The Emergency Department's own fallback position is empty while the cart is here."
+    },
+
+    "restoration-ownership": {
+      "carrier": "fadl",
+      "supporting": "Rami and the responsible clinical lead",
+      "workPlace": "coordination",
+      "request": {
+        "line": "Name who owns a restoration decision and when the next update is due, before anyone needs the answer in a hurry.",
+        "source": "canon:04-story/chapters/chapter-01-the-shadow-at-first-light-v0.2.md -- the Chapter 1 player task asks 'who owns electrical isolation and restoration' and 'when the next status update is required'."
+      },
+      "commissionAct": "Ask Fadl to settle who owns a restoration decision",
+      "verifyAct": "Ask Fadl to confirm the named owner gave the first update on time",
+      "protects": "One instruction rather than two, if something has to be restored.",
+      "unknown": "Whether the agreed owner will still be reachable when it matters.",
+      "working": {
+        "by": "fadl",
+        "place": "coordination",
+        "line": "The people who have to agree are the people who are needed elsewhere. That is the cost of doing it now.",
+        "source": "canon:03-characters/cast-directions-v0.1.md#16-inspector-of-measures-fadl -- he turns 'a vague ambition into a plan with measures, owners, and review dates'."
+      },
+      "disrupted": {
+        "by": "fadl",
+        "place": "coordination",
+        "line": "I cannot hold the bedside group while other work has it. We stop here rather than agree without them.",
+        "source": "canon:03-characters/cast-directions-v0.1.md#16-inspector-of-measures-fadl -- ownership without the responsible professionals present would be 'an excellent file' rather than a decision."
+      },
+      "complete": {
+        "by": "fadl",
+        "place": "coordination",
+        "line": "There is a named owner and an interval. Neither has been tested against an actual update.",
+        "source": "canon:04-story/chapters/chapter-01-the-shadow-at-first-light-v0.2.md#scene-4 -- 'Fadl names separate owners and review times... and review ownership'."
+      },
+      "verified": {
+        "by": "fadl",
+        "place": "coordination",
+        "line": "The update came at the agreed time, from the named owner. That is what makes it real.",
+        "source": "canon:04-story/chapters/chapter-01-the-shadow-at-first-light-v0.2.md#scene-4 -- Fadl 'names separate owners and review times' and holds them."
+      },
+      "residue": "The ward round that lead would have been on did not happen."
+    },
+
+    "message-route": {
+      "carrier": "maha",
+      "supporting": "the operations coordinator",
+      "workPlace": "coordination",
+      "request": {
+        "line": "Send one test down the rail and wait for the chit. An amber shutter means sent, not answered, and I want to know which we have.",
+        "source": "canon:02-world/sensory-canon-v0.1.md -- the station bell's three taps, the return chit, and the amber shutter meaning 'sent, not answered'."
+      },
+      "commissionAct": "Ask Maha to send a test down the message rail",
+      "verifyAct": "Ask Maha to confirm sender, recipient, elapsed time and the answering station",
+      "protects": "A first escalation that is known to arrive, before it is needed.",
+      "unknown": "Whether the same route answers when it is carrying real traffic.",
+      "working": {
+        "by": "maha",
+        "place": "coordination",
+        "line": "The message has left. Until the chit returns, all I can record is that it went.",
+        "source": "canon:03-characters/cast-directions-v0.1.md#4-copyist-maha -- she preserves 'source, time interval, contradiction, or unresolved uncertainty'."
+      },
+      "disrupted": {
+        "by": "maha",
+        "place": "coordination",
+        "line": "The team I need for the test is elsewhere. I will not record a result I did not observe.",
+        "source": "canon:03-characters/cast-directions-v0.1.md#4-copyist-maha -- 'Maha protects and organizes evidence'; an unobserved result is not evidence."
+      },
+      "complete": {
+        "by": "maha",
+        "place": "coordination",
+        "line": "It went and something came back once, under no pressure. That is one observation, not a guarantee.",
+        "source": "canon:02-world/sensory-canon-v0.1.md -- the return chit records an acknowledgement, not a capability under load."
+      },
+      "verified": {
+        "by": "maha",
+        "place": "coordination",
+        "line": "Sender, recipient, elapsed time and the station that answered. All four, or it does not count.",
+        "source": "canon:03-characters/cast-directions-v0.1.md#4-copyist-maha -- 'source preservation, chronology, and reconciliation of ward records with central returns'."
+      },
+      "residue": "Part of the routine handover was not run by the coordinator who ran the test."
+    }
+  }
+}

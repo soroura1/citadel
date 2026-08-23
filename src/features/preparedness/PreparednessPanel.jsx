@@ -30,8 +30,15 @@ import { CheckCircle, Gauge, Warning, Wrench, ArrowRight, SealCheck } from "@pho
  */
 const STATE_ORDER = ['available', 'scheduled', 'working', 'disrupted', 'complete', 'verified'];
 
-export function PreparednessPanel({ preparedness, residue = [], onSchedule, onVerify, onAdvance, canAdvance }) {
+export function PreparednessPanel({ preparedness, requests = null, residue = [], onSchedule, onVerify, onAdvance, canAdvance }) {
   const { projects, capacity, taken, remaining } = preparedness;
+  /* ★ R0-C05A — THE SITUATED REQUEST BESIDE THE SPECIFICATION.
+     The panel used to open with four titles and a cost line, which is a
+     specification. Each project is now something a named person is asking for,
+     and the request/act wording is looked up from the projection by project id
+     — so the panel cannot attribute the power route to anyone but Rami, and
+     cannot show a request for a project that is not in the content. */
+  const requestFor = (id) => requests?.find((entry) => entry.project === id) ?? null;
   const anyActive = projects.some((p) => ['scheduled', 'working', 'disrupted'].includes(p.state));
   // ★ THREE SITUATIONS, NOT TWO. Nothing chosen yet; work under way; and the
   // committed work finished. A two-branch label told a participant who had
@@ -45,8 +52,8 @@ export function PreparednessPanel({ preparedness, residue = [], onSchedule, onVe
     <section className="action-panel preparedness" aria-label="Preparedness window">
       <div className="panel-heading">
         <div>
-          <p className="kicker">Preparedness window</p>
-          <h2>Choose two pieces of work</h2>
+          <p className="kicker">Before Second Bell</p>
+          <h2>Four requests have reached you. Two can be staffed.</h2>
         </div>
         <span className="capacity"><Gauge /> {taken}/{capacity} capacity</span>
       </div>
@@ -62,6 +69,16 @@ export function PreparednessPanel({ preparedness, residue = [], onSchedule, onVe
               <b>{project.name}</b>
               <span className="work-state">{project.stateLabel}</span>
             </div>
+
+            {/* ★ WHO IS ASKING, AND IN THEIR OWN WORDS. Canon owns the line;
+                the projection owns which person it belongs to. */}
+            {requestFor(project.id) && (
+              <div className="work-request">
+                <b>{requestFor(project.id).carrier.name}</b>
+                <span>{requestFor(project.id).carrier.office}</span>
+                <p>{requestFor(project.id).request}</p>
+              </div>
+            )}
 
             {/* The ladder, as position rather than as a percentage. A ring at
                 100% cannot say whether the work was tested.
@@ -80,11 +97,30 @@ export function PreparednessPanel({ preparedness, residue = [], onSchedule, onVe
               ))}
             </ol>
 
+            {/* ★ PROTECTS / COSTS / UNKNOWN, BEFORE THE COMMITMENT.
+                § 0.4A's required treatment puts these first and the technical
+                detail behind inspection: the old card opened every field at
+                once, which reads as a datasheet rather than a choice. */}
+            {requestFor(project.id) && (
+              <dl className="work-preview">
+                <div><dt>Protects</dt><dd>{requestFor(project.id).protects}</dd></div>
+                <div><dt>Costs</dt><dd className="displaced">{requestFor(project.id).costs}</dd></div>
+                <div><dt>Unknown</dt><dd>{requestFor(project.id).unknown}</dd></div>
+              </dl>
+            )}
+
+            {/* ⚠️ `Stops` USED TO BE HERE TOO, and once the preview above states
+                the cost in the engine's own words it was the same fact twice on
+                one card. The preview leads (§ 0.4A's required treatment); the
+                technical detail follows it, and the row returns if the preview
+                is ever absent so the cost can never simply vanish. */}
             <dl className="work-facts">
               <div><dt>Responsible</dt><dd>{project.responsibleFunctions.join(' · ')}</dd></div>
               <div><dt>Access</dt><dd>{project.accessNeed}</dd></div>
               <div><dt>Materials</dt><dd>{project.materials}</dd></div>
-              <div><dt>Stops</dt><dd className="displaced">{project.displaces.what} — {project.displaces.because}</dd></div>
+              {!requestFor(project.id) && (
+                <div><dt>Stops</dt><dd className="displaced">{project.displaces.what} — {project.displaces.because}</dd></div>
+              )}
               <div><dt>Verified by</dt><dd>{project.verification}</dd></div>
             </dl>
 
@@ -107,12 +143,15 @@ export function PreparednessPanel({ preparedness, residue = [], onSchedule, onVe
               {project.state === 'available' && (
                 <button type="button" className="secondary" disabled={!project.canSchedule}
                         onClick={() => onSchedule(project.id)}>
-                  {remaining > 0 ? 'Take this on' : `No capacity — ${capacity} already chosen`}
+                  {/* ★ AN ACTOR AND A PURPOSE, not "Take this on". */}
+                  {remaining > 0
+                    ? (requestFor(project.id)?.commissionAct ?? project.name)
+                    : `No capacity — ${capacity} already commissioned`}
                 </button>
               )}
               {project.canVerify && (
                 <button type="button" className="secondary verify" onClick={() => onVerify(project.id)}>
-                  <SealCheck weight="fill" /> Verify the result
+                  <SealCheck weight="fill" /> {requestFor(project.id)?.verifyAct ?? 'Have the responsible function test it'}
                 </button>
               )}
               {project.verified && (

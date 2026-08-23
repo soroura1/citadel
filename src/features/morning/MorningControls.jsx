@@ -18,7 +18,7 @@ import { SPEEDS } from '../../sim/commands.js';
  * `gameplay-and-state.md` § 3 permit bounded speed; the same two cycles produce
  * the same events at any of them.
  */
-export function MorningControls({ view, onMode, onSpeed, onAdvance, labels, onLabels }) {
+export function MorningControls({ view, onMode, onSpeed, onAdvance, labels, onLabels, advanceLabel = null }) {
   const paused = view.time.mode === 'paused';
   const done = view.time.cycle >= view.time.ordinaryCycles;
 
@@ -31,8 +31,15 @@ export function MorningControls({ view, onMode, onSpeed, onAdvance, labels, onLa
         {paused ? 'Resume' : 'Pause'}
       </button>
 
+      {/* ★ R0-C05A — THE LABEL COMES FROM THE PROJECTION WHEN THERE IS AN ACT.
+          § 0.4A: *Advance one cycle* is a progression verb, and a progression
+          verb is what made the morning read as an engine report. When the
+          narrative has a meaningful next act this control says what it is; when
+          it does not, it stays honest about being a clock. The COMMAND is the
+          same either way, so the non-timed participant is still not playing a
+          thinner game — only a better-labelled one. */}
       <button type="button" className="control" onClick={onAdvance} disabled={paused || done}>
-        <SkipForward weight="fill" /> Advance one cycle
+        <SkipForward weight="fill" /> {advanceLabel ?? 'Let the morning work on'}
       </button>
 
       {/* ⛔ Bounded, validated — and currently without observable effect, because
