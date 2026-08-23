@@ -1,6 +1,6 @@
 # `citadel` — status
 
-**Last updated:** 2026-08-23 · **R0-I2 MERGED; `R0-V05B` CHARACTER-IDENTITY PROOF IN OWNER REVIEW; `R0-C05A` HELD.**
+**Last updated:** 2026-08-23 · **R0-I2 MERGED; `R0-V05A/V05B` ACCEPTED FOR R0 INTEGRATION; `R0-C05A` READY.**
 **Topology:** [`../CLAUDE.md`](../CLAUDE.md) — `citadel.endura-assess.com` → `172.17.0.1:8087`,
 `TARGET=/opt/citadel/citadel`.
 
@@ -216,11 +216,11 @@ They were not what went wrong.
 ## What comes next
 
 The owner may raise the XP0 deployment. The revised map-first V05A narrative-action proof and its
-owner-requested V05B character-identity increment exist outside this production repository and
-await owner inspection; no application code or production asset changed for them. Six candidate
-portrait masters appear inside the existing place-anchored request/response cards while the
-temporary decision tray and secondary evidence/work-order overlay remain unchanged. C05A may start
-only after V05B acceptance. Production R0 remains held by
+owner-requested V05B character-identity increment exist outside this production repository and are
+accepted for bounded R0 integration; no application code or production asset changed for them. Six
+candidate portrait masters appear inside the existing place-anchored request/response cards while the
+temporary decision tray and secondary evidence/work-order overlay remain unchanged. C05A is now
+the first unblocked task. Production R0 remains held by
 [`../../citadel-planning/06-releases/RELEASE-PROGRESSION.md`](../../citadel-planning/06-releases/RELEASE-PROGRESSION.md): XP0 deployment is review evidence, not automatic R0 authorisation.
 
 The owner has now played the deployed I1/I2 experience. The environment and opportunity-cost
@@ -230,8 +230,9 @@ reaction and residue. `R0-G02` and `R0-G03` remain Review while corrective `R0-I
 finding.
 
 `R0-N01` is complete, `R0-V05A` established the map-first hierarchy and owner-requested `R0-V05B`
-adds six candidate identities inside its place cards. V05B is in owner Review. After the owner
-accepts it, the next task is engineering `R0-C05A`, followed by owner comprehension gate `R0-G03A`.
+adds six candidate identities inside its place cards. The owner accepted both for bounded R0
+integration on 2026-08-23; `Q10` remains open. The next task is engineering `R0-C05A` under the
+task-level release-ledger plan, followed by owner comprehension gate `R0-G03A`.
 Do not start `R0-V06`, `R0-C06` or
 `R0-C07`. `Q10` and `Q11` remain open; no deployment was raised.
 
