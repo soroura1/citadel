@@ -1,6 +1,6 @@
 # `citadel` — status
 
-**Last updated:** 2026-08-23 · **R0-I2 MERGED; REVISED MAP-FIRST `R0-V05A` PROOF IN OWNER REVIEW; `R0-C05A` HELD.**
+**Last updated:** 2026-08-23 · **R0-I2 MERGED; `R0-V05B` CHARACTER-IDENTITY PROOF IN OWNER REVIEW; `R0-C05A` HELD.**
 **Topology:** [`../CLAUDE.md`](../CLAUDE.md) — `citadel.endura-assess.com` → `172.17.0.1:8087`,
 `TARGET=/opt/citadel/citadel`.
 
@@ -89,7 +89,7 @@ speed selection.
 
 ### ⛔ What this increment does not claim
 
-Nothing is bound. `VA-013`–`VA-017` are candidates, every slot records `reviewed: false` and
+Nothing is bound. `VA-013`–`VA-023` are candidates, every production slot records `reviewed: false` and
 `reviewGate: Q10`, and the map says so on its face. There is no pressure director (`R0-C06`) and no
 save surface (`R0-C09`); incident, recovery and debrief are the untouched XP0 treatment.
 **`R0-G02` is Review, not Passed**, and no deployment was raised.
@@ -215,11 +215,12 @@ They were not what went wrong.
 
 ## What comes next
 
-The owner may raise the XP0 deployment. The revised map-first V05A narrative-action proof exists
-outside this production repository and awaits owner inspection; no application code or asset
-changed for it. It replaces the proof's permanent side panel with place-anchored character beats,
-a temporary decision tray and a secondary evidence/work-order overlay. C05A may start only after
-that acceptance. Production R0 remains held by
+The owner may raise the XP0 deployment. The revised map-first V05A narrative-action proof and its
+owner-requested V05B character-identity increment exist outside this production repository and
+await owner inspection; no application code or production asset changed for them. Six candidate
+portrait masters appear inside the existing place-anchored request/response cards while the
+temporary decision tray and secondary evidence/work-order overlay remain unchanged. C05A may start
+only after V05B acceptance. Production R0 remains held by
 [`../../citadel-planning/06-releases/RELEASE-PROGRESSION.md`](../../citadel-planning/06-releases/RELEASE-PROGRESSION.md): XP0 deployment is review evidence, not automatic R0 authorisation.
 
 The owner has now played the deployed I1/I2 experience. The environment and opportunity-cost
@@ -228,8 +229,10 @@ mission, canonical situated requests, actor-and-purpose controls, performed worl
 reaction and residue. `R0-G02` and `R0-G03` remain Review while corrective `R0-I2A` addresses that
 finding.
 
-`R0-N01` is complete and `R0-V05A` is in owner Review. After the owner accepts the proof, the next
-task is engineering `R0-C05A`, followed by owner comprehension gate `R0-G03A`. Do not start `R0-V06`, `R0-C06` or
+`R0-N01` is complete, `R0-V05A` established the map-first hierarchy and owner-requested `R0-V05B`
+adds six candidate identities inside its place cards. V05B is in owner Review. After the owner
+accepts it, the next task is engineering `R0-C05A`, followed by owner comprehension gate `R0-G03A`.
+Do not start `R0-V06`, `R0-C06` or
 `R0-C07`. `Q10` and `Q11` remain open; no deployment was raised.
 
 When R0 is authorised, work follows the ledger's R0-I0–I5 sequence:
