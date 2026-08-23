@@ -91,11 +91,28 @@ test('★ the non-timed control sits beside pause and speed, available to everyo
   const markup = renderToStaticMarkup(createElement(MorningControls, {
     view, onMode() {}, onSpeed() {}, onAdvance() {}, labels: true, onLabels() {},
   }));
-  assert.match(markup, /Advance one cycle/);
+  // ⚠️ R0-C05A CHANGED THE WORDING AND NOT THE RULE. This used to assert the
+  // literal "Advance one cycle" — which § 0.4A names as one of the progression
+  // verbs that made the morning read as an engine report. The label is now
+  // projected from the narrative, so the assertion moved to what it was
+  // actually protecting: the non-timed control EXISTS, sits in the same group
+  // as pause and speed, and is not routed into a settings or accessibility
+  // menu. Asserting the old string would have pinned the defect in place.
+
+  assert.ok(/class="control"/.test(markup), 'the non-timed control is gone');
+  assert.ok(!/Advance one cycle/.test(markup), 'the progression verb came back');
   assert.match(markup, /Pause|Resume/);
   assert.match(markup, /×1/);
   // Not tucked into a settings panel or an accessibility menu.
   assert.match(markup, /role="group" aria-label="Fictional time controls"/);
+});
+
+test('★ and the non-timed control reaches the SAME command as the running clock', () => {
+  // The rule the assertion above used to carry by proxy, now carried directly:
+  // one `ADVANCE_CYCLE` path, so nobody using it plays a thinner game.
+  const source = readFileSync(new URL('../src/features/morning/MorningControls.jsx', import.meta.url), 'utf8');
+  assert.match(source, /onClick=\{onAdvance\}/);
+  assert.match(source, /advanceLabel \?\?/, 'the label is no longer projected');
 });
 
 test('★ a paused morning SAYS it is paused, and its advance control is disabled', () => {

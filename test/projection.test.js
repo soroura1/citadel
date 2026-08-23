@@ -159,9 +159,21 @@ test('⛔ 15 — every operational asset is still CANDIDATE, and the surface say
     assert.equal(slot(id).reviewed, false, `${id} was bound as canonical`);
     assert.equal(slot(id).reviewGate, 'Q10');
   }
+  // ⚠️ R0-C05A MOVED THE STATEMENT; IT DID NOT REMOVE IT.
+  //
+  // This used to require the map itself to say "Candidate operational
+  // depiction · not reviewed · Q10 open", and that was right when the map was
+  // the only surface there was. § 0.4A now forbids build labels, review gates
+  // and candidate status in participant play — so the map must NOT say it, and
+  // the owner surface MUST. Both halves are asserted, because dropping the
+  // second one is how "nothing is bound yet" quietly stops being visible.
   const map = renderToStaticMarkup(createElement(LivingMap, { view: viewAt(1), labels: true, onSelectPlace() {}, hotspots: [] }));
-  assert.match(map, /Candidate operational depiction/);
-  assert.match(map, /Q10/);
+  assert.ok(!/Candidate operational depiction/.test(map), 'a build label is back on the game board');
+  assert.ok(!/Q10/.test(map));
+
+  const owner = readFileSync(new URL('../src/features/narrative/BuildPanel.jsx', import.meta.url), 'utf8');
+  assert.match(owner, /Q10 open — no asset is bound or canonical/);
+  assert.match(owner, /unreviewed/);
 });
 
 // --- projections never leak production language -------------------------------

@@ -30,6 +30,7 @@ import { ORDINARY_CYCLES } from '../sim/clock.js';
 import { EVENTS } from '../sim/events.js';
 import { GROUND, ROUTE_PATHS, ROUTE_STYLE, occupiedPath, pointAlong, widthFor } from './anchors.js';
 import { PROJECTS, PROJECT_CAPACITY, STATE_LABELS, committed, contendedResources } from '../sim/projects.js';
+import { projectNarrative } from './narrative.js';
 
 export const ORDINARY_STATES = Object.freeze(['ordinary-steady', 'ordinary-high-stable', 'ordinary-rising']);
 
@@ -370,6 +371,15 @@ export function project(run, { selectedPlace = PLACES.ICU } = {}) {
     changes: projectChanges(events),
     inspector: projectInspector(world, selectedPlace),
     preparedness: projectPreparedness(world),
+    // ★ R0-C05A — THE SAME PASS CARRIES THE STORY.
+    //
+    // Deliberately here rather than in a second hook. Map/structured parity is
+    // a fact only because both representations render ONE object; a narrative
+    // fetched separately would be a second source, and the two would drift the
+    // moment one surface forgot to refresh. § 0.4B.6 requires visual and
+    // structured modes to consume the same narrative projection, and this is
+    // what makes that structural rather than a promise.
+    narrative: projectNarrative(world, events),
     // Residue is what the world is still carrying — including work that
     // stopped being done because something else was chosen.
     residue: world.residue.map((item) => ({ ...item })),

@@ -242,3 +242,247 @@ h1,h2,p { margin-block-start:0; } h1,h2,.brand b { font-family:"Alegreya Sans",s
 .work-residue li { display: grid; gap: 2px; }
 .work-residue b { font-size: 11px; }
 .work-residue span { font-size: 9px; color: #919a92; }
+
+/* ⚠️ R0-C05A — THE R0 INSPECTOR IS NOT XP0'S INSPECTOR, AND STOPPED PRETENDING.
+ *
+ * `.inspector-card` is a four-column grid written for XP0's `PlaceInspector`:
+ * a title, a paragraph, a two-item definition list and a button. R0's
+ * `MorningInspector` has entirely different children — units, active work, a
+ * route list and sourced evidence — so they were being auto-placed into columns
+ * sized for something else, and `stores → icu · clear · owner
+ * storage-and-distribution` wrapped one word per line inside a `1fr` cell.
+ *
+ * It has looked like this since `R0-I1`, past two green suites, because the
+ * DOM was right the whole time. Found by looking at it. Fixed by giving the R0
+ * component its own layout rather than by widening a column and hoping.
+ */
+.inspector-card.morning-inspector {
+  display: grid; grid-template-columns: minmax(200px, 240px) repeat(auto-fit, minmax(240px, 1fr));
+  align-items: start; gap: 14px 20px;
+}
+.inspector-card.morning-inspector .inspector-title { align-self: center; }
+.inspector-card.morning-inspector .inspector-units,
+.inspector-card.morning-inspector .inspector-work,
+.inspector-card.morning-inspector .inspector-evidence { margin-bottom: 0; }
+.inspector-card.morning-inspector .inspector-routes > div { grid-template-columns: 92px minmax(0, 1fr); }
+@media (max-width: 1050px) {
+  /* The four-column override above hides the definition list; the R0 route
+     list is not that list and must survive, because it is the only place a
+     route's owner and condition are stated. */
+  .inspector-card.morning-inspector { grid-template-columns: 1fr; }
+  .inspector-card.morning-inspector dl { display: grid; }
+}
+
+/* ==========================================================================
+ * R0-C05A — THE NARRATIVE SURFACE
+ * ==========================================================================
+ * The owner rejected a permanent dramatic side panel (visual bible § 21.5), so
+ * nothing below creates a column beside the world. The mission is a ribbon over
+ * the map, the request is anchored to the place the person is standing in, the
+ * commitment tray appears for a decision and retracts after it, and the record
+ * is a drawer over a morning that has not moved.
+ *
+ * ⛔ EVERY CLASS HERE IS PREFIXED `nar-`. `R0-C05` shipped a fault that no test
+ * could catch — `.prep-card` already belonged to XP0's three-column card, so
+ * reusing the name auto-placed the new content into columns meant for something
+ * else, with a correct DOM and shredded pixels. A class collision is two valid
+ * rules and is indistinguishable from intent, so the answer is a naming rule:
+ * a feature owns its prefix and never borrows one.
+ */
+
+/* --- the stage: the card is a SIBLING of the map, deliberately ------------- */
+.nar-stage { position: relative; padding: 0 14px; }
+
+/* --- 1. the mission ribbon, compact and persistent ------------------------- */
+.nar-mission {
+  display: grid; grid-template-columns: auto 1fr auto; align-items: baseline; gap: 6px 14px;
+  margin: 0 14px 10px; padding: 9px 14px;
+  background: linear-gradient(90deg, rgba(23, 32, 28, 0.97), rgba(23, 32, 28, 0.86));
+  border: 1px solid var(--line); border-inline-start: 3px solid var(--bright);
+}
+.nar-mission-when { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--bright); }
+.nar-mission strong { font-family: "Alegreya", Georgia, serif; font-size: 16px; line-height: 1.25; font-weight: 500; }
+.nar-mission small { font-size: 10px; color: var(--muted); text-align: end; }
+
+/* --- 2. the place-anchored request, and then the response ------------------ */
+.nar-card {
+  position: absolute; z-index: 6;
+  width: min(330px, 32vw);
+  transform: translate(18px, -44%);
+  display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; gap: 10px;
+  padding: 9px 11px 10px 9px;
+  background: rgba(12, 18, 14, 0.97); border: 1px solid rgba(240, 182, 110, 0.52);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.42);
+  font-size: 10px; line-height: 1.4;
+}
+/* ⚠️ The card flips away from the edge it would otherwise leave. `left`/`top`
+ * are the projection's ground anchor; these four rules keep the whole card
+ * inside the picture rather than half of it. */
+.nar-card-flip { transform: translate(calc(-100% - 18px), -44%); }
+.nar-card-low { transform: translate(18px, -104%); }
+.nar-card-flip.nar-card-low { transform: translate(calc(-100% - 18px), -104%); }
+.nar-card-many { width: min(360px, 36vw); }
+.nar-card-request { border-color: rgba(240, 182, 110, 0.52); }
+/* The response is a different border, and it is also a different sentence in a
+ * different tense — § 11: no state is expressed only by colour. */
+.nar-card-response { border-color: rgba(99, 166, 158, 0.65); }
+.nar-card-copy { min-width: 0; }
+.nar-card-copy b { display: block; font-size: 11px; }
+.nar-card-copy span { display: block; font-size: 8px; color: #939d94; margin-bottom: 4px; }
+.nar-card-copy p { margin: 0; color: #e0e5df; }
+/* Four people asking at once: each keeps a name AND an office, so no reader
+ * has to recognise a face to know who owns what. */
+.nar-card-who { list-style: none; margin: 0 0 6px; padding: 0; display: grid; gap: 2px; }
+.nar-card-who li { display: grid; grid-template-columns: auto 1fr; gap: 6px; align-items: baseline; }
+.nar-card-who b { font-size: 10px; }
+.nar-card-who span { margin: 0; font-size: 8px; color: #939d94; }
+
+.nar-portraits { display: grid; gap: 3px; }
+.nar-portraits-many { grid-template-columns: repeat(2, auto); }
+
+.nar-portrait {
+  position: relative; display: block; overflow: hidden; flex: none;
+  border: 1px solid rgba(240, 182, 110, 0.58); border-radius: 3px;
+  background: linear-gradient(145deg, #25251f, #111512);
+}
+.nar-portrait img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 20%; }
+.nar-portrait em {
+  display: none; place-items: center; width: 100%; height: 100%;
+  font-family: "Alegreya", Georgia, serif; font-style: normal; font-size: 18px; color: var(--bright);
+}
+.nar-portrait-single { }
+.nar-portrait-stack em { font-size: 13px; }
+/* ⛔ RECOVERY, NOT THE DESIGNED TREATMENT (§ 22.2). If the image never
+ * arrives, a letter takes its place and every name, office, request and act
+ * beside it is unchanged. Nothing playable depended on the face. */
+.nar-portrait-absent img { display: none; }
+.nar-portrait-absent em { display: grid; }
+
+/* --- 3. the temporary commitment tray -------------------------------------- */
+.nar-tray, .nar-outcome {
+  margin: 12px 14px 0; padding: 14px 16px;
+  background: rgba(14, 21, 17, 0.97); border: 1px solid var(--line);
+}
+.nar-tray { display: grid; grid-template-columns: minmax(240px, 0.9fr) minmax(360px, 1.5fr); gap: 16px; }
+.nar-tray-intro { display: flex; flex-direction: column; justify-content: center; }
+.nar-eyebrow { margin: 0 0 5px; font-size: 8px; font-weight: 700; letter-spacing: 0.11em; text-transform: uppercase; color: var(--bright); }
+.nar-tray-intro h2 { margin: 0 0 5px; font-family: "Alegreya", Georgia, serif; font-size: 21px; line-height: 1.05; font-weight: 500; }
+.nar-purpose { margin: 0; font-size: 10px; line-height: 1.45; color: #cdd4cd; }
+.nar-tray-act { display: grid; grid-template-columns: 1fr auto; gap: 9px 14px; align-items: center; }
+.nar-act {
+  min-height: 46px; padding: 8px 14px; display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid rgba(240, 182, 110, 0.66); background: rgba(207, 143, 75, 0.15);
+  color: #fff; font: inherit; font-weight: 700; text-align: start; cursor: pointer;
+}
+.nar-secondary {
+  min-height: 46px; padding: 8px 12px; display: inline-flex; align-items: center; gap: 7px;
+  border: 1px solid var(--line); background: transparent; color: #cdd3cd; font: inherit; cursor: pointer;
+}
+.nar-act:focus-visible, .nar-secondary:focus-visible, .nar-close:focus-visible { outline: 2px solid var(--bright); outline-offset: 2px; }
+.nar-preview { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 0; }
+.nar-preview > div { padding: 7px 9px; background: #0e1511; border: 1px solid rgba(233, 223, 202, 0.08); }
+.nar-preview dt { font-size: 7px; letter-spacing: 0.07em; text-transform: uppercase; color: #879188; }
+.nar-preview dd { margin: 3px 0 0; font-size: 9px; line-height: 1.4; }
+
+.nar-outcome { display: grid; grid-template-columns: 1fr 1fr auto auto; align-items: center; gap: 10px 14px; font-size: 10px; }
+.nar-outcome b { display: block; font-size: 8px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--bright); margin-bottom: 3px; }
+.nar-outcome-world { color: #dfe4de; }
+.nar-outcome-return { color: var(--amber); }
+.nar-closed { grid-column: 1 / -1; margin: 0; font-size: 10px; color: var(--muted); }
+
+/* --- 4. the secondary record, over an unmoved world ------------------------ */
+.nar-backdrop { position: fixed; inset: 0; z-index: 40; background: rgba(6, 10, 8, 0.62); }
+.nar-drawer {
+  position: fixed; inset-block: 0; inset-inline-end: 0; z-index: 41; width: min(460px, 100vw);
+  overflow-y: auto; padding: 18px; background: #141d18; border-inline-start: 1px solid var(--line);
+}
+.nar-drawer-head { display: grid; grid-template-columns: 1fr auto; gap: 12px; margin-bottom: 16px; }
+.nar-drawer-head h2 { margin: 0 0 4px; font-family: "Alegreya", Georgia, serif; font-size: 22px; font-weight: 500; }
+.nar-drawer-note { margin: 0; font-size: 9px; color: var(--muted); }
+.nar-close { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid var(--line); background: transparent; color: var(--stone); cursor: pointer; }
+.nar-drawer-section { margin-bottom: 18px; }
+.nar-drawer-section h3 { margin: 0 0 8px; font-size: 13px; color: var(--bright); }
+.nar-request-list, .nar-work-order, .nar-evidence, .nar-residue-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.nar-request-list li, .nar-work-order li { padding: 10px; background: #101713; border: 1px solid rgba(233, 223, 202, 0.08); }
+.nar-request-list b, .nar-work-order b { font-size: 11px; }
+.nar-request-list em { display: block; font-size: 9px; font-style: normal; color: var(--muted); margin: 2px 0 6px; }
+.nar-request-list p { margin: 0 0 8px; font-size: 10px; line-height: 1.45; color: #dde3dd; }
+.nar-request-list dl, .nar-work-order dl { margin: 0; display: grid; gap: 4px; }
+.nar-request-list dl > div, .nar-work-order dl > div { display: grid; grid-template-columns: 74px 1fr; gap: 8px; }
+.nar-request-list dt, .nar-work-order dt { font-size: 8px; letter-spacing: 0.06em; text-transform: uppercase; color: #879188; }
+.nar-request-list dd, .nar-work-order dd { margin: 0; font-size: 9px; line-height: 1.45; color: #c6ccc6; }
+.nar-work-order li > span { font-size: 10px; color: var(--amber); }
+.nar-evidence li { display: grid; gap: 3px; font-size: 10px; }
+.nar-evidence small { font-size: 8px; color: var(--muted); }
+.nar-residue-list li { display: grid; gap: 2px; }
+.nar-residue-list b { font-size: 11px; color: var(--amber); }
+.nar-residue-list span { font-size: 9px; color: var(--muted); }
+.nar-drawer-safety { margin: 0; padding-top: 12px; border-top: 1px solid var(--line); font-size: 9px; color: var(--muted); }
+
+/* --- the structured reading of the same beat ------------------------------- */
+.nar-structured { margin-top: 12px; padding: 14px; background: var(--panel); border: 1px solid var(--line); }
+.nar-structured h2 { margin: 0 0 5px; font-family: "Alegreya", Georgia, serif; font-size: 20px; font-weight: 500; }
+.nar-structured-speaker { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; margin-top: 12px; }
+.nar-structured-change { margin: 12px 0 0; display: grid; gap: 6px; }
+.nar-structured-change > div { display: grid; grid-template-columns: 140px 1fr; gap: 10px; }
+.nar-structured-change dt { font-size: 8px; letter-spacing: 0.06em; text-transform: uppercase; color: #879188; }
+.nar-structured-change dd { margin: 0; font-size: 10px; line-height: 1.45; color: #c6ccc6; }
+
+/* --- the situated request inside the preparedness card --------------------- */
+.work-request { margin: 0 0 10px; padding: 8px 10px; background: #101713; border-inline-start: 2px solid rgba(240, 182, 110, 0.5); }
+.work-request b { font-size: 11px; }
+.work-request span { display: block; font-size: 8px; color: var(--muted); margin-bottom: 4px; }
+.work-request p { margin: 0; font-size: 10px; line-height: 1.45; color: #dde3dd; }
+.work-preview { margin: 0 0 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.work-preview > div { padding: 6px 8px; background: #0e1511; border: 1px solid rgba(233, 223, 202, 0.08); }
+.work-preview dt { font-size: 7px; letter-spacing: 0.07em; text-transform: uppercase; color: #879188; }
+.work-preview dd { margin: 3px 0 0; font-size: 9px; line-height: 1.4; color: #c6ccc6; }
+
+/* --- ⛔ the owner surface. `?build=1`, and nothing else, reaches it. -------- */
+.nar-build { margin: 14px; padding: 14px; background: #1b1712; border: 1px dashed var(--amber); font-size: 10px; }
+.nar-build h2 { margin: 0 0 4px; font-size: 15px; color: var(--amber); }
+.nar-build p { margin: 0 0 10px; color: var(--muted); }
+.nar-build dl { margin: 0 0 10px; display: grid; gap: 4px; }
+.nar-build dl > div { display: grid; grid-template-columns: 120px 1fr; gap: 10px; }
+.nar-build dt { font-size: 8px; letter-spacing: 0.06em; text-transform: uppercase; color: #879188; }
+.nar-build dd { margin: 0; }
+.nar-build ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; color: var(--muted); }
+
+/* ==========================================================================
+ * NARROW — the tray stacks, and the card leaves the map's coordinate space.
+ * ==========================================================================
+ * ⚠️ THIS IS THE COLLISION V05B FOUND AT EXACTLY 390×844. An absolutely
+ * positioned request card and a bottom tray will overlap on a short viewport
+ * whatever the anchor, because neither knows the other exists. Below 620px the
+ * map is already hidden by the rule above, so the card stops being positioned
+ * at all and simply flows — which cannot collide with anything.
+ */
+@media (max-width: 620px) {
+  .nar-card {
+    position: static; width: auto; transform: none;
+    margin-top: 12px; grid-template-columns: auto minmax(0, 1fr);
+  }
+  .nar-card-flip, .nar-card-low, .nar-card-flip.nar-card-low { transform: none; }
+  .nar-mission { grid-template-columns: 1fr; gap: 3px; margin-inline: 8px; }
+  .nar-mission small { text-align: start; }
+  .nar-stage { padding: 0 8px; }
+  .nar-tray { grid-template-columns: 1fr; gap: 12px; margin-inline: 8px; }
+  .nar-tray-act { grid-template-columns: 1fr; }
+  .nar-preview, .nar-structured-change > div, .work-preview { grid-template-columns: 1fr; }
+  .nar-outcome { grid-template-columns: 1fr; margin-inline: 8px; }
+  .nar-drawer { width: 100vw; }
+}
+
+/* ==========================================================================
+ * ⛔ REDUCED MOTION — HONESTLY, THIS SURFACE HAS NOTHING TO SUPPRESS.
+ * ==========================================================================
+ * The narrative components declare no transition and no animation, so the rule
+ * below suppresses nothing that exists and the mode passes VACUOUSLY. That is
+ * recorded rather than dressed up: a check that passes because there is nothing
+ * to check certifies nothing, and this repository has written that sentence
+ * before. If a future increment animates the tray's arrival, the suppression
+ * has to be written then — this rule will not have covered it in advance.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .nar-card, .nar-tray, .nar-outcome, .nar-drawer { transition: none; animation: none; }
+}

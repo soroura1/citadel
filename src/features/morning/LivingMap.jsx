@@ -71,7 +71,11 @@ export function LivingMap({ view, labels = true, onSelectPlace, hotspots = [] })
         );
       })}
 
-      <p className="map-candidate-note">Candidate operational depiction · not reviewed · <code>Q10</code> open</p>
+      {/* ⛔ R0-C05A — the candidate/`Q10` note used to sit here, on the map a
+          participant plays on. It was true and it was production information;
+          § 0.4A moves build and review status to the owner surface (`?build=1`),
+          where `Q10`'s openness is stated in full rather than abbreviated onto
+          a game board. It was moved, not dropped: nothing is bound yet. */}
     </div>
   );
 }

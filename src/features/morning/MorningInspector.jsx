@@ -10,7 +10,7 @@ import { MagnifyingGlass } from '@phosphor-icons/react';
  */
 export function MorningInspector({ inspector, label }) {
   return (
-    <section className="inspector-card" aria-label={`Inspection of ${label}`}>
+    <section className="inspector-card morning-inspector" aria-label={`Inspection of ${label}`}>
       <div className="inspector-title">
         <MagnifyingGlass />
         <span><small>Inspection</small><b>{label}</b></span>
