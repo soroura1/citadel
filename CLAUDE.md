@@ -1,6 +1,6 @@
 # `citadel` — status
 
-**Last updated:** 2026-08-24 · **C05A DEPLOYED; `R0-V05C` LIVE AUDIT COMPLETE AND PROOF IN PROGRESS.**
+**Last updated:** 2026-08-24 · **C05A DEPLOYED; `R0-V05C-A` SELECTED; `R0-C05B-A` READY.**
 **Topology:** [`../CLAUDE.md`](../CLAUDE.md) — `citadel.endura-assess.com` → `172.17.0.1:8087`,
 `TARGET=/opt/citadel/citadel`.
 
@@ -300,17 +300,14 @@ act may fall below the viewport, the same command may appear in multiple regions
 project cards overwhelm the choice, and the human response may return above the player's scroll
 position.
 
-The single release ledger therefore opens `R0-I2B`: `R0-N02` is complete and `R0-V05C` is In
-progress after a fresh live-flow audit. That walk proved *Let the work continue* advances one work
-cycle—in the captured conflicting pair Rami starts while Yasin waits for the shared passage—but the
-CTA gives no destination, actor or consequence before commitment. It also reconfirmed duplicate
-progression controls, simultaneous capacity-recognition/project-selection layers and the expanded
-specification wall. V05C now proves a ten-step notice → move → performance → human-return rhythm,
-specific CTAs, recognition before choice, compact comparison and a computed contention preview.
-`R0-C05B` remains held until the owner accepts that reversible proof. C05B will derive one action
-owner, preserve four real strategic alternatives, progressively disclose technical detail and
-return the response into view; it may not change simulation rules or canon.
-`R0-H05B` then supplies the unbriefed owner walk. Do not start `R0-V06`, `R0-C06` or `R0-C07`.
+The single release ledger now divides `R0-I2B` into three inspectable slices. The owner selected
+`R0-V05C-A`, a Living Route opening with Bishr as the prominent local Guide of the Ways, one
+Gate–Emergency route, one objective and one truthful primary act. The composite target is
+reference-only; runtime must use the existing map, candidate portrait, icon library and live
+semantic UI. **`R0-C05B-A` is the only unblocked task.** It implements entry → route act → visible
+world response → compact Bishr return, then stops for `R0-H05B-A`. Bishr orients but does not become
+an omniscient narrator or the League mentor. Do not start V/C05B-B, V/C05B-C, `R0-V06`, `R0-C06`
+or `R0-C07`.
 `R0-G02`, `R0-G03` and `R0-G03A` remain Review; `Q10` and `Q11` remain open.
 
 When R0 is authorised, work follows the ledger's R0-I0–I5 sequence:
