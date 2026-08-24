@@ -1,6 +1,6 @@
 # `citadel` — status
 
-**Last updated:** 2026-08-23 · **C05A DEPLOYED; OWNER AUDIT OPENED I2B; `R0-V05C` NEXT.**
+**Last updated:** 2026-08-24 · **C05A DEPLOYED; `R0-V05C` LIVE AUDIT COMPLETE AND PROOF IN PROGRESS.**
 **Topology:** [`../CLAUDE.md`](../CLAUDE.md) — `citadel.endura-assess.com` → `172.17.0.1:8087`,
 `TARGET=/opt/citadel/citadel`.
 
@@ -300,10 +300,16 @@ act may fall below the viewport, the same command may appear in multiple regions
 project cards overwhelm the choice, and the human response may return above the player's scroll
 position.
 
-The single release ledger therefore opens `R0-I2B`: `R0-N02` is complete, `R0-V05C` is the first
-unblocked task, and `R0-C05B` remains held until the owner accepts that reversible proof. C05B will
-derive one action owner, preserve four real strategic alternatives, progressively disclose
-technical detail and return the response into view; it may not change simulation rules or canon.
+The single release ledger therefore opens `R0-I2B`: `R0-N02` is complete and `R0-V05C` is In
+progress after a fresh live-flow audit. That walk proved *Let the work continue* advances one work
+cycle—in the captured conflicting pair Rami starts while Yasin waits for the shared passage—but the
+CTA gives no destination, actor or consequence before commitment. It also reconfirmed duplicate
+progression controls, simultaneous capacity-recognition/project-selection layers and the expanded
+specification wall. V05C now proves a ten-step notice → move → performance → human-return rhythm,
+specific CTAs, recognition before choice, compact comparison and a computed contention preview.
+`R0-C05B` remains held until the owner accepts that reversible proof. C05B will derive one action
+owner, preserve four real strategic alternatives, progressively disclose technical detail and
+return the response into view; it may not change simulation rules or canon.
 `R0-H05B` then supplies the unbriefed owner walk. Do not start `R0-V06`, `R0-C06` or `R0-C07`.
 `R0-G02`, `R0-G03` and `R0-G03A` remain Review; `Q10` and `Q11` remain open.
 
