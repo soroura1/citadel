@@ -17,7 +17,7 @@ import { ROUTE_STYLE } from '../../projections/anchors.js';
  * its condition and its owner in words. Duplicating it here would make a screen
  * reader read the map twice.
  */
-export function RouteLayer({ routes, nodes }) {
+export function RouteLayer({ routes, nodes, objective = null }) {
   /* ⚠️ THE VIEWBOX IS 16:9, AND BOTH EARLIER ATTEMPTS AT THIS WERE WRONG.
    *
    * A `0 0 100 100` box with `preserveAspectRatio="none"` squashes every circle
@@ -30,8 +30,28 @@ export function RouteLayer({ routes, nodes }) {
    * scale with the map, and the widths below are the accepted V03 values
    * expressed in map units rather than in device pixels. */
   const X = 160, Y = 90;
+  const point = ([x, y]) => `${x * X},${y * Y}`;
   return (
     <svg className="route-layer" viewBox={`0 0 ${X} ${Y}`} preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      {/* ★ R0-C05B-A — THE OBJECTIVE ROUTE, UNDER EVERYTHING ELSE.
+          Drawn first so the occupied head, the supply lines and the origin
+          nodes all stay legible on top of it: the highlight says WHICH corridor
+          the morning's first task concerns, and the existing grammar goes on
+          saying what is happening along it. Nothing about the route's state is
+          carried by this stroke, which is why it can be switched off with
+          guidance without removing any operational fact. */}
+      {objective && (
+        <>
+          <polyline className="route-objective-glow" points={objective.path.map(point).join(' ')}
+                    fill="none" strokeLinecap="round" strokeLinejoin="round" />
+          <polyline className="route-objective" points={objective.path.map(point).join(' ')}
+                    fill="none" strokeLinecap="round" strokeLinejoin="round" />
+          {[objective.fromAnchor, objective.toAnchor].map((end, index) => (
+            <circle key={index} className="route-objective-end"
+                    cx={end.x * X} cy={end.y * Y} r="1.5" fill="none" />
+          ))}
+        </>
+      )}
       {routes.map((route) => {
         const style = route.style ?? ROUTE_STYLE.service;
         return (

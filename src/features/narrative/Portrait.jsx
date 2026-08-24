@@ -25,7 +25,13 @@ import { portraitSlot } from '../../projections/slots.js';
 export function Portrait({ slot: id, size = 'single', name }) {
   const asset = portraitSlot(id);
   if (!asset) return null;
-  const [w, h] = asset.render[size];
+  /* ⚠️ A SIZE THE SLOT NEVER DECLARED IS NOT GUESSED. R0-C05B-A added an
+     `arrival` size to the Guide of the Ways alone; asking any other slot for it
+     renders no image rather than inventing a dimension, and — as everywhere in
+     this component — the name, office and line beside it are untouched. */
+  const declared = asset.render[size];
+  if (!declared) return null;
+  const [w, h] = declared;
   return (
     <span className={`nar-portrait nar-portrait-${size}`} style={{ width: `${w}px`, height: `${h}px` }}>
       <img src={asset.file}

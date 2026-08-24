@@ -486,3 +486,363 @@ h1,h2,p { margin-block-start:0; } h1,h2,.brand b { font-family:"Alegreya Sans",s
 @media (prefers-reduced-motion: reduce) {
   .nar-card, .nar-tray, .nar-outcome, .nar-drawer { transition: none; animation: none; }
 }
+
+/* ==========================================================================
+ * R0-C05B-A — THE BISHR-GUIDED ARRIVAL
+ * ==========================================================================
+ * ⛔ EVERY CLASS HERE IS PREFIXED `guide-`, for the reason R0-C05 paid for:
+ * `.prep-card` already belonged to XP0's three-column card, and reusing the
+ * name auto-placed new content into columns meant for something else with a
+ * correct DOM and shredded pixels. A collision is two valid rules and cannot be
+ * distinguished from intent, so a feature owns its prefix and never borrows.
+ *
+ * ★ AND THE ARRIVAL IS AN OVERLAY ON THE WORLD. It sits inside the map's
+ * coordinate space, over the route it is talking about, and it is gone the
+ * moment that route has been walked.
+ */
+
+/* --- the height budget, which is the whole audit finding ------------------
+ * The deployed build put the first act at y=1083 on a 900px viewport: the map
+ * alone is 16:9 across the full shell, which is 794px tall at 1440px wide,
+ * under 262px of chrome. Constraining the map's WIDTH while it carries the
+ * arrival keeps the aspect invariant intact — `.map-stage.living-map` is still
+ * 16/9, and R0-I1's test still reads that rule — and brings the whole
+ * composition, act included, inside the first viewport.
+ */
+/* ⛔ AND THE CAP GOES ON THE STAGE, NOT ON THE MAP.
+ * The first attempt narrowed `.living-map` alone. The map got shorter and the
+ * act came into view — and the place-anchored card, which positions itself at a
+ * fraction of the STAGE, went on using the old width. Bishr's card said "Gate
+ * of Names" and stood roughly 180px to the left of the Gate: correct markup,
+ * wrong place, and the same failure R0-C05A found when the card put a man at
+ * the Gate inside the ICU. Everything that shares the world's coordinate space
+ * has to share one box, so the box is what gets capped. */
+.guide-stage {
+  /* 358px is measured, not guessed: 72 top bar + 60 status + 40 mission + 66
+   * controls + the stage's own margins, plus the 76px return bar that has to
+   * land inside the viewport WITH the map above it. Get this wrong by 20px and
+   * the world's answer is cut off by the fold, which is the audit finding this
+   * slice exists to close. */
+  inline-size: min(100%, calc((100vh - 358px) * 16 / 9 + 28px));
+  margin-inline: auto;
+}
+
+/* ★ THE OVERLAY BOX IS THE MAP'S BOX, to the pixel.
+ * `.nar-stage` carries 14px of inline padding, so a child positioned at 8% of
+ * the STAGE is not at 8% of the MAP. Insetting this container by exactly that
+ * padding makes the two boxes identical, which is what lets the route endpoints
+ * sit on the polyline instead of near it. */
+.guide-overlay { position: absolute; inset: 0 14px; pointer-events: none; z-index: 4; }
+.guide-overlay > * { pointer-events: auto; }
+
+/* --- the four-part grammar, along the top of the world -------------------- */
+.guide-loop {
+  position: absolute; inset-block-start: 0; inset-inline: 0; z-index: 3;
+  display: flex; justify-content: center; gap: clamp(4px, 1.6vw, 26px);
+  margin: 0; padding: 11px 14px 16px; list-style: none;
+  background: linear-gradient(180deg, rgba(7, 11, 9, 0.95) 40%, rgba(7, 11, 9, 0));
+}
+.guide-loop-part {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: #a3ada5;
+}
+.guide-loop-part svg { width: 16px; height: 16px; }
+.guide-loop-part b { font-weight: 600; }
+/* The gloss is for the structured reading and for a wide screen; the strip over
+   the map stays four words, because the map is the thing being looked at. */
+.guide-loop-part em { display: none; }
+.guide-loop-part + .guide-loop-part::before {
+  content: "→"; margin-inline-end: clamp(4px, 1.6vw, 26px); color: #6d766f; font-style: normal;
+}
+/* ⚠️ STATE IS NEVER COLOUR ALONE (§ 18.4). `current` carries weight, a filled
+   icon and an underline; `done` carries a check mark in the content layer. */
+.guide-loop-current { color: var(--bright); }
+.guide-loop-current b { border-block-end: 2px solid var(--bright); padding-block-end: 3px; }
+.guide-loop-done { color: #9fa9a1; }
+.guide-loop-done b::after { content: " ✓"; }
+
+/* --- this morning's four steps, at the foot of the world ------------------ */
+.guide-steps {
+  position: absolute; inset-block-end: 12px; left: 14px; z-index: 3;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+  margin: 0; padding: 0; list-style: none; max-inline-size: 34%;
+}
+.guide-step {
+  display: flex; align-items: center; gap: 7px;
+  padding: 8px 11px; font-size: 10px; line-height: 1.25;
+  background: rgba(10, 15, 12, 0.9); border: 1px solid var(--line); color: #8e988f;
+}
+.guide-step-mark {
+  display: grid; place-items: center; inline-size: 18px; block-size: 18px;
+  border: 1px solid currentColor; border-radius: 50%; font-size: 9px; flex: none;
+}
+.guide-step-current { color: var(--stone); border-color: rgba(240, 182, 110, 0.55); }
+.guide-step-current .guide-step-mark { color: var(--bright); }
+.guide-step-done { color: #6f7a72; }
+.guide-step-done .guide-step-mark::after { content: ""; }
+
+/* --- the arrival itself: the figure, then the card ------------------------ */
+/* ⚠️ THE GUIDE STANDS ON THE FAR SIDE OF THE ROUTE HE IS POINTING AT.
+ * The selected target puts Bishr on the left, but this map's Gate-ED route runs
+ * along the bottom LEFT (`anchors.js`: gate 0.08,0.58 -> ed 0.34,0.66). The
+ * first build of this panel sat exactly on top of it, and the screenshot showed
+ * an arrival that named a route the participant could not see -- which fails
+ * § 23.5's route salience and question 1 of § 23.1. § 23.4 asks for the map and
+ * highlighted route to stay readable "behind/beside him", so he moved to the
+ * side that leaves the whole route in the picture. Found by looking, not by any
+ * assertion over the DOM. */
+/* ⚠️ PHYSICAL `right`, NOT `inset-inline-end` — and deliberately.
+ * Everything anchored to the MAP is anchored to a painting that does not
+ * mirror: the route endpoints and the place card already position with `left`
+ * for the same reason. Under `dir="rtl"` the logical property flipped this
+ * panel back onto the Gate-ED route it was moved off in the first place. Text
+ * inside it still mirrors; only its position against the world is fixed. */
+.guide-arrival {
+  position: absolute; inset-block-end: 0; right: 0; z-index: 4;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end; gap: 0;
+  max-inline-size: min(640px, 62%); padding: 0 14px 14px 0;
+}
+/* The card is authored first in the DOM order a reader needs -- who is
+ * speaking, then what they want -- and placed second visually so the figure
+ * stands at the map's edge. `order` rather than a reordered source, because the
+ * reading order is the one a screen reader and a keyboard follow. */
+.guide-card { order: 1; position: relative; z-index: 1; }
+.guide-figure { order: 2; z-index: 0; margin-inline: 10px 4px; }
+/* ★ A FIGURE, NOT A FRAMED PICTURE. The compact place card wants a bordered
+ * tile so it reads as an identity beside a line of speech; the arrival wants a
+ * person standing in the world. Same slot, same derivative, different treatment
+ * -- the frame is removed and the lower edge is faded into the map. */
+.guide-figure { align-self: end; }
+.guide-figure .nar-portrait {
+  display: block; border: 0; border-radius: 0; background: none;
+  filter: drop-shadow(0 16px 30px rgba(0, 0, 0, 0.75));
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 9%, #000 88%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0, #000 9%, #000 88%, transparent 100%);
+}
+.guide-card {
+  background: rgba(14, 20, 16, 0.95);
+  border: 1px solid rgba(240, 182, 110, 0.34);
+  border-inline-start: 3px solid var(--bright);
+  padding: 14px 16px;
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.5);
+}
+.guide-who { display: grid; gap: 1px; margin: 0 0 9px; }
+.guide-who b { font-family: "Alegreya Sans", sans-serif; font-size: 21px; line-height: 1; color: var(--stone); }
+.guide-who span { font-size: 10px; letter-spacing: 0.11em; text-transform: uppercase; color: var(--bright); }
+.guide-intro { margin: 0 0 8px; font-size: 12px; line-height: 1.45; color: #d9dfd8; }
+.guide-objective {
+  display: flex; align-items: center; gap: 10px; margin: 11px 0 10px;
+  padding-block-start: 10px; border-block-start: 1px solid var(--line);
+}
+.guide-objective svg { width: 22px; height: 22px; color: var(--bright); flex: none; }
+.guide-objective span { display: grid; gap: 2px; }
+.guide-objective small { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: #8e988f; }
+.guide-objective b { font-family: "Alegreya Sans", sans-serif; font-size: 16px; line-height: 1.15; color: var(--stone); font-weight: 500; }
+
+/* ★ ONE DOMINANT ACT. It is the only filled control on the screen. */
+.guide-act {
+  inline-size: 100%; min-block-size: 46px;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  border: 0; background: var(--bright); color: #16130c;
+  font-size: 12.5px; font-weight: 600; cursor: pointer; padding: 0 12px; text-align: center;
+  letter-spacing: -0.005em; text-wrap: balance;
+}
+.guide-act:hover { background: #f6c98a; }
+.guide-preview {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 12px; margin: 10px 0 0;
+}
+.guide-preview dt { font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--bright); margin-block-end: 2px; }
+.guide-preview dd { margin: 0; font-size: 10px; line-height: 1.35; color: #c3cac3; }
+.guide-secondary { display: flex; flex-wrap: wrap; gap: 8px; margin-block-start: 11px; }
+.guide-quiet {
+  min-block-size: 34px; display: flex; align-items: center; gap: 7px;
+  padding: 0 11px; border: 1px solid var(--line); background: transparent;
+  color: #b6bdb6; font-size: 11px; cursor: pointer;
+}
+.guide-quiet svg { width: 14px; height: 14px; }
+.guide-toggle[aria-pressed="true"] { color: var(--bright); border-color: rgba(240, 182, 110, 0.45); }
+
+/* The way back, when the card that held the toggle is not on screen. */
+.guide-restore { display: flex; justify-content: flex-end; margin: 0 0 8px; }
+
+/* --- the route's own endpoints, named where the line actually ends -------- */
+.guide-endpoint {
+  position: absolute; z-index: 2; transform: translate(-50%, -50%);
+  display: flex; align-items: center; gap: 5px; white-space: nowrap;
+  padding: 4px 8px; font-size: 10px; font-weight: 600; color: var(--stone);
+  background: rgba(10, 15, 12, 0.88); border: 1px solid rgba(240, 182, 110, 0.5);
+  pointer-events: none;
+}
+.guide-endpoint svg { width: 12px; height: 12px; color: var(--bright); }
+/* The origin sits ABOVE its own point, so the label never covers the line it
+ * is naming -- the route leaves the Gate travelling east. */
+.guide-endpoint-from { transform: translate(-50%, -145%); }
+/* The far terminus is a mark on the route, not a second name for a place the
+ * map already labels. See `RouteEndpoints`. */
+.guide-endpoint-to {
+  inline-size: 15px; block-size: 15px; padding: 0; border-radius: 50%;
+  background: rgba(255, 215, 154, 0.22); border-color: #ffd79a;
+  box-shadow: 0 0 0 4px rgba(255, 190, 105, 0.16);
+}
+
+/* --- the lit route ------------------------------------------------------- */
+.route-objective { stroke: #ffd79a; stroke-width: 1.1; }
+.route-objective-glow { stroke: rgba(255, 190, 105, 0.34); stroke-width: 4.2; }
+.route-objective-end { stroke: #ffd79a; stroke-width: 0.55; }
+
+/* --- the retraction: the world's answer, where the button was ------------- */
+.guide-return { outline: none; }
+.guide-return .nar-outcome {
+  border-color: rgba(240, 182, 110, 0.45);
+  box-shadow: 0 0 0 1px rgba(240, 182, 110, 0.12);
+}
+.guide-return:focus-visible .nar-outcome { outline: 3px solid #f0c77c; outline-offset: 3px; }
+
+
+/* --- the return: the card steps off the route it is talking about ---------
+ * The compact card anchors at the Gate (0.08, 0.58) and, at the guided map
+ * height, lands squarely ON the lit Gate-ED polyline — so the retraction
+ * arrived and the route the participant had just walked disappeared underneath
+ * it. § 23.3 requires the route to perform visibly AND Bishr to speak; the card
+ * therefore drops below the line instead of sitting on it. Found by looking at
+ * the return state, which the static target cannot show at all.
+ */
+.guide-stage .nar-card { transform: translate(6px, 64px); }
+.guide-stage .nar-card-flip { transform: translate(calc(-100% - 6px), 64px); }
+.guide-stage .nar-card-low { transform: translate(18px, -104%); }
+.guide-stage .nar-card-flip.nar-card-low { transform: translate(calc(-100% - 18px), -104%); }
+
+/* The steps move to the vacated guide corner once the arrival retracts, so the
+   world's lower-left -- which is where this route lives -- is clear. */
+.guide-stage-returning .guide-steps { left: auto; right: 14px; }
+
+/* --- How play works ------------------------------------------------------ */
+.guide-scrim {
+  position: fixed; inset: 0; z-index: 40; display: grid; place-items: center;
+  padding: 24px; background: rgba(6, 10, 8, 0.72);
+}
+.guide-how {
+  inline-size: min(520px, 100%); max-block-size: 82vh; overflow: auto;
+  background: #141c17; border: 1px solid rgba(240, 182, 110, 0.4); padding: 24px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+.guide-how h2 { font-size: 23px; margin-block-end: 6px; }
+.guide-how-lede { font-size: 12px; color: var(--muted); margin-block-end: 14px; }
+.guide-how-steps { margin: 0 0 14px; padding-inline-start: 20px; display: grid; gap: 9px; }
+.guide-how-steps li { font-size: 12px; line-height: 1.45; color: #d7ded7; }
+.guide-how-note {
+  margin: 0 0 16px; padding: 10px 12px; font-size: 11px; line-height: 1.45;
+  color: #c3cac3; background: #111713; border-inline-start: 3px solid var(--bright);
+}
+.guide-how-close {
+  min-block-size: 40px; display: flex; align-items: center; gap: 8px; padding: 0 16px;
+  border: 1px solid var(--line); background: transparent; color: var(--stone);
+  font-size: 12px; cursor: pointer;
+}
+
+/* --- the structured reading ---------------------------------------------- */
+.guide-structured, .guide-brief {
+  margin-block-start: 12px; padding: 18px;
+  background: var(--panel); border: 1px solid var(--line);
+  border-inline-start: 3px solid var(--bright);
+}
+.guide-structured-who { display: flex; align-items: center; gap: 12px; margin-block-end: 12px; }
+.guide-structured-who h2 { margin: 0; font-size: 23px; line-height: 1.05; }
+.guide-who-office { margin: 2px 0 0; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--bright); }
+.guide-structured-task { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; margin: 12px 0; }
+.guide-structured-task dt { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: #8e988f; margin-block-end: 3px; }
+.guide-structured-task dd { margin: 0; font-size: 13px; line-height: 1.3; color: var(--stone); }
+/* In the structured reading the strip is a list, not an overlay, and the gloss
+   is the point of it — a screen without a map has nothing else to explain the
+   four words. */
+.guide-structured .guide-loop, .guide-brief .guide-loop {
+  position: static; flex-wrap: wrap; justify-content: flex-start; background: none;
+  padding: 12px 0 0; border-block-start: 1px solid var(--line); gap: 8px 18px;
+}
+.guide-structured .guide-loop-part, .guide-brief .guide-loop-part { flex-direction: column; align-items: flex-start; gap: 3px; }
+.guide-structured .guide-loop-part em, .guide-brief .guide-loop-part em {
+  display: block; font-size: 10px; line-height: 1.35; letter-spacing: 0; text-transform: none;
+  color: var(--muted); font-style: normal; max-inline-size: 30ch;
+}
+.guide-structured .guide-loop-part + .guide-loop-part::before,
+.guide-brief .guide-loop-part + .guide-loop-part::before { content: none; }
+.guide-structured .guide-steps, .guide-brief .guide-steps {
+  position: static; left: auto; flex-wrap: wrap; max-inline-size: none; margin-block-start: 12px;
+}
+
+/* ==========================================================================
+ * NARROW — 390×844: the same meaning, before any secondary detail.
+ * ==========================================================================
+ * Below 620px the map is already hidden (§ 18.7), and the arrival was living
+ * inside it. So it stops being an overlay and simply flows, in the order § 23.4
+ * requires: portrait crop, name, two short blocks, objective, act — and only
+ * then the loop, the steps and the secondary controls.
+ */
+@media (max-width: 620px) {
+  .guide-stage { inline-size: 100%; }
+  /* No map to overlay, so the guidance flows -- and § 23.4 fixes the order it
+     flows in: portrait, name, two short blocks, objective and act FIRST, then
+     the secondary instructions. Source order puts the loop and the steps over
+     the world's top and floor, which is right on a map and wrong in a column,
+     so the column re-orders rather than the markup. */
+  .guide-overlay { position: static; inset: auto; display: flex; flex-direction: column; }
+  .guide-arrival { order: 1; }
+  .guide-loop { order: 2; }
+  .guide-steps { order: 3; }
+  /* The endpoint labels name points on a map that is not being shown; the
+     structured task block names the same two places in words. */
+  .guide-endpoint { display: none; }
+  /* ⛔ AND THE ROUTE-CLEARING NUDGE GOES WITH THE MAP. `.guide-stage .nar-card`
+     drops the card 64px so it sits below the lit polyline; with no map the card
+     is a static block, and the same 64px opened a hole above it and pushed it
+     over the return bar below. Higher specificity than R0-C05A's `transform:
+     none`, so it has to be undone here explicitly. */
+  .guide-stage .nar-card,
+  .guide-stage .nar-card-flip,
+  .guide-stage .nar-card-low,
+  .guide-stage .nar-card-flip.nar-card-low { transform: none; }
+  /* One column, and the portrait leads it. The desktop rule places the card
+     first so the figure stands at the map's edge; in a column that would put
+     Bishr's face BELOW his own primary act, which is not the order § 23.4
+     names. */
+  .guide-arrival {
+    position: static; right: auto; max-inline-size: none; padding: 0;
+    grid-template-columns: minmax(0, 1fr); align-items: start; gap: 10px;
+    margin-block-start: 12px;
+  }
+  .guide-figure { order: 1; justify-self: start; margin-inline: 0; }
+  .guide-figure .nar-portrait { inline-size: 116px !important; block-size: 132px !important; }
+  .guide-card { order: 2; }
+  .guide-preview { grid-template-columns: 1fr; }
+  .guide-loop {
+    position: static; background: none; padding: 12px 0 0; flex-wrap: wrap;
+    justify-content: flex-start; gap: 6px 12px;
+  }
+  .guide-loop-part + .guide-loop-part::before { margin-inline-end: 12px; }
+  .guide-steps { position: static; left: auto; flex-wrap: wrap; max-inline-size: none; margin-block-start: 10px; }
+  .guide-structured-task { grid-template-columns: 1fr; }
+  .guide-how { padding: 18px; }
+}
+
+/* ==========================================================================
+ * ⛔ REDUCED MOTION — and this time there IS something to suppress.
+ * ==========================================================================
+ * The stylesheet's R0-C05A note recorded that the narrative surface declared no
+ * animation, so its reduced-motion rule passed vacuously, and that "if a future
+ * increment animates the tray's arrival, the suppression has to be written
+ * then". This is that increment: the lit route draws attention with a slow
+ * pulse. § 23.4 — "route state changes without travel animation" — so under
+ * reduced motion the route is simply lit, at full strength, immediately.
+ */
+@keyframes guide-route-pulse {
+  0%, 100% { stroke-opacity: 0.55; }
+  50% { stroke-opacity: 1; }
+}
+.route-objective-glow { animation: guide-route-pulse 3.4s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .route-objective-glow { animation: none; stroke-opacity: 1; }
+  .guide-arrival, .guide-card, .guide-return, .guide-scrim, .guide-how { transition: none; animation: none; }
+}
