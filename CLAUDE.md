@@ -1,6 +1,6 @@
 # `citadel` — status
 
-**Last updated:** 2026-08-24 · **C05A DEPLOYED; `R0-V05C-A` SELECTED; `R0-C05B-A` READY.**
+**Last updated:** 2026-08-25 · **C05B-A MERGED; `R0-H05B-A` IS THE OWNER'S UNBRIEFED WALK.**
 **Topology:** [`../CLAUDE.md`](../CLAUDE.md) — `citadel.endura-assess.com` → `172.17.0.1:8087`,
 `TARGET=/opt/citadel/citadel`.
 
@@ -226,6 +226,81 @@ unbriefed comprehension walk. No deployment was raised, and `C06`/`V06` remain h
 
 ---
 
+## ★ R0-C05B-A — the morning arrives through a person, and then gets out of the way
+
+**Merged at `PENDING`** (both Woodpecker checks green). **Not deployed.**
+
+The owner walked the deployed `4b0909f` without a briefing and found three things at once: the first
+act fell below the viewport, one command could be reached from several regions, and the human
+response returned above their scroll position. This slice corrects the **arrival beat only** — entry
+→ route act → visible world response → retracted guide — and stops.
+
+```text
+src/content/chapter01-beats.json   an `arrival` block; every line keyed, every number a state path
+src/projections/guidance.js        one pure projection, folded into the same project() pass
+src/features/guidance/             arrival guide · play loop · How play works · structured reading
+```
+
+★ **There is no tutorial stage, and that is the design.** `projectGuidance` reads the beat
+`classifyBeat` already derived plus the event log; nothing writes a step counter. § 0.4C forbids
+storing guidance as a second story, and a `tutorialStep` would have been exactly that — two
+authorities on where the morning has got to, drifting the first time one forgot to advance.
+
+★ **The capacity contradiction is interpolated, not written.** The selected target bakes *eight* and
+*six* into Bishr's welcome. Baked, they are a claim with no way to be wrong — the physical/staffed
+desync this chapter exists to expose. Arrival copy writes `{services.icu.staffedPositions}`;
+`beatRefusals` requires every token to resolve against a real world, refuses copy that asserts the
+contradiction instead of reading it, and `fillState` **throws** on an unresolved token rather than
+leaving a hole in the one sentence that must not be quietly wrong.
+
+★ **One command, one owner, named by the projection.** While the arrival is on screen it owns
+`inspect-place`+`gate` and the commitment tray is **absent — not disabled, absent**; the time control
+stops borrowing the narrative's advance label for the duration of the beat. Turn guidance off and the
+tray owns the act again, which is why the toggle cannot cost a participant a command.
+
+**Measured in the production build at 1440×900:** the act sits at **y 594–640** of 900 (deployed:
+**y 1083**); exactly one enabled control offers it in both modes; the post-act change, response and
+open question all land at **`scrollY` 0**.
+
+### ⚠️ Four faults a browser found and 186 green tests did not
+
+Every one had a correct DOM.
+
+1. **The arrival was nested inside `LivingMap`**, which the stylesheet hides below 620px — so at
+   390×844 there was no guide, no objective and no button at all. ⛔ R0-C05A had already written this
+   lesson down for the place card, three lines above where I made it again.
+2. **Capping the map instead of the shared coordinate box** left the place-linked card claiming the
+   Gate while sitting ~180px away from it — C05A's "a man at the Gate shown in the ICU", in a new
+   shape.
+3. **The guide panel was drawn over the very route its objective named.** This map's Gate–ED route
+   runs along the bottom left, where the target puts Bishr. He moved to the trailing edge.
+4. **The guidance toggle lived inside the card it removed**, so turning guidance off was a one-way
+   switch for the rest of the beat.
+
+Faults 1 and 4 now have tests. ⛔ 2 and 3 are geometry, which no DOM assertion can express; they are
+carried in the evidence README and in the stylesheet's own comments.
+
+⚠️ **Two guards had to be repaired rather than satisfied.** The narrow-reflow test read the *last*
+`@media (max-width: 620px)` block and started looking in the wrong region the moment a second one
+existed; and a no-percentage grep over component source failed on `PlayLoop`'s own comment explaining
+why there is no progress bar. A guard that its own explanation breaks is a guard somebody deletes.
+
+★ **Reduced motion is no longer vacuous.** Every previous increment recorded the suppression as
+passing because nothing was animated. The lit route pulses, and under `prefers-reduced-motion` it is
+simply lit at full strength — verified by emulating the media feature, not by reading the rule.
+
+### ⛔ What this increment does not claim
+
+Nothing is bound; `Q10` is open and `VA-018` stays candidate. The target implies a full-length
+standing figure and the master is a **1196×1315 bust**, so the arrival renders the existing
+derivative at its declared `232×264` — frameless and masked into the map — and the gap is recorded
+rather than closed by generating art. The map is deliberately letterboxed while the arrival is on
+screen, which is what brings the act and the return inside 900px. Pressing *Let the morning work
+through First Bell* leaves the guided treatment for the C05A layout: expected, and Slice B's to
+correct. **`R0-H05B-A` is Review, never Passed**, and no deployment was raised.
+
+---
+
 ## What is left, and why each piece survived
 
 | Kept | Why |
@@ -241,7 +316,9 @@ unbriefed comprehension walk. No deployment was raised, and `C06`/`V06` remain h
 | `test/preparedness.test.js` | R0-I2 — capacity refusals, derived contention, disruption and resumption, the measured cost of a conflicting pair, `complete` vs `verified`, residue persistence, replay, and the ladder/label faults above. **99 tests in total** |
 | `src/content/projects.json`, `src/sim/projects.js`, `src/features/preparedness/` | R0-C05. The content names world resources, so a content edit changes the game rather than desynchronising a hard-coded pair |
 | `src/content/chapter01-beats.json`, `src/content/beats.js`, `src/projections/narrative.js`, `src/features/narrative/` | R0-C05A. The story is a projection of the same world, and its content cannot load unless every claim names what makes it true |
-| `test/narrative.test.js` | R0-C05A — content-provenance refusals, narrative determinism, the six-beat order, a compatible and a contending pair, portrait budgets, raster-free play, visual/structured parity and the absence of production labels. **138 tests in total** |
+| `test/narrative.test.js` | R0-C05A — content-provenance refusals, narrative determinism, the six-beat order, a compatible and a contending pair, portrait budgets, raster-free play, visual/structured parity and the absence of production labels |
+| `src/content/chapter01-beats.json` (`arrival`), `src/projections/guidance.js`, `src/features/guidance/` | R0-C05B-A. The arrival is a reading of the same world, its numbers are state paths, and the surface that owns the act is named by the projection rather than agreed between components |
+| `test/guided-arrival.test.js` | R0-C05B-A — derived arrival and determinism, no stored stage, canonical carrier and the absent League mentor, interpolated capacity, eighteen content refusals on mutated fixtures, one enabled command owner in both modes, CTA specificity, the retraction and its four-part return, raster-free play, the guidance-off path and no C01–C05A regression. **186 tests in total** |
 | `test/jsx-hook.mjs` | ⚠️ Restored. Without it no test can import a `.jsx` module, so no test can render one — and this repository has already shipped a blank production page past a green suite |
 
 ---
@@ -304,10 +381,10 @@ The single release ledger now divides `R0-I2B` into three inspectable slices. Th
 `R0-V05C-A`, a Living Route opening with Bishr as the prominent local Guide of the Ways, one
 Gate–Emergency route, one objective and one truthful primary act. The composite target is
 reference-only; runtime must use the existing map, candidate portrait, icon library and live
-semantic UI. **`R0-C05B-A` is the only unblocked task.** It implements entry → route act → visible
-world response → compact Bishr return, then stops for `R0-H05B-A`. Bishr orients but does not become
-an omniscient narrator or the League mentor. Do not start V/C05B-B, V/C05B-C, `R0-V06`, `R0-C06`
-or `R0-C07`.
+semantic UI. **`R0-C05B-A` is merged.** The pilot now opens through Bishr, one Gate–Emergency
+route and one truthful act, and retracts into the compact place-linked card once the route is walked.
+**The next step is not code: it is `R0-H05B-A`, the owner's unbriefed walk**, and only the owner can
+record it. Do not start V/C05B-B, V/C05B-C, `R0-V06`, `R0-C06` or `R0-C07`.
 `R0-G02`, `R0-G03` and `R0-G03A` remain Review; `Q10` and `Q11` remain open.
 
 When R0 is authorised, work follows the ledger's R0-I0–I5 sequence:
