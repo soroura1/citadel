@@ -119,7 +119,21 @@ export const SLOTS = Object.freeze({
     file: `${PORTRAIT}/bishr-v0.1.jpg`,
     lowBandwidth: `${PORTRAIT}/low-bandwidth/bishr-v0.1.jpg`,
     focal: { aspect: [58, 66], vertical: 0.2 },
-    render: { single: [58, 66], stack: [34, 38] },
+    /**
+     * ★ R0-C05B-A — A THIRD DECLARED SIZE, NOT A THIRD IMAGE.
+     *
+     * The arrival shows Bishr large and once (§ 23.1); the place card shows him
+     * compact and often. Same slot, same candidate, same derivative — the size
+     * is declared here so no surface picks its own, and `arrival` is capped at
+     * the derivative's own 232×264 because § 18.2 forbids enlarging a master
+     * past its source. On a HiDPI display the arrival therefore renders at 1×;
+     * that is recorded as a limitation rather than fixed by inventing pixels.
+     *
+     * ⚠️ ONLY THIS SLOT DECLARES IT, because only the Guide of the Ways arrives.
+     * A slot asked for a size it never declared renders no image rather than
+     * guessing a number, and the name, office and every line stay regardless.
+     */
+    render: { single: [58, 66], stack: [34, 38], arrival: [232, 264] },
     pixels: { standard: [232, 264], lowBandwidth: [116, 132] },
     maxBytes: 60_000,
     lowBandwidthMaxBytes: 20_000,

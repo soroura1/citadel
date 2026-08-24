@@ -14,14 +14,23 @@ import { slot } from '../../projections/slots.js';
  * ⛔ AND NOTHING HERE IS BOUND ART. Each unit names a slot, the slot names a
  * candidate, and `Q10` has reviewed none of them. The map says so on its face.
  */
-export function LivingMap({ view, labels = true, onSelectPlace, hotspots = [] }) {
+export function LivingMap({ view, labels = true, onSelectPlace, hotspots = [], objective = null }) {
   const base = slot('R0-SL02');
   return (
-    <div className={`map-stage living-map${labels ? '' : ' labels-off'}`}>
+    /* ⚠️ COMPOSED BY JOIN, NOT BY TEMPLATE. A second `${…}` in the template
+       broke the stylesheet guard's static extraction — its strip expression
+       cannot see past a space inside an interpolation, and it began reporting
+       fragments of JavaScript as missing classes. The names are literal again,
+       and `test/preparedness.test.js` names them explicitly the way `PlaceCard`
+       already does. */
+    <div className={['map-stage', 'living-map', labels ? '' : 'labels-off'].filter(Boolean).join(' ')}>
       <img className="sector-map" src={base.file} alt={base.alt} width="1600" height="900" />
       <div className="map-vignette" />
 
-      <RouteLayer routes={view.routes} nodes={view.nodes} />
+      {/* ★ R0-C05B-A — `objective` is the guidance projection's route or null.
+          The map does not decide to highlight anything; it is told, by the same
+          pass that produced every unit and every polyline beside it. */}
+      <RouteLayer routes={view.routes} nodes={view.nodes} objective={objective} />
 
       {view.units.map((unit) => {
         const asset = slot(unit.slot);

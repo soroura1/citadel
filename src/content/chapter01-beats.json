@@ -43,6 +43,65 @@
     }
   },
 
+  "arrival": {
+    "_why_this_block_exists": "R0-C05B-A. The deployed 4b0909f walk found the first act below the viewport, one command exposed by several controls, and a human response returning outside the player's scroll position. The correction is not more prose: it is one governed arrival that names the carrier, the contradiction, the objective, the route and the single act, and then RETRACTS. Nothing here is a tutorial stage; the projection derives which arrival state applies from the world and the event log, exactly as `classifyBeat` derives the beat.",
+    "_why_numbers_are_interpolated": "The selected target bakes 'eight' and 'six' into the arrival copy. A baked number is a claim with no way to be wrong, and it is the exact desync Fadl exists to refuse. Every number below is written as {a.state.path}; `beatRefusals` requires each path to RESOLVE against a real world and `projectGuidance` fills it from that same world, so the opening screen cannot outlive the state it describes.",
+    "carrier": "bishr",
+    "place": "gate",
+    "title": {
+      "text": "Guide of the Ways",
+      "source": "canon:03-characters/naming-canon-v0.4.md#offices -- 'the Guide of the Ways | Dalil al-Durub | دليل الدروب | the Guide', and #106 'Guide of the Ways | Bishr'. Sensory canon v0.1 §'Offices are used ... without the surname'."
+    },
+    "intro": [
+      {
+        "text": "Welcome. The Bimaristan has been working since before you arrived. The board shows {services.icu.physicalPositions} intensive-care places; this morning {services.icu.staffedPositions} of them can be safely staffed.",
+        "source": "canon:04-story/chapters/chapter-01-the-shadow-at-first-light-v0.2.md#chapter-contract -- the dramatic purpose is to expose 'the gap between physical capacity and safely usable capability'; Scene 1 has the player 'identify the difference between physical positions, staffed positions, occupied positions'."
+      },
+      {
+        "text": "Before Second Bell, walk one patient route with me — the Gate to Emergency. Learn what the board cannot show, then decide what to strengthen.",
+        "source": "canon:04-story/chapters/chapter-01-the-shadow-at-first-light-v0.2.md#scene-1-five-hundred-doors -- Bishr's want is to 'show the player one complete journey from the city threshold to definitive care before the Second Bell'; cast-directions-v0.1.md#9 names his strength as remembering 'routes ... that formal records overlook'."
+      }
+    ],
+    "objective": {
+      "text": "Follow the Gate–Emergency route",
+      "stateKey": "routes.gate-ed"
+    },
+    "route": {
+      "id": "gate-ed",
+      "from": "gate",
+      "to": "ed",
+      "fromLabel": "Gate of Names",
+      "toLabel": "Emergency Department"
+    },
+    "loop": [
+      { "key": "observe", "label": "Observe", "gloss": "Read a place or a route before you trust the board.", "command": "inspect-place" },
+      { "key": "decide", "label": "Decide", "gloss": "Commit the capacity you have to the work you can defend.", "command": "schedule-project" },
+      { "key": "watch", "label": "Watch", "gloss": "Let the morning perform what you committed.", "command": "advance-cycle" },
+      { "key": "respond", "label": "Respond", "gloss": "The responsible function tests the result and says what it found.", "command": "verify-project" }
+    ],
+    "steps": [
+      { "key": "observe-route", "label": "Observe the route" },
+      { "key": "read-change", "label": "Read what changed" },
+      { "key": "choose-two", "label": "Choose two preparations" },
+      { "key": "watch-consequence", "label": "Watch the consequence" }
+    ],
+    "howPlayWorks": {
+      "title": "How play works",
+      "lede": "Four moves, repeated. Nothing here is timed and nothing is scored.",
+      "steps": [
+        { "text": "Inspect the highlighted place or route. Inspection always answers.", "command": "inspect-place" },
+        { "text": "Take one meaningful act. Its label says the target and what it is for; its preview says what it protects, what it costs and what it cannot settle.", "command": "inspect-place" },
+        { "text": "Watch the world respond. Places, routes and equipment move before anyone speaks.", "command": "advance-cycle" },
+        { "text": "Then decide what to strengthen. Capacity is smaller than the work that deserves it.", "command": "schedule-project" }
+      ],
+      "guidanceNote": "Guidance can be switched off. The objective, the route, every command and the structured reading stay exactly where they are; only this framing goes."
+    },
+    "guidance": {
+      "onLabel": "Guidance: On",
+      "offLabel": "Guidance: Off"
+    }
+  },
+
   "mission": {
     "text": "Keep the route from Emergency to intensive care working, and find out why physical ICU places are not all safely usable.",
     "until": "Until Second Bell",
@@ -69,7 +128,7 @@
         "line": "Walk the route once before you trust the board. The public sees a queue; we see a different clock on every person in it.",
         "source": "canon:04-story/chapters/chapter-01-the-shadow-at-first-light-v0.2.md#scene-1 -- Bishr's want is to 'show the player one complete journey from the city threshold to definitive care'; the resistance names 'The public sees a queue; staff see many different clinical and operational clocks.'"
       },
-      "act": { "label": "Walk with Bishr from the Gate to Emergency", "command": "inspect-place", "place": "gate" },
+      "act": { "label": "Walk the Gate–Emergency route with Bishr", "command": "inspect-place", "place": "gate" },
       "preview": {
         "protects": "A truthful reading of the Gate-to-Emergency route.",
         "costs": "Your first look follows the route rather than the central summary.",

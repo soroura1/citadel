@@ -31,6 +31,7 @@ import { EVENTS } from '../sim/events.js';
 import { GROUND, ROUTE_PATHS, ROUTE_STYLE, occupiedPath, pointAlong, widthFor } from './anchors.js';
 import { PROJECTS, PROJECT_CAPACITY, STATE_LABELS, committed, contendedResources } from '../sim/projects.js';
 import { projectNarrative } from './narrative.js';
+import { projectGuidance } from './guidance.js';
 
 export const ORDINARY_STATES = Object.freeze(['ordinary-steady', 'ordinary-high-stable', 'ordinary-rising']);
 
@@ -360,6 +361,7 @@ export function projectPreparedness(world) {
 /** Everything a surface needs, from one world, in one pass. */
 export function project(run, { selectedPlace = PLACES.ICU } = {}) {
   const { world, events } = run;
+  const narrative = projectNarrative(world, events);
   return {
     ordinaryState: classifyOrdinary(world),
     time: { ...world.time, ordinaryCycles: ORDINARY_CYCLES },
@@ -379,7 +381,17 @@ export function project(run, { selectedPlace = PLACES.ICU } = {}) {
     // moment one surface forgot to refresh. § 0.4B.6 requires visual and
     // structured modes to consume the same narrative projection, and this is
     // what makes that structural rather than a promise.
-    narrative: projectNarrative(world, events),
+    narrative,
+    /**
+     * ★ R0-C05B-A — AND THE SAME PASS CARRIES THE ARRIVAL.
+     *
+     * It is given the narrative object rather than the world a second time, so
+     * the guide, the act it owns and the response it reports are literally the
+     * same values the place card renders. A guidance projection that re-derived
+     * the beat would be a second reading of one morning, and the two would
+     * disagree the first time either changed.
+     */
+    guidance: projectGuidance(world, events, narrative),
     // Residue is what the world is still carrying — including work that
     // stopped being done because something else was chosen.
     residue: world.residue.map((item) => ({ ...item })),

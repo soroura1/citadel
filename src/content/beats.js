@@ -50,6 +50,8 @@ export const CHARACTERS = Object.freeze(CONTENT.characters);
 export const MISSION = Object.freeze(CONTENT.mission);
 export const BEATS = Object.freeze(CONTENT.beats.map((beat) => Object.freeze(beat)));
 export const PROJECT_CARRIERS = Object.freeze(CONTENT.projectCarriers);
+/** R0-C05B-A — the governed arrival: who greets you, and what the first move is. */
+export const ARRIVAL = Object.freeze(CONTENT.arrival);
 
 export const beatByKey = (key) => BEATS.find((beat) => beat.beat === key) ?? null;
 export const carrierFor = (projectId) => PROJECT_CARRIERS[projectId] ?? null;
@@ -68,12 +70,47 @@ const CARRIER_STATES = Object.freeze(['working', 'disrupted', 'complete', 'verif
 
 /** Resolve a dotted path, and say whether it actually landed on something. */
 function resolves(root, path) {
+  return read(root, path) !== undefined;
+}
+
+/** Resolve a dotted path to its value, or `undefined` if it does not land. */
+function read(root, path) {
   let node = root;
   for (const key of String(path).split('.')) {
-    if (node == null || typeof node !== 'object' || !(key in node)) return false;
+    if (node == null || typeof node !== 'object' || !(key in node)) return undefined;
     node = node[key];
   }
-  return node !== undefined;
+  return node;
+}
+
+/**
+ * ★ R0-C05B-A — A NUMBER IN PARTICIPANT COPY IS A STATE PATH, OR IT IS NOTHING.
+ *
+ * The selected arrival target bakes "eight" and "six" into Bishr's welcome.
+ * Baked, they are a claim with no way to be wrong: the world could staff four
+ * tomorrow and the opening screen would go on saying six, confidently, forever
+ * — which is the physical-versus-staffed desync this whole chapter exists to
+ * expose. So arrival copy writes `{services.icu.staffedPositions}` instead, and
+ * the ONLY way to get a number onto that screen is a path that resolves.
+ *
+ * ⛔ AND AN UNRESOLVED TOKEN THROWS rather than rendering as itself. A literal
+ * "{services.icu.staffedPositions}" on the page would be obvious; a token that
+ * silently emptied to "The board shows  intensive-care places" would not.
+ */
+export const STATE_TOKEN = /\{([A-Za-z0-9_.]+)\}/g;
+
+/** Every state path a piece of governed copy interpolates. */
+export const stateTokens = (text) =>
+  [...String(text ?? '').matchAll(STATE_TOKEN)].map((match) => match[1]);
+
+export function fillState(text, world) {
+  return String(text).replace(STATE_TOKEN, (_, path) => {
+    const value = read(world, path);
+    if (value === undefined || value === null || typeof value === 'object') {
+      throw new Error(`content-interpolates-an-unresolvable-state: ${path}`);
+    }
+    return String(value);
+  });
 }
 
 /**
@@ -101,6 +138,7 @@ export function beatRefusals(world, slotIds = [], content = CONTENT) {
   const MISSION = content.mission;
   const BEATS = content.beats ?? [];
   const PROJECT_CARRIERS = content.projectCarriers ?? {};
+  const ARRIVAL = content.arrival;
 
   const known = new Set(Object.keys(CHARACTERS));
   const acts = new Set([...COMMAND_IDS, ...SURFACE_ACTS]);
@@ -158,6 +196,93 @@ export function beatRefusals(world, slotIds = [], content = CONTENT) {
     }
   }
 
+  // --- ★ R0-C05B-A, the arrival -------------------------------------------
+  // The first screen is the one a participant cannot skip and cannot come back
+  // to, so every part of it is checked here rather than trusted to be tidy.
+  if (!ARRIVAL) {
+    say('no-governed-arrival', 'arrival');
+  } else {
+    if (!known.has(ARRIVAL.carrier)) say('arrival-carrier-is-not-a-known-character', String(ARRIVAL.carrier));
+    if (!PLACE_IDS.includes(ARRIVAL.place)) say('arrival-is-anchored-to-no-real-place', String(ARRIVAL.place));
+    // ⛔ The office a participant reads on the first screen is canon's, or it
+    // is invention wearing canon's clothes.
+    if (!ARRIVAL.title?.text) say('arrival-carrier-has-no-office-title', 'arrival.title');
+    if (!ARRIVAL.title?.source) say('arrival-title-states-no-canonical-source', 'arrival.title');
+
+    // § 23.2 limits arrival copy to two short paragraphs. A third is a lore
+    // dump, and a lore dump before play is the thing that section forbids.
+    const intro = ARRIVAL.intro ?? [];
+    if (intro.length !== 2) say('arrival-is-not-two-short-paragraphs', `${intro.length} paragraph(s)`);
+    intro.forEach((para, index) => {
+      if (!para?.text) say('arrival-paragraph-has-no-text', `arrival.intro[${index}]`);
+      if (!para?.source) say('arrival-paragraph-states-no-canonical-source', `arrival.intro[${index}]`);
+      interpolations(para?.text, `arrival.intro[${index}]`);
+    });
+
+    // ⛔ The contradiction is the reason the arrival exists. It must be READ
+    // from the world, not asserted — so at least one paragraph must interpolate
+    // both the physical and the staffed count.
+    const introText = intro.map((para) => para?.text ?? '').join(' ');
+    for (const path of ['services.icu.physicalPositions', 'services.icu.staffedPositions']) {
+      if (!stateTokens(introText).includes(path)) {
+        say('arrival-does-not-read-the-capacity-contradiction-from-state', path);
+      }
+    }
+
+    operational(ARRIVAL.objective, 'arrival.objective');
+
+    const route = ARRIVAL.route;
+    if (!route?.id || !(route.id in (world.routes ?? {}))) {
+      say('arrival-names-a-route-the-world-does-not-have', String(route?.id));
+    } else {
+      // The endpoints are the world's, not the copy's. A route labelled
+      // Gate→Emergency that the world runs the other way would highlight a
+      // path the objective does not describe.
+      if (world.routes[route.id].from !== route.from) say('arrival-route-starts-somewhere-else', route.id);
+      if (world.routes[route.id].to !== route.to) say('arrival-route-ends-somewhere-else', route.id);
+    }
+    for (const end of ['fromLabel', 'toLabel']) {
+      if (!route?.[end]) say('arrival-route-endpoint-has-no-label', `arrival.route.${end}`);
+    }
+
+    // ★ EVERY LOOP STEP NAMES THE COMMAND IT DESCRIBES. Four words on a strip
+    // that correspond to nothing the participant can do is a diagram of a game,
+    // not a grammar for this one.
+    const loop = ARRIVAL.loop ?? [];
+    if (loop.length !== 4) say('the-play-loop-is-not-four-parts', `${loop.length} part(s)`);
+    for (const part of loop) {
+      if (!part?.key || !part?.label) say('play-loop-part-has-no-label', JSON.stringify(part).slice(0, 40));
+      if (!part?.gloss) say('play-loop-part-explains-nothing', String(part?.key));
+      if (!COMMAND_IDS.includes(part?.command)) {
+        say('play-loop-part-names-no-command', `${part?.key} -> ${part?.command}`);
+      }
+    }
+
+    const steps = ARRIVAL.steps ?? [];
+    if (steps.length !== 4) say('the-first-use-steps-are-not-four', `${steps.length} step(s)`);
+    for (const step of steps) {
+      if (!step?.key || !step?.label) say('first-use-step-has-no-label', JSON.stringify(step).slice(0, 40));
+    }
+
+    const how = ARRIVAL.howPlayWorks;
+    if (!how?.title) say('how-play-works-has-no-title', 'arrival.howPlayWorks');
+    if (!how?.lede) say('how-play-works-explains-nothing', 'arrival.howPlayWorks');
+    if (!how?.guidanceNote) say('how-play-works-does-not-say-what-turning-guidance-off-keeps', 'arrival.howPlayWorks');
+    for (const [index, step] of (how?.steps ?? []).entries()) {
+      if (!step?.text) say('how-play-works-step-has-no-text', `arrival.howPlayWorks.steps[${index}]`);
+      // ⛔ An instruction describing a control that does not exist is worse
+      // than no instruction: it teaches a participant to look for it.
+      if (!COMMAND_IDS.includes(step?.command)) {
+        say('how-play-works-describes-a-command-that-does-not-exist', `${index} -> ${step?.command}`);
+      }
+    }
+    if ((how?.steps ?? []).length < 4) say('how-play-works-is-shorter-than-the-loop-it-explains', 'arrival.howPlayWorks.steps');
+
+    for (const label of ['onLabel', 'offLabel']) {
+      if (!ARRIVAL.guidance?.[label]) say('guidance-toggle-has-no-label', `arrival.guidance.${label}`);
+    }
+  }
+
   // --- ★ project carriers, checked in BOTH directions ----------------------
   // A missing carrier leaves a commissioned project with nobody to answer for
   // it; a surplus carrier is content for a project that no longer exists, and
@@ -187,8 +312,24 @@ export function beatRefusals(world, slotIds = [], content = CONTENT) {
 
   return out;
 
+  /**
+   * ⛔ Every `{path}` in participant copy must land on a real, printable value.
+   * A path that resolves to an object would render "[object Object]"; one that
+   * resolves to nothing would silently leave a hole in a sentence about
+   * capacity, which is the one sentence that must not be quietly wrong.
+   */
+  function interpolations(text, at) {
+    for (const path of stateTokens(text)) {
+      const value = read(world, path);
+      if (value === undefined || value === null || typeof value === 'object') {
+        say('copy-interpolates-an-unresolvable-state', `${at} -> ${path}`);
+      }
+    }
+  }
+
   function operational(claim, at) {
     if (!claim?.text) { say('operational-claim-has-no-text', at); return; }
+    interpolations(claim.text, at);
     const hasState = 'stateKey' in (claim ?? {});
     const hasEvent = 'eventType' in (claim ?? {});
     if (!hasState && !hasEvent) {

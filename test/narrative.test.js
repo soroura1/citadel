@@ -511,7 +511,13 @@ test('★ narrow reflow moves the card OUT of the map\'s coordinate space', () =
   // The 390×844 collision V05B found: an absolutely positioned card and a
   // bottom tray overlap on a short viewport whatever the anchor.
   const css = read('src/styles.css');
-  const narrow = css.slice(css.lastIndexOf('@media (max-width: 620px)'));
+  // ⚠️ EVERY 620px BLOCK, NOT THE LAST ONE. This read `lastIndexOf` until
+  // R0-C05B-A appended a second narrow block for the guidance surface — at
+  // which point the assertion below started looking in a region that never
+  // contained the rule and failed on a stylesheet that was entirely correct. A
+  // guard that depends on being the last of its kind stops guarding the moment
+  // anything else is added.
+  const narrow = css.split('@media (max-width: 620px)').slice(1).join('\n');
   assert.match(narrow, /\.nar-card \{[^}]*position: static/);
   assert.match(narrow, /\.nar-tray \{[^}]*grid-template-columns: 1fr/);
 });

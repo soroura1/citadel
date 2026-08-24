@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRun } from "./features/morning/useRun.js";
 import { LivingMap } from "./features/morning/LivingMap.jsx";
 import { MorningControls } from "./features/morning/MorningControls.jsx";
@@ -13,6 +13,10 @@ import { CommitmentTray, OutcomeBar } from "./features/narrative/CommitmentTray.
 import { RecordOverlay } from "./features/narrative/RecordOverlay.jsx";
 import { NarrativeStructured } from "./features/narrative/NarrativeStructured.jsx";
 import { BuildPanel, buildSurfaceRequested } from "./features/narrative/BuildPanel.jsx";
+import { ArrivalGuide, RouteEndpoints, GuidanceToggle } from "./features/guidance/ArrivalGuide.jsx";
+import { GuidanceStructured, GuidanceBrief } from "./features/guidance/GuidanceStructured.jsx";
+import { PlayLoop, FirstSteps } from "./features/guidance/PlayLoop.jsx";
+import { HowPlayWorks } from "./features/guidance/HowPlayWorks.jsx";
 import { PLACES } from "./sim/world.js";
 import {
   ActivityIcon as Activity, ArrowRight, CheckCircle, ClipboardText, Clock, Eye, FirstAidKit,
@@ -202,19 +206,47 @@ function DebriefPanel({ selected, response, onRestart }) {
  * participant would have lost the person asking at exactly the width where the
  * words matter most.
  */
-function LivingMorning({ structured, onReachPreparation }) {
+/**
+ * ⚠️ EXPORTED FOR ONE REASON, AND IT IS A LOAD-BEARING ONE.
+ *
+ * "The same command and payload may never be enabled in two participant-facing
+ * regions" (§ 0.4C) is a property of the WHOLE operate surface, not of any one
+ * component — the audit found it by playing the page, and no assertion over a
+ * single panel could have. Working rule 5 in this repository's own CLAUDE file
+ * says anything composed where a test cannot reach it is untested by
+ * construction, and it has been paid for six times. So the composition is
+ * exported and `test/guided-arrival.test.js` renders it and counts.
+ */
+export function LivingMorning({ structured, onReachPreparation }) {
   const [place, setPlace] = useState(PLACES.ICU);
   const [labels, setLabels] = useState(true);
   const [record, setRecord] = useState(false);
+  /* ⚠️ R0-C05B-A — GUIDANCE IS A PREFERENCE, NOT A STAGE. This is the only
+     piece of guidance state that exists, it is presentational, and it is the
+     participant's. Where the morning has GOT TO is derived in
+     `projectGuidance`; § 0.4C forbids storing that as a second story. */
+  const [guidanceOn, setGuidanceOn] = useState(true);
+  const [howOpen, setHowOpen] = useState(false);
+  const howButton = useRef(null);
+  const returnRegion = useRef(null);
   const { view, setMode, setSpeed, advanceCycle, inspect, scheduleProject, verifyProject, perform } =
     useRun(20260822, place);
   const selectPlace = (id) => { setPlace(id); inspect(id); };
   const label = PLACE_LABELS[place] ?? place;
   const ready = view.status === "preparation-window";
   const narrative = view.narrative;
+  const guidance = view.guidance;
   /* ★ The card names where the SPEAKER is, not what the inspector is showing.
      Two different questions; one of them used to answer the other. */
   const speakerPlace = PLACE_LABELS[narrative.place] ?? narrative.place;
+
+  /* ★ THREE STATES, ALL READ. `arriving` is the large guide; `returning` is the
+     retraction, with the world's answer where the button was; everything after
+     is the morning R0-C05A already plays. Guidance off collapses all of it and
+     changes no command — see `GuidanceToggle`. */
+  const guided = guidanceOn && guidance.phase !== "in-play";
+  const arriving = guided && guidance.phase === "arrival";
+  const returning = guided && guidance.phase === "returning";
 
   /* ★ ONE ENTRY POINT FOR EVERY NARRATIVE ACT. An inspection also moves the
      inspector's selection, because the participant asked to look at a place and
@@ -224,34 +256,127 @@ function LivingMorning({ structured, onReachPreparation }) {
     else perform(offered);
   };
 
+  /* ⛔ THE RESPONSE MUST NOT LAND WHERE THE PARTICIPANT IS NOT LOOKING. The
+     deployed audit found the human return arriving above the player's scroll
+     position, so the act appeared to do nothing. The return is now placed in
+     the region the button occupied AND takes focus, which is what a keyboard or
+     screen-reader participant needs in any case. `block: "nearest"` and
+     `behavior: "auto"` on purpose: § 23.4 requires immediate placement rather
+     than smooth scrolling when motion is reduced, and "nearest" does not move a
+     viewport that already contains the element. */
+  const phase = guidance.phase;
+  const previousPhase = useRef(phase);
+  useEffect(() => {
+    if (previousPhase.current !== phase && phase === "returning" && returnRegion.current) {
+      returnRegion.current.focus({ preventScroll: true });
+      const still = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+      returnRegion.current.scrollIntoView({ block: "nearest", behavior: still ? "auto" : "smooth" });
+    }
+    previousPhase.current = phase;
+  }, [phase]);
+
+  const closeHow = () => { setHowOpen(false); howButton.current?.focus(); };
+  const guidanceToggle = (
+    <GuidanceToggle on={guidanceOn} labels={guidance.labels} onToggle={() => setGuidanceOn((on) => !on)} />
+  );
+  const guideProps = {
+    guidance, onAct: act, onHowPlayWorks: () => setHowOpen(true), howButtonRef: howButton, guidanceToggle,
+  };
+
   return (
     <>
       <MorningStatus strip={view.strip} />
       <MissionRibbon mission={narrative.mission} />
       <MorningControls view={view} onMode={setMode} onSpeed={setSpeed} onAdvance={advanceCycle}
                        labels={labels} onLabels={() => setLabels((on) => !on)}
-                       advanceLabel={narrative.next?.command === "advance-cycle" ? narrative.next.label : null} />
+                       /* ⛔ AND IT STOPS BORROWING THE NARRATIVE'S LABEL WHILE
+                          THE ARRIVAL OWNS PROGRESSION. The audit's second
+                          finding was one command presented by several regions;
+                          through this beat the clock is a clock. Bounded to the
+                          arrival deliberately — the same correction for the
+                          ordinary cycles belongs to Slice B. */
+                       advanceLabel={!guidance.ownsProgression && narrative.next?.command === "advance-cycle"
+                         ? narrative.next.label : null} />
 
       {/* ★ THE WORLD FIRST, AND THE PERSON IN IT. Exactly one of the map and
           the structured world is on screen, and exactly one rendering of the
           beat goes with it — § 21.3 forbids repeating one event in three
           panels. Both read the SAME `view.narrative`. */}
-      <div className="nar-stage">
+      <div className={guided ? `nar-stage guide-stage guide-stage-${guidance.phase}` : "nar-stage"}>
+        {/* ⛔ THE GUIDANCE IS A SIBLING OF THE MAP, NOT A CHILD OF IT.
+            R0-C05A recorded this exact lesson for the place card and it was
+            re-made here anyway: below 620px the stylesheet hides `.living-map`,
+            and the first build of this slice nested Bishr, the objective, the
+            play loop and the primary act inside it. At 390×844 the whole
+            arrival simply was not there — no guide, no task, no button — and
+            every one of the 186 tests was green, because the markup was
+            correct at the width the tests do not have. The overlay box below
+            is inset to match the map exactly, so the fractional anchors still
+            land on the world; at narrow widths it stops being positioned and
+            simply flows, ahead of the structured reading. */}
+        {/* ⛔ THE TOGGLE WAS A ONE-WAY SWITCH, and only playing it showed that.
+            It lived inside the arrival card, so turning guidance off unmounted
+            the control that turns it back on — a participant who tried it once
+            had no way back for the rest of the beat. It is now offered from the
+            stage exactly when the card is not there to offer it, so there is
+            always one and never two. */}
+        {guidance.phase !== "in-play" && !guidanceOn && (
+          <div className="guide-restore">{guidanceToggle}</div>
+        )}
+
+        {/* ★ THE ARRIVAL COMES FIRST IN DOCUMENT ORDER, in both modes. In the
+            visual mode the overlay is positioned over the world anyway, so this
+            costs nothing there and puts Bishr ahead of the map for a screen
+            reader. In the structured mode it is the difference between meeting
+            the guide and scrolling past a list of eight places to find him: the
+            first build put the structured arrival at y=816 on a 900px viewport,
+            which is the audit's own finding wearing different clothes. */}
+        {structured && arriving && <GuidanceStructured {...guideProps} />}
+        {structured && returning && <GuidanceBrief {...guideProps} />}
+
+        {guided && !structured && (
+          <div className="guide-overlay">
+            <PlayLoop loop={guidance.loop} />
+            <RouteEndpoints route={guidance.objective.route}
+                            from={guidance.objective.route.fromAnchor}
+                            to={guidance.objective.route.toAnchor} />
+            <FirstSteps steps={guidance.steps} />
+            {arriving && <ArrivalGuide {...guideProps} />}
+          </div>
+        )}
+
         {structured
           ? <MorningStructured view={view} onSelectPlace={selectPlace} places={hotspots} />
-          : <LivingMap view={view} labels={labels} onSelectPlace={selectPlace} hotspots={hotspots} />}
-        {structured
+          : <LivingMap view={view} labels={labels} onSelectPlace={selectPlace} hotspots={hotspots}
+                       objective={guided ? guidance.objective.route : null} />}
+
+        {/* ⛔ NOT WHILE THE ARRIVAL IS SPEAKING. Bishr's request is on the
+            arrival card; a place card beside it would be the same person asking
+            the same thing twice — § 21.3 by name. After the act the compact,
+            place-linked card is exactly what he retracts INTO (§ 23.3). */}
+        {!arriving && (structured
           ? <NarrativeStructured narrative={narrative} placeLabel={speakerPlace} />
-          : <PlaceCard narrative={narrative} placeLabel={speakerPlace} />}
+          : <PlaceCard narrative={narrative} placeLabel={speakerPlace} />)}
       </div>
 
       {/* ★ THE TRAY IS TEMPORARY. Before the act it carries purpose, the
           actor-and-purpose verb and a fair preview; after it, what the world
           did and what is still open. Never both, because they describe two
-          different moments. */}
-      {narrative.act
-        ? <CommitmentTray narrative={narrative} onAct={act} onOpenRecord={() => setRecord(true)} />
-        : <OutcomeBar narrative={narrative} onAct={act} onOpenRecord={() => setRecord(true)} />}
+          different moments.
+
+          ⛔ AND EXACTLY ONE SURFACE OWNS THE ACT. While the arrival is on
+          screen it owns `inspect-place`+`gate` and the tray is not rendered at
+          all — not disabled, not hidden, absent. Turn guidance off and the tray
+          owns it again, which is why turning guidance off cannot cost a
+          participant a command. */}
+      {arriving
+        ? null
+        : narrative.act
+          ? <CommitmentTray narrative={narrative} onAct={act} onOpenRecord={() => setRecord(true)} />
+          : <div className={returning ? "guide-return" : undefined}
+                 ref={returning ? returnRegion : null} tabIndex={returning ? -1 : undefined}>
+              <OutcomeBar narrative={narrative} onAct={act} onOpenRecord={() => setRecord(true)} />
+            </div>}
 
       {/* ★ R0-C05 — THE WINDOW IS PART OF THE SAME MORNING, NOT A NEW SCREEN.
           It appears once the requests have been heard, so the four projects
@@ -294,8 +419,9 @@ function LivingMorning({ structured, onReachPreparation }) {
         </section>
       </div>
 
+      {howOpen && <HowPlayWorks how={guidance.howPlayWorks} onClose={closeHow} />}
       {record && <RecordOverlay view={view} onClose={() => setRecord(false)} />}
-      {buildSurfaceRequested() && <BuildPanel increment="R0-I2A · R0-C05A" narrative={narrative} />}
+      {buildSurfaceRequested() && <BuildPanel increment="R0-I2B · R0-C05B-A" narrative={narrative} />}
     </>
   );
 }
