@@ -228,7 +228,7 @@ unbriefed comprehension walk. No deployment was raised, and `C06`/`V06` remain h
 
 ## ★ R0-C05B-A — the morning arrives through a person, and then gets out of the way
 
-**Merged at `PENDING`** (both Woodpecker checks green). **Not deployed.**
+**Merged at `226c477`** (PR #65, both Woodpecker checks green). **Not deployed.**
 
 The owner walked the deployed `4b0909f` without a briefing and found three things at once: the first
 act fell below the viewport, one command could be reached from several regions, and the human
